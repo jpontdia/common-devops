@@ -257,7 +257,7 @@ jobs:
         with:
           keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
           configs: $configurationmap
-          login-credentials: ${{ secrets.azure-credentials }}
+          login_credentials: ${{ secrets.azure-credentials }}
 
       - name: test variables 
         run: |
