@@ -214,7 +214,7 @@ jobs:
 
   deploy-dev:
     name: Development
-    needs: [build]
+    #needs: [build]
     runs-on: ubuntu-latest
     env:
       initialsecretconfiguration: ""
