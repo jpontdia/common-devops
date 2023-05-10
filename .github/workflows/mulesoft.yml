@@ -16,6 +16,8 @@ on:
  
 jobs:
   build:
+    name: Build
+    if: ${{ false }}
     runs-on: ubuntu-latest
     env:
       #For testing dynamic content
@@ -216,7 +218,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       initialsecretconfiguration: ""
-      secretsconfiguration: ""
+      configurationmap: ""
 
     environment:
       name: dev
@@ -239,17 +241,18 @@ jobs:
             if [[ "$p" =~ ^#.*  ]]; then
               echo "  A comment was found"
             else
-            temporal=$(echo "$temporal $p")
+              temporal=$(echo "$temporal $p")
               echo "  Variable found: $p"
               echo "    temporal: $temporal"
             fi
-            secretsconfiguration="$temporal"
-            echo "    temporal  secretsconfiguration : $secretsconfiguration"
+            configurationmap="$temporal"
+            echo "    temporal  configurationmap : $configurationmap"
           done 
 
           echo ""
-          echo "Secrets secretsconfiguration: $secretsconfiguration"
-          echo "Secrets initialsecretconfiguration: $initialsecretconfiguration"
+          echo "temporal: $temporal"
+          echo "temporal  configurationmap : $configurationmap" 
+          echo "initialsecretconfiguration: $initialsecretconfiguration"
 
 
 
