@@ -248,10 +248,28 @@ jobs:
           done 
 
           echo ""
-          cat configurationmap.txt
+          configurationmap=$(configurationmap.txt)
+          echo "configurationmap: $configurationmap"
           echo "initialsecretconfiguration: $initialsecretconfiguration"
 
+      - name: Azure log-in
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.azure-credentials }}
 
+
+      - name: Azure get KeyVault secrets
+        uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
+        with:
+          keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
+          configs: $configurationmap
+
+      - name: test variables 
+        run: |
+          echo "SALESFORCE_STOREPASSWORD = $SALESFORCE_STOREPASSWORD"
+          echo "SALESFORCE_STOREPASSWORD = $env.SALESFORCE_STOREPASSWORD"
+          echo "anypoint_environment_clientid = $anypoint_environment_clientid"
+          echo "anypoint_environment_clientid = $env.anypoint_environment_clientid"
 
 
 
