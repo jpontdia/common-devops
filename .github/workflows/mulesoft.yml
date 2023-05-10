@@ -239,6 +239,7 @@ jobs:
             else
               secretsconfiguration=$(echo "$secretsconfiguration $p")
               echo "  Variable found: $p"
+              echo "    temporal: $secretsconfiguration"
             fi
           done 
 
