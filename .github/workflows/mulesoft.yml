@@ -252,7 +252,7 @@ jobs:
           echo "configurationmap: $configurationmap"
           echo "initialsecretconfiguration: $initialsecretconfiguration"
 
-      - name: Azure get KeyVault secrets
+      - name: Get Azure KeyVault secrets
         uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
         with:
           keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
