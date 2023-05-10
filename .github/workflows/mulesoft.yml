@@ -227,7 +227,7 @@ jobs:
           configurationtoken=${{ secrets.configurations-token }}
 
           # Get the secrets mapping
-          # secretsconfiguration=""
+          secretsconfiguration=""
           secretsmappingfile="secrets-mapping.txt"
           urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$secretsmappingfile"
           echo "Getting the secrets mapping file: $urlconfigurationfile"
@@ -237,8 +237,8 @@ jobs:
             if [[ "$p" =~ ^#.*  ]]; then
               echo "  A comment was found"
             else
-              echo "  Variable found: $p"
               secretsconfiguration=$(echo "$secretsconfiguration $p")
+              echo "  Variable found: $p"
             fi
           done 
 
