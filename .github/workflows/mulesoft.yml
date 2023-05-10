@@ -207,6 +207,43 @@ jobs:
 
 
 
+  deploy-dev:
+    name: Development
+    needs: [build]
+    runs-on: ubuntu-latest
+    env:
+      initialsecretconfiguration: ""
+      secretsconfiguration: ""
+
+    environment:
+      name: dev
+      url: 'https://dev.myapp.com'
+    steps:
+
+      - name: Get the mapping for the secrets 
+        run: |
+          #Configure environment variables
+          configurationtoken=${{ secrets.configurations-token }}
+
+          # Get the secrets mapping
+          # secretsconfiguration=""
+          secretsmappingfile="secrets-mapping.txt"
+          urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$secretsmappingfile"
+          echo "Getting the secrets mapping file: $urlconfigurationfile"
+          initialsecretconfiguration=$(curl -sH "Authorization: token $configurationtoken" $urlconfigurationfile)
+
+          echo "$initialsecretconfiguration" | while read p; do
+            if [[ "$p" =~ ^#.*  ]]; then
+              echo "  A comment was found"
+            else
+              echo "  Variable found: $p"
+              secretsconfiguration=$(echo "$secretsconfiguration $p")
+            fi
+          done 
+
+          echo ""
+          echo "Secrets secretsconfiguration: $secretsconfiguration"
+          echo "Secrets initialsecretconfiguration: $initialsecretconfiguration"
 
 
 
