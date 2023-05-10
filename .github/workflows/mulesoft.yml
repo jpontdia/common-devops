@@ -243,15 +243,12 @@ jobs:
             else
               temporal=$(echo "$temporal $p")
               echo "  Variable found: $p"
-              echo "    temporal: $temporal"
             fi
-            configurationmap="$temporal"
-            echo "    temporal  configurationmap : $configurationmap"
+            echo "$temporal" > configurationmap.txt
           done 
 
           echo ""
-          echo "temporal: $temporal"
-          echo "temporal  configurationmap : $configurationmap" 
+          cat configurationmap.txt
           echo "initialsecretconfiguration: $initialsecretconfiguration"
 
 
