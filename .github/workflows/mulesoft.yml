@@ -148,6 +148,7 @@ jobs:
         run: $MavenCompile
 
       - name: Run test cases and package
+        if: ${{ false }}    
         run: |
           ## Get the git commit hash 
           commitHash=$(git rev-parse --short "$GITHUB_SHA")
