@@ -248,21 +248,16 @@ jobs:
           done 
 
           echo ""
-          configurationmap=$(configurationmap.txt)
+          configurationmap=$(cat configurationmap.txt)
           echo "configurationmap: $configurationmap"
           echo "initialsecretconfiguration: $initialsecretconfiguration"
-
-      - name: Azure log-in
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.azure-credentials }}
-
 
       - name: Azure get KeyVault secrets
         uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
         with:
           keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
           configs: $configurationmap
+          login-credentials: ${{ secrets.azure-credentials }}
 
       - name: test variables 
         run: |
