@@ -256,11 +256,13 @@ jobs:
         uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
         with:
           keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
-          configs: $configurationmap
+          #configs: $configurationmap
+          secrets_file_path: configurationmap.txt
           login_credentials: ${{ secrets.azure-credentials }}
 
       - name: test variables 
         run: |
+          echo "initialsecretconfiguration: $initialsecretconfiguration"
           echo "SALESFORCE_STOREPASSWORD = $SALESFORCE_STOREPASSWORD"
           echo "SALESFORCE_STOREPASSWORD = $env.SALESFORCE_STOREPASSWORD"
           echo "anypoint_environment_clientid = $anypoint_environment_clientid"
