@@ -13,7 +13,9 @@ on:
       configurations-token:
         required: true
         description: Access token to get the configuration for the service
- 
+env:
+  initialsecretconfiguration: ""
+  configurationmap: "" 
 jobs:
   build:
     name: Build
@@ -216,9 +218,6 @@ jobs:
     name: Development
     #needs: [build]
     runs-on: ubuntu-latest
-    env:
-      initialsecretconfiguration: ""
-      configurationmap: ""
 
     environment:
       name: dev
@@ -253,13 +252,21 @@ jobs:
           echo "configurationmap: $configurationmap"
           echo "initialsecretconfiguration: $initialsecretconfiguration"
 
+      - name: Get access configuration token
+        uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
+        with:
+          keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
+          secrets: |
+            configuration_access_token=configuration-access-token
+          login_credentials: ${{ secrets.azure-credentials }}
+
       - name: Get Azure KeyVault secrets
         uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
         with:
           keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
           #configs: $configurationmap
           secrets_file_path: configurationmap.txt
-          login_credentials: ${{ secrets.azure-credentials }}
+          #login_credentials: ${{ secrets.azure-credentials }}
 
       - name: test variables 
         run: |
