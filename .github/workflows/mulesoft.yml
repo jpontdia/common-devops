@@ -282,18 +282,9 @@ jobs:
 
       - name: Get configuration for the service 
         run: |
-          echo "mytest=$mytest"
-          echo "configurationmap: $configurationmap"
-          echo "initialsecretconfiguration: $initialsecretconfiguration"
-          echo "SALESFORCE_STOREPASSWORD = $SALESFORCE_STOREPASSWORD"
-          echo "$SALESFORCE_STOREPASSWORD" | sed 's/./& /g'
-          echo "configuration_access_token:"
-          echo "$configuration_access_token" | sed 's/./& /g'
-          echo "anypoint_environment_clientid = $anypoint_environment_clientid"
-          echo "$anypoint_environment_clientid" | sed 's/./& /g'
 
           #POM and JAR file must be in the root directory
-          echo "Getting the service metadata from pom file for deployment"
+          echo "Getting the service metadata from POM file"
           service=$(sed -n 's:.*<name>\(.*\)</name>.*:\1:p' pom.xml | sed -n 1p)
           servicegroup=$(sed -n 's:.*<groupId>\(.*\)</groupId>.*:\1:p' pom.xml | sed -n 2p)
           serviceartifact=$(sed -n 's:.*<artifactId>\(.*\)</artifactId>.*:\1:p' pom.xml | sed -n 2p)
@@ -312,9 +303,7 @@ jobs:
           deploymentname=$(echo "$service$envsuffix")
           echo "Deployment name: $deploymentname"
           echo "Jar file: $jar"
-
-          # yaml pareser version
-          yq --version
+          echo ""
 
           # Get the configuration file for the service
           configurationfile=$(echo "$deploymentname.yml")
@@ -335,10 +324,10 @@ jobs:
           echo ""
 
           start=$(date +%s)
-          echo ""
           echo "Deployment process start"
 
           # Get the current status of the service
+          echo "Getting the status for the service"
           STATUS=$(\
             anypoint-cli-v4 runtime-mgr cloudhub-application describe \
             --client_id $cicd_connectedapp_clientid \
@@ -387,7 +376,6 @@ jobs:
             STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
             UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
             echo "Service: $deploymentname status: $STATUS, updateStatus: $UPDATE_STATUS"
-
             end=$(date +%s)
             echo "  Elapsed time: $(($end-$start)) seconds, iteration: $iteration limit: $limit"
 
@@ -404,6 +392,12 @@ jobs:
                 fi
             fi
 
+            # Temporal block
+            if  [ $iteration -eq 1 ]; then
+              echo ""
+              echo "$DEPLOYMENT_INFO"
+              echo ""
+            fi
             iteration=$(( $iteration + 1 ))
           done
 
