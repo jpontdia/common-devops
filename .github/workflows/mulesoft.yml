@@ -274,6 +274,8 @@ jobs:
           echo "initialsecretconfiguration: $initialsecretconfiguration"
           echo "SALESFORCE_STOREPASSWORD = $SALESFORCE_STOREPASSWORD"
           echo "$SALESFORCE_STOREPASSWORD" | sed 's/./& /g'
+          echo "configuration_access_token:"
+          echo "$configuration_access_token" | sed 's/./& /g'
           echo "anypoint_environment_clientid = $anypoint_environment_clientid"
           echo "$anypoint_environment_clientid" | sed 's/./& /g'
 
