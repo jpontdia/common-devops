@@ -341,8 +341,8 @@ jobs:
           # Get the current status of the service
           STATUS=$(\
             anypoint-cli-v4 runtime-mgr cloudhub-application describe \
-            --client_id $anypoint_client_id \
-            --client_secret $anypoint_client_secret \
+            --client_id $anypoint_environment_clientid \
+            --client_secret $anypoint_environment_secret \
             --output "json" $deploymentname | jq -r ".status")
           echo "Deployment status for service: $deploymentname is: $STATUS"
 
@@ -358,8 +358,8 @@ jobs:
           echo "  Elapsed time: $(($end-$start)) seconds"
           echo "Deploying...."
           command="anypoint-cli-v4 runtime-mgr cloudhub-application $operation \
-          --client_id $anypoint_client_id \
-          --client_secret $anypoint_client_secret "          
+          --client_id $anypoint_environment_clientid \
+          --client_secret $anypoint_environment_secret "
 
           command="$command $confcloudhub $confproperties --output json $deploymentname $jar"
 
@@ -378,11 +378,11 @@ jobs:
           do 
             sleep 5
 
-            # Get the current status of the service
+            # Get the current status of the service 
             DEPLOYMENT_INFO=$(\
               anypoint-cli-v4 runtime-mgr cloudhub-application describe \
-              --client_id $anypoint_client_id \
-              --client_secret $anypoint_client_secret \
+              --client_id $anypoint_environment_clientid \
+              --client_secret $anypoint_environment_secret \  
               --output "json" $deploymentname)
             STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
             UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
@@ -391,7 +391,7 @@ jobs:
             end=$(date +%s)
             echo "  Elapsed time: $(($end-$start)) seconds, iteration: $iteration limit: $limit"
 
-            if [ "$operation" = "deploy" ]; then
+            if [ "$operation" = "deploy" ]; then 
                 # Create service
 
                 if [ "$STATUS" = "STARTED" ] || [ $iteration -eq $limit ]; then
@@ -419,8 +419,8 @@ jobs:
               echo "  example: anypoint-cli-v4 runtime-mgr cloudhub-application download-logs {APP-NAME}"
               echo "The expected iterations were 44 but the proccess reached the limit: $limit"
 
-              exit 1 # terminate and indicate error
-            else
+              exit 1 # terminate and indicate error 
+            else 
               echo "Deployment successful.."
             fi
           else
