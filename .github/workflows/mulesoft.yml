@@ -341,8 +341,8 @@ jobs:
           # Get the current status of the service
           STATUS=$(\
             anypoint-cli-v4 runtime-mgr cloudhub-application describe \
-            --client_id $ANYPOINT_CLIENT_ID \
-            --client_secret $ANYPOINT_CLIENT_SECRET \
+            --client_id $anypoint_client_id \
+            --client_secret $anypoint_client_secret \
             --output "json" $deploymentname | jq -r ".status")
           echo "Deployment status for service: $deploymentname is: $STATUS"
 
@@ -358,8 +358,8 @@ jobs:
           echo "  Elapsed time: $(($end-$start)) seconds"
           echo "Deploying...."
           command="anypoint-cli-v4 runtime-mgr cloudhub-application $operation \
-          --client_id $ANYPOINT_CLIENT_ID \
-          --client_secret $ANYPOINT_CLIENT_SECRET "
+          --client_id $anypoint_client_id \
+          --client_secret $anypoint_client_secret "          
 
           command="$command $confcloudhub $confproperties --output json $deploymentname $jar"
 
@@ -381,8 +381,8 @@ jobs:
             # Get the current status of the service
             DEPLOYMENT_INFO=$(\
               anypoint-cli-v4 runtime-mgr cloudhub-application describe \
-              --client_id $ANYPOINT_CLIENT_ID \
-              --client_secret $ANYPOINT_CLIENT_SECRET \
+              --client_id $anypoint_client_id \
+              --client_secret $anypoint_client_secret \
               --output "json" $deploymentname)
             STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
             UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
