@@ -208,7 +208,16 @@ jobs:
       name: dev
       url: 'https://dev.myapp.com'
     steps:
+      - name: Get JAR file
+        uses: actions/download-artifact@v2
+        with:
+          name: jar
 
+      - name: Get POM file
+        uses: actions/download-artifact@v2
+        with:
+          name: pom
+          
       - name: Get secrets for the pipeline
         uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
         with:
