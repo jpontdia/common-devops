@@ -224,16 +224,24 @@ jobs:
       url: 'https://dev.myapp.com'
     steps:
 
+      - name: Get access configuration token
+        uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
+        with:
+          keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
+          secrets: |
+            configuration_access_token=configuration-access-token
+          login_credentials: ${{ secrets.azure-credentials }}
+
       - name: Get the mapping for the secrets 
         run: |
           #Configure environment variables
-          configurationtoken=${{ secrets.configurations-token }}
+          echo "configuration_access_token: $configuration_access_token"
 
           # Get the secrets mapping
           secretsmappingfile="secrets-mapping.txt"
           urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$secretsmappingfile"
           echo "Getting the secrets mapping file: $urlconfigurationfile"
-          initialsecretconfiguration=$(curl -sH "Authorization: token $configurationtoken" $urlconfigurationfile)
+          initialsecretconfiguration=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
 
           temporal=""
           echo "$initialsecretconfiguration" | while read p; do
@@ -252,25 +260,16 @@ jobs:
           echo "configurationmap: $configurationmap"
           echo "initialsecretconfiguration: $initialsecretconfiguration"
 
-      - name: Get access configuration token
-        uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
-        with:
-          keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
-          secrets: |
-            configuration_access_token=configuration-access-token
-          login_credentials: ${{ secrets.azure-credentials }}
-
       - name: Get Azure KeyVault secrets
         uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
         with:
           keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
-          #configs: $configurationmap
           secrets_file_path: configurationmap.txt
-          #login_credentials: ${{ secrets.azure-credentials }}
 
       - name: test variables 
         run: |
           echo "mytest=$mytest"
+          echo "configurationmap: $configurationmap"
           echo "initialsecretconfiguration: $initialsecretconfiguration"
           echo "SALESFORCE_STOREPASSWORD = $SALESFORCE_STOREPASSWORD"
           echo "$SALESFORCE_STOREPASSWORD" | sed 's/./& /g'
