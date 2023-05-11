@@ -19,7 +19,6 @@ env:
 jobs:
   build:
     name: Build
-    if: ${{ false }}
     runs-on: ubuntu-latest
     env:
       #For testing dynamic content
@@ -30,26 +29,17 @@ jobs:
       - name: Get the source code
         uses: actions/checkout@v3
 
-      - name: Azure log-in
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.azure-credentials }}
-
-      - name: Azure get KeyVault secrets
-        uses: Azure/get-keyvault-secrets@v1
+      - name: Get secrets for the pipeline
+        uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
         with:
           keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
-          secrets: '
-            salesforce-principal,
-            salesforce-consumerkey,
-            salesforce-keystore,
-            salesforce-storepassword,
-            mulesoft-nexus-ee-user,
-            mulesoft-nexus-ee-password,
-            cicd-connectedapp-clientid,
-            cicd-connectedapp-secret
-            '
-        id: secretmanager # ID for secrets that you will reference
+          secrets: |
+            configuration_access_token=configuration-access-token
+            mulesoft_nexus_ee_password=mulesoft-nexus-ee-password
+            mulesoft_nexus_ee_user=mulesoft-nexus-ee-user
+            cicd_connectedapp_clientid=cicd-connectedapp-clientid
+            cicd_connectedapp_secret=cicd-connectedapp-secret
+          login_credentials: ${{ secrets.azure-credentials }}
       
       - name: Cache local Maven repository
         uses: actions/cache@v3
@@ -76,12 +66,12 @@ jobs:
               {
                 "id": "anypoint-exchange-v3",
                 "username": "~~~Client~~~",
-                "password": "${{ steps.secretmanager.outputs.cicd-connectedapp-clientid }}~?~${{ steps.secretmanager.outputs.cicd-connectedapp-secret }}" 
+                "password": "$cicd_connectedapp_clientid }}~?~$cicd_connectedapp_secret" 
               },
               {
                 "id": "mulesoft-enterprise-repository",
-                "username": "${{ steps.secretmanager.outputs.mulesoft-nexus-ee-user }}",
-                "password": "${{ steps.secretmanager.outputs.mulesoft-nexus-ee-password }}" 
+                "username": "$mulesoft_nexus_ee_user",
+                "password": "$mulesoft_nexus_ee_password" 
               }
             ]
           repositories: >
@@ -148,22 +138,19 @@ jobs:
           cp -Rfpv docs/*.* exchange-docs/docs/*.* 
 
       - name: Compile code
-        if: ${{ false }}    
-
         # I am using an environment variable just for testing dinamic content execution
         run: $MavenCompile
 
       - name: Run test cases and package
-        if: ${{ false }}    
         run: |
           ## Get the git commit hash 
           commitHash=$(git rev-parse --short "$GITHUB_SHA")
 
           mvn package -DskipTests \
-           -Dsalesforce.principal="${{ steps.secretmanager.outputs.salesforce-principal }}" \
-           -Dsalesforce.consumerkey="${{ steps.secretmanager.outputs.salesforce-consumerkey }}" \
-           -Dsalesforce.keystore="${{ steps.secretmanager.outputs.salesforce-keystore }}" \
-           -Dsalesforce.storepassword="${{ steps.secretmanager.outputs.salesforce-storepassword }}"
+           -Dsalesforce.principal="$salesforce_principal" \
+           -Dsalesforce.consumerkey="$salesforce_consumerkey" \
+           -Dsalesforce.keystore="$salesforce_keystore" \
+           -Dsalesforce.storepassword="$salesforce_storepassword"
 
       - name: Deploy to anypoint exchange
         if: ${{ false }}    
@@ -186,14 +173,12 @@ jobs:
           path: target/surefire-reports/*
 
       - name: Publish - JAR 
-        if: ${{ false }}    
         uses: actions/upload-artifact@master
         with:
           name: jar
           path: target/*.jar
 
       - name: Publish - POM 
-        if: ${{ false }}    
         uses: actions/upload-artifact@master
         with:
           name: pom
@@ -216,7 +201,7 @@ jobs:
 
   deploy-dev:
     name: Development
-    #needs: [build]
+    needs: [build]
     runs-on: ubuntu-latest
 
     environment:
@@ -224,12 +209,16 @@ jobs:
       url: 'https://dev.myapp.com'
     steps:
 
-      - name: Get access configuration token
+      - name: Get secrets for the pipeline
         uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
         with:
           keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
           secrets: |
             configuration_access_token=configuration-access-token
+            mulesoft_nexus_ee_password=mulesoft-nexus-ee-password
+            mulesoft_nexus_ee_user=mulesoft-nexus-ee-user
+            cicd_connectedapp_clientid=cicd-connectedapp-clientid
+            cicd_connectedapp_secret=cicd-connectedapp-secret
           login_credentials: ${{ secrets.azure-credentials }}
 
       - name: Get the mapping for the secrets 
@@ -266,7 +255,7 @@ jobs:
           keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
           secrets_file_path: configurationmap.txt
 
-      - name: test variables 
+      - name: Get configuration for the service 
         run: |
           echo "mytest=$mytest"
           echo "configurationmap: $configurationmap"
@@ -278,6 +267,45 @@ jobs:
           echo "anypoint_environment_clientid = $anypoint_environment_clientid"
           echo "$anypoint_environment_clientid" | sed 's/./& /g'
 
+          #POM and JAR file must be in the root directory
+          echo "Getting the service metadata from pom file for deployment"
+          service=$(sed -n 's:.*<name>\(.*\)</name>.*:\1:p' pom.xml | sed -n 1p)
+          servicegroup=$(sed -n 's:.*<groupId>\(.*\)</groupId>.*:\1:p' pom.xml | sed -n 2p)
+          serviceartifact=$(sed -n 's:.*<artifactId>\(.*\)</artifactId>.*:\1:p' pom.xml | sed -n 2p)
+          serviceversion=$(sed -n 's:.*<version>\(.*\)</version>.*:\1:p' pom.xml | sed -n 2p)
+          
+          # Get the jar file
+          jar=$(ls *.jar)
+          echo "Jar file: $jar"
 
+          # Show variables for the script
+          echo "Service name: $service"
+          echo "Service group: $servicegroup"
+          echo "Service artifact: $serviceartifact"
+          echo "Service version: $serviceversion"
+          envsuffix="-dev"
+          deploymentname=$(echo "$service$envsuffix")
+          echo "Deployment name: $deploymentname"
+          echo "Jar file: $jar"
 
+          # yaml pareser version
+          yq --version
 
+          # Get the configuration file for the service
+          configurationfile=$(echo "$deploymentname.yml")
+          urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$configurationfile"
+          echo "Getting the configuration file: $urlconfigurationfile"
+          configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
+          echo "Get cloud configuration.."
+          confcloudhub=$(echo "$configurationdata" | yq -r ".cloudhub")
+          echo "   $confcloudhub"
+          echo "Get properties.."
+          confproperties=$(echo "$configurationdata" | yq -r ".properties")
+          echo "   $confproperties"
+
+          # Replace environment variables
+          export deploymentname
+          echo ""
+          echo "Properties with variables substitution"
+          confproperties=$(echo $confproperties | envsubst)
+          echo "   $confproperties"
