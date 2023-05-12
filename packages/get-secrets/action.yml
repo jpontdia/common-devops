@@ -4,7 +4,6 @@ inputs:
   keyvault-key:
     required: true
     description: The name of the KeyVault
-    type: string
   azure-credentials:
     required: true
     description: Azure Credentials for login

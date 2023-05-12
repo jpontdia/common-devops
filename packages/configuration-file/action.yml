@@ -1,0 +1,55 @@
+name: 'Get configuration file'
+description: 'Get the configuration file for the service defined in pom.xml'
+inputs:
+  configuration-access-token:
+    required: true
+    description: Token to access the configuration repository 
+  prefix:
+    required: false
+    description: Prefix for the configuration file
+  suffix:
+    required: false
+    description: Suffix for the configuration file
+outputs:
+  configuration-data:
+    description: "The contents of the configuration file"
+    value: ${{ steps.configuration.outputs.configuration-data }}
+runs:
+  using: "composite"
+  steps:
+    - id: configuration
+      name: Get configuration for the service 
+      run: |
+
+        # Get the pom configurtion
+        echo "Getting the service metadata from POM file"
+        service=$(sed -n 's:.*<name>\(.*\)</name>.*:\1:p' pom.xml | sed -n 1p)
+        servicegroup=$(sed -n 's:.*<groupId>\(.*\)</groupId>.*:\1:p' pom.xml | sed -n 2p)
+        serviceartifact=$(sed -n 's:.*<artifactId>\(.*\)</artifactId>.*:\1:p' pom.xml | sed -n 2p)
+        serviceversion=$(sed -n 's:.*<version>\(.*\)</version>.*:\1:p' pom.xml | sed -n 2p)
+
+        # Show variables for the script
+        echo "Service name: $service"
+        echo "Service group: $servicegroup"
+        echo "Service artifact: $serviceartifact"
+        echo "Service version: $serviceversion"
+        configurationname=$(echo "${{ inputs.prefix }}$service${{ inputs.suffix }}")
+        echo "Configuration file name: $configurationname"
+        echo ""
+
+        # Get the configuration file for the service
+        configurationfile=$(echo "$configurationname.yml")
+        urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$configurationfile"
+        echo "Getting the configuration file: $urlconfigurationfile"
+        configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
+
+        # Replace environment variables
+        echo "Configuration data: $configurationdata"
+        confproperties=$(echo $configurationdata | envsubst)
+        export deploymentname=$(echo "$configurationname" )
+        confproperties=$(echo $configurationdata | envsubst)
+        echo ""
+        echo "Configuration with variable substitution: $confproperties"
+        echo ""
+
+        echo "configuration-data=$(echo $confproperties)" >> $GITHUB_OUTPUT
