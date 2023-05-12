@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Get secrets
-        uses: jpontdia/devops-pipelines/.github/actions/get-secrets.yml@main
+        uses: jpontdia/devops-pipelines/packages/get-secrets@main
         with:
           keyvault-key: jpworks-keyvault
           azure-credentials: ${{ secrets.azure-credentials }}

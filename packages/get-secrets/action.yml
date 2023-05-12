@@ -11,6 +11,7 @@ inputs:
 runs:
   using: "composite"
   steps:
+
     - name: Get secrets for the pipeline
       uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
       with:
