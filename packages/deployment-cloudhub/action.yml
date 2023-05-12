@@ -68,12 +68,12 @@ runs:
           end=$(date +%s)
           echo "  Elapsed time: $(($end-$start)) seconds"
           echo "Deploying...."
-          command="anypoint-cli-v4 runtime-mgr cloudhub-application $operation \
+          CREATEUPDATE_APP="anypoint-cli-v4 runtime-mgr cloudhub-application $operation \
           --client_id $cicd_connectedapp_clientid \
-          --client_secret $cicd_connectedapp_secret "
-          command="$command $propscloud $propsservice --output json $deploymentname $jar"
-          echo "deployment command: $command"
-          $command
+          --client_secret $cicd_connectedapp_secret \
+          $propscloud $propsservice --output json $deploymentname $jar"
+          echo "deployment command: $CREATEUPDATE_APP"
+          $CREATEUPDATE_APP
           end=$(date +%s)
           echo ""
           echo "Deployment finished, verifying the deployment...."
