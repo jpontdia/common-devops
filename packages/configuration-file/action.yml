@@ -3,7 +3,10 @@ description: 'Get the configuration file for the service defined in pom.xml'
 inputs:
   configuration-access-token:
     required: true
-    description: Token to access the configuration repository 
+    description: Token to access the configuration repository
+  yaml-path: 
+    required: true
+    description: Path to get the node in the yaml file
   prefix:
     required: false
     description: Prefix for the configuration file
@@ -42,8 +45,9 @@ runs:
         urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$configurationfile"
         echo "Getting the configuration file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
+        pathdata=$(echo "$configurationdata" | yq -r "${{ inputs.yaml-path}}")
 
         # Replace environment variables
-        echo "Configuration data: $configurationdata"
-        echo "configuration-data=$(echo $configurationdata)" >> $GITHUB_OUTPUT
+        echo "Configuration data: $pathdata"
+        echo "configuration-data=$(echo $pathdata)" >> $GITHUB_OUTPUT
       shell: bash
