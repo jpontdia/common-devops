@@ -277,7 +277,7 @@ jobs:
             anypoint-cli-v4 runtime-mgr cloudhub-application describe \
             --client_id $cicd_connectedapp_clientid \
             --client_secret $cicd_connectedapp_secret \
-            --output "json"  | jq -r ".status")
+            --output "json" $deploymentname | jq -r ".status")
           echo "Deployment status for service: $deploymentname is: $STATUS"
 
           # Verify if deployment is for update or new application
