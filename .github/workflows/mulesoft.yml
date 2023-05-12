@@ -29,17 +29,11 @@ jobs:
       - name: Get the source code
         uses: actions/checkout@v3
 
-      - name: Get secrets for the pipeline
-        uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
+      - name: Get secrets
+        uses: jpontdia/devops-pipelines/.github/actions/get-secrets.yml@main
         with:
-          keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
-          secrets: |
-            configuration_access_token=configuration-access-token
-            mulesoft_nexus_ee_password=mulesoft-nexus-ee-password
-            mulesoft_nexus_ee_user=mulesoft-nexus-ee-user
-            cicd_connectedapp_clientid=cicd-connectedapp-clientid
-            cicd_connectedapp_secret=cicd-connectedapp-secret
-          login_credentials: ${{ secrets.azure-credentials }}
+          keyvault-key: jpworks-keyvault
+          azure-credentials: ${{ secrets.azure-credentials }}
       
       - name: Cache local Maven repository
         uses: actions/cache@v3
@@ -283,7 +277,7 @@ jobs:
       - name: Get configuration for the service 
         run: |
 
-          #POM and JAR file must be in the root directory
+          # Get the pom configurtion
           echo "Getting the service metadata from POM file"
           service=$(sed -n 's:.*<name>\(.*\)</name>.*:\1:p' pom.xml | sed -n 1p)
           servicegroup=$(sed -n 's:.*<groupId>\(.*\)</groupId>.*:\1:p' pom.xml | sed -n 2p)
@@ -310,6 +304,8 @@ jobs:
           urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$configurationfile"
           echo "Getting the configuration file: $urlconfigurationfile"
           configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
+          
+          # Parse the configuration
           echo "Get cloud configuration.."
           confcloudhub=$(echo "$configurationdata" | yq -r ".cloudhub")
           echo "   $confcloudhub"
