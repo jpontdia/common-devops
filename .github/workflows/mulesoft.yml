@@ -263,8 +263,8 @@ jobs:
         name: Deploy the service to dev environment
         uses: jpontdia/devops-pipelines/packages/deployment-cloudhub@main
         with:
-          deployment-name: ${{ steps.configuration-deployment-name.outputs.configuration-data }}
-          connectedapp-clientid: $cicd_connectedapp_clientid
-          connectedapp-secret: $cicd_connectedapp_secret 
-          configuration-cloud: ${{ steps.configuration-cloudhub.outputs.configuration-data }}
-          configuration-service: ${{ steps.configuration-service.outputs.configuration-data }}
+          deployment-name: "${{ steps.configuration-deployment-name.outputs.configuration-data }}"
+          connectedapp-clientid: "$cicd_connectedapp_clientid"
+          connectedapp-secret: "$cicd_connectedapp_secret" 
+          configuration-cloud: "${{ steps.configuration-cloudhub.outputs.configuration-data }}"
+          configuration-service: "${{ steps.configuration-service.outputs.configuration-data }}"

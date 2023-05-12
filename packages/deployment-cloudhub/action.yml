@@ -20,10 +20,11 @@ runs:
   using: "composite"
   steps:
     - id: deployment
-      name: Get configuration for the service 
+      name: Deploy the service to the cloud 
       run: |
 
           # Assign variables for the script
+          echo "Assigning variables to the script"
           cicd_connectedapp_clientid=${{ inputs.connectedapp-clientid}}
           cicd_connectedapp_secret=${{ inputs.connectedapp-secret}}
           deploymentname=${{ inputs.deployment-name}}
