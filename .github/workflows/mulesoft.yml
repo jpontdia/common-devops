@@ -136,6 +136,7 @@ jobs:
         uses: jpontdia/devops-pipelines/packages/configuration-file@main
         with:
           configuration-access-token: $configuration_access_token
+          yaml-path: ".test-properties"
           prefix: ""
           suffix: ""
       
@@ -148,11 +149,8 @@ jobs:
           ## Get the git commit hash 
           commitHash=$(git rev-parse --short "$GITHUB_SHA")
 
-          echo "Get properties from data: ${{ steps.configuration-tests.outputs.configuration-data }}"
-          confproperties=$(echo "${{ steps.configuration-tests.outputs.configuration-data }}" | yq -r ".test-properties")          
-          confproperties=$(echo $confproperties | envsubst)
-          echo "  Test properties: $confproperties"
-          mvn package -DskipTests $confproperties
+          echo "Test properties: $${{ steps.configuration-tests.outputs.configuration-data }}"
+          mvn package -DskipTests $${{ steps.configuration-tests.outputs.configuration-data }}
 
       - name: Deploy to anypoint exchange
         if: ${{ false }}    
