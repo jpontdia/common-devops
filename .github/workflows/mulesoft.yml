@@ -259,118 +259,12 @@ jobs:
         name: Get the pom service information
         uses: jpontdia/devops-pipelines/packages/service-info@main
 
-      - name: Get configuration for the service 
-        run: |
-          
-          # Get the jar file
-          jar=$(ls *.jar)
-          echo "Jar file: $jar"
-
-          start=$(date +%s)
-          echo "Deployment process start"
-
-          # Get the current status of the service
-          echo "Getting the status for the service"
-          deploymentname="${{ steps.configuration-deployment-name.outputs.configuration-data }}"
-
-          STATUS=$(\
-            anypoint-cli-v4 runtime-mgr cloudhub-application describe \
-            --client_id $cicd_connectedapp_clientid \
-            --client_secret $cicd_connectedapp_secret \
-            --output "json" $deploymentname | jq -r ".status")
-          echo "Deployment status for service: $deploymentname is: $STATUS"
-
-          # Verify if deployment is for update or new application
-          operation="deploy"
-          if [ "$STATUS" = "DEPLOYING" ]; then
-            echo "The service was already in DEPLOYING state, wait until deployment finish or delete it"
-            exit 1 # terminate and indicate error 
-          else
-            if [ "$STATUS" != "" ]; then
-              operation="modify"
-            fi
-          fi
-
-          # Execute deployment of the service
-          echo ""
-          echo "Deployment operation for serivce: $deploymentname is: $operation"
-          end=$(date +%s)
-          echo "  Elapsed time: $(($end-$start)) seconds"
-          echo "Deploying...."
-          command="anypoint-cli-v4 runtime-mgr cloudhub-application $operation \
-          --client_id $cicd_connectedapp_clientid \
-          --client_secret $cicd_connectedapp_secret "
-          command="$command \
-              ${{ steps.configuration-cloudhub.outputs.configuration-data }} \
-              ${{ steps.configuration-service.outputs.configuration-data }} \
-              --output json $deploymentname $jar"
-          echo "deployment command: $command"
-          $command
-          end=$(date +%s)
-          echo ""
-          echo "Deployment finished, verifying the deployment...."
-          echo "  Elapsed time: $(($end-$start)) seconds" 
-
-          # Process to verify if the service was deployed correctly
-          iteration=1
-          limit=60
-          while true
-          do 
-            sleep 5
-
-            # Get the current status of the service 
-            DEPLOYMENT_INFO=$(\
-              anypoint-cli-v4 runtime-mgr cloudhub-application describe \
-              --client_id $cicd_connectedapp_clientid \
-              --client_secret $cicd_connectedapp_secret \
-              --output "json" $deploymentname)
-            STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
-            UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
-            echo "Service: $deploymentname status: $STATUS, updateStatus: $UPDATE_STATUS"
-            end=$(date +%s)
-            echo "  Elapsed time: $(($end-$start)) seconds, iteration: $iteration limit: $limit"
-
-            if [ "$operation" = "deploy" ]; then 
-                # Create service
-
-                if [ "$STATUS" = "STARTED" ] || [ $iteration -eq $limit ]; then
-                  break # Abandon the while loop.
-                fi
-            else
-                # Update service
-                if [ "$UPDATE_STATUS" = "null" ] || [ "$UPDATE_STATUS" = "DEPLOY_FAILED" ] || [ $iteration -eq $limit ]; then
-                  break # Abandon the while loop.
-                fi
-            fi
-
-            iteration=$(( $iteration + 1 ))
-          done
-
-          # Verify if service was successfully deployed 
-          if [ "$operation" = "deploy" ]; then
-
-            # Create new service
-            if [ "$STATUS" != "STARTED" ]; then
-              echo "Error: The service was not deployed in the expected time, review logs"
-              echo "  example: anypoint-cli-v4 runtime-mgr cloudhub-application download-logs {APP-NAME}"
-              echo "The expected iterations were 44 but the proccess reached the limit: $limit"
-
-              exit 1 # terminate and indicate error 
-            else 
-              echo "Deployment successful.."
-            fi
-          else
-            # Update service
-            if [ "$UPDATE_STATUS" = "DEPLOY_FAILED" ]; then
-              echo "Error: There were errors while deploying the service"
-              exit 1 # terminate and indicate error
-            elif [ $iteration -eq $limit ]; then
-              echo "Error: The service was not deployed in the expected time, review logs"
-              echo "  example: anypoint-cli-v4 runtime-mgr cloudhub-application download-logs {APP-NAME}"
-              echo "The expected iterations were 44 but the proccess reached the limit: $limit"
-
-              exit 1 # terminate and indicate error
-            else
-              echo "Deployment successful.."
-            fi
-          fi
+      - id: deployment-development
+        name: Deploy the service to dev environment
+        uses: jpontdia/devops-pipelines/packages/deployment-cloudhub@main
+        with:
+          deployment-name: ${{ steps.configuration-deployment-name.outputs.configuration-data }}
+          connectedapp-clientid: $cicd_connectedapp_clientid
+          connectedapp-secret: $cicd_connectedapp_secret 
+          configuration-cloud: ${{ steps.configuration-cloudhub.outputs.configuration-data }}
+          configuration-service: ${{ steps.configuration-service.outputs.configuration-data }}
