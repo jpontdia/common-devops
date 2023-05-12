@@ -149,9 +149,9 @@ jobs:
           commitHash=$(git rev-parse --short "$GITHUB_SHA")
 
           echo "Get properties.."
-          confproperties=$(echo "${{ steps.configuration-tests.outputs.configuration-data }}" | yq -r ".test-properties")
+          confproperties=$(echo "${{ steps.configuration-tests.outputs.configuration-data }}" | yq -r ".test-properties")          
+          confproperties=$(echo $confproperties | envsubst)
           echo "  Test properties: $confproperties"
-
           mvn package -DskipTests $confproperties
 
       - name: Deploy to anypoint exchange
