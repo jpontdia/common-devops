@@ -1,0 +1,49 @@
+name: 'Get service information'
+description: 'Get the pom service information'
+outputs:
+  name:
+    description: "Name of the service"
+    value: ${{ steps.configuration.outputs.name }}
+  group:
+    description: "Maven groupId"
+    value: ${{ steps.configuration.outputs.group }}
+  artifact:
+    description: "Maven artifcactId"
+    value: ${{ steps.configuration.outputs.artifact }}
+  version:
+    description: "Maven version"
+    value: ${{ steps.configuration.outputs.version }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: configuration
+      name: Get configuration for the service 
+      run: |
+
+        # Get the pom configurtion
+        echo "Getting the service metadata from POM file"
+        service=$(sed -n 's:.*<name>\(.*\)</name>.*:\1:p' pom.xml | sed -n 1p)
+        group=$(sed -n 's:.*<groupId>\(.*\)</groupId>.*:\1:p' pom.xml | sed -n 2p)
+        artifact=$(sed -n 's:.*<artifactId>\(.*\)</artifactId>.*:\1:p' pom.xml | sed -n 2p)
+        version=$(sed -n 's:.*<version>\(.*\)</version>.*:\1:p' pom.xml | sed -n 2p)
+
+        # Show variables for the script
+        echo ""
+        echo "Service information from the pom.xml"
+        echo "Service name: $service"
+        echo "Service group: $group"
+        echo "Service artifact: $artifact"
+        echo "Service version: $version"
+        echo ""
+        export name
+        export group
+        export artifact
+        export version
+ 
+        # Return values
+        echo "name=$(echo $name)" >> $GITHUB_OUTPUT
+        echo "group=$(echo $group)" >> $GITHUB_OUTPUT
+        echo "artifact=$(echo $artifact)" >> $GITHUB_OUTPUT
+        echo "version=$(echo $version)" >> $GITHUB_OUTPUT
+      shell: bash

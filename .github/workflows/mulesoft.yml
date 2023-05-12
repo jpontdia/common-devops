@@ -132,7 +132,7 @@ jobs:
           cp -Rfpv docs/*.* exchange-docs/docs/*.* 
 
       - id: configuration-tests
-        name: Get configuration file
+        name: Get configuration file for test cases
         uses: jpontdia/devops-pipelines/packages/configuration-file@main
         with:
           configuration-access-token: $configuration_access_token
@@ -224,82 +224,64 @@ jobs:
           keyvault-key: jpworks-keyvault
           azure-credentials: ${{ secrets.azure-credentials }}
 
-      - name: Install NodeJs
-        uses: actions/setup-node@v3
+      - id: install-anypoint-cli
+        name: Install Mulesoft Anypoint CLI
+        uses: jpontdia/devops-pipelines/packages/install-anypoint-cli@main
+
+      - id: configuration-cloudhub
+        name: Get the configuration for cloud deployment
+        uses: jpontdia/devops-pipelines/packages/configuration-file@main
         with:
-          node-version: 18
+          configuration-access-token: $configuration_access_token
+          yaml-path: ".cloudhub"
+          prefix: ""
+          suffix: "-dev"
+
+      - id: configuration-service
+        name: Get the configuration for the service
+        uses: jpontdia/devops-pipelines/packages/configuration-file@main
+        with:
+          configuration-access-token: $configuration_access_token
+          yaml-path: ".properties"
+          prefix: ""
+          suffix: "-dev"
   
-      - name: Install Anypoint CLI
-        run: |
-          echo "Install anypoint-cli-v4..."
-          npm install -g anypoint-cli-v4
-          echo ""
-          echo "anypoint-cli-v4 --version: "
-          anypoint-cli-v4 --version
-          echo ""
-          echo "Installing cloudhub-plugin"
-          anypoint-cli-v4 plugins:install anypoint-cli-cloudhub-plugin
+      - id: configuration-deployment-name
+        name: Get the configuration for the service
+        uses: jpontdia/devops-pipelines/packages/configuration-file@main
+        with:
+          configuration-access-token: $configuration_access_token
+          yaml-path: ".deployment-name"
+          prefix: ""
+          suffix: "-dev"
+
+      - id: service-info
+        name: Get the pom service information
+        uses: jpontdia/devops-pipelines/packages/service-info@main
 
       - name: Get configuration for the service 
         run: |
-
-          # Get the pom configurtion
-          echo "Getting the service metadata from POM file"
-          service=$(sed -n 's:.*<name>\(.*\)</name>.*:\1:p' pom.xml | sed -n 1p)
-          servicegroup=$(sed -n 's:.*<groupId>\(.*\)</groupId>.*:\1:p' pom.xml | sed -n 2p)
-          serviceartifact=$(sed -n 's:.*<artifactId>\(.*\)</artifactId>.*:\1:p' pom.xml | sed -n 2p)
-          serviceversion=$(sed -n 's:.*<version>\(.*\)</version>.*:\1:p' pom.xml | sed -n 2p)
           
           # Get the jar file
           jar=$(ls *.jar)
           echo "Jar file: $jar"
-
-          # Show variables for the script
-          echo "Service name: $service"
-          echo "Service group: $servicegroup"
-          echo "Service artifact: $serviceartifact"
-          echo "Service version: $serviceversion"
-          envsuffix="-dev"
-          deploymentname=$(echo "$service$envsuffix")
-          echo "Deployment name: $deploymentname"
-          echo "Jar file: $jar"
-          echo ""
-
-          # Get the configuration file for the service
-          configurationfile=$(echo "$deploymentname.yml")
-          urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$configurationfile"
-          echo "Getting the configuration file: $urlconfigurationfile"
-          configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
-          
-          # Parse the configuration
-          echo "Get cloud configuration.."
-          confcloudhub=$(echo "$configurationdata" | yq -r ".cloudhub")
-          echo "   $confcloudhub"
-          echo "Get properties.."
-          confproperties=$(echo "$configurationdata" | yq -r ".properties")
-
-          # Replace environment variables
-          export deploymentname
-          echo "Properties with variable substitution"
-          confproperties=$(echo $confproperties | envsubst)
-          echo "   $confproperties"
-          echo ""
 
           start=$(date +%s)
           echo "Deployment process start"
 
           # Get the current status of the service
           echo "Getting the status for the service"
+          deploymentname="${{ steps.configuration-deployment-name.outputs.configuration-data }}"
+
           STATUS=$(\
             anypoint-cli-v4 runtime-mgr cloudhub-application describe \
             --client_id $cicd_connectedapp_clientid \
             --client_secret $cicd_connectedapp_secret \
-            --output "json" $deploymentname | jq -r ".status")
+            --output "json"  | jq -r ".status")
           echo "Deployment status for service: $deploymentname is: $STATUS"
 
           # Verify if deployment is for update or new application
           operation="deploy"
-
           if [ "$STATUS" = "DEPLOYING" ]; then
             echo "The service was already in DEPLOYING state, wait until deployment finish or delete it"
             exit 1 # terminate and indicate error 
@@ -318,7 +300,10 @@ jobs:
           command="anypoint-cli-v4 runtime-mgr cloudhub-application $operation \
           --client_id $cicd_connectedapp_clientid \
           --client_secret $cicd_connectedapp_secret "
-          command="$command $confcloudhub $confproperties --output json $deploymentname $jar"
+          command="$command \
+              ${{ steps.configuration-cloudhub.outputs.configuration-data }} \
+              ${{ steps.configuration-service.outputs.configuration-data }} \
+              --output json $deploymentname $jar"
           echo "deployment command: $command"
           $command
           end=$(date +%s)
