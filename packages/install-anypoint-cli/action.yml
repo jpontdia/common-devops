@@ -19,3 +19,4 @@ runs:
         echo "Installing cloudhub-plugin"
         anypoint-cli-v4 plugins:install anypoint-cli-cloudhub-plugin
         echo ""
+      shell: bash
