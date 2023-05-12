@@ -45,8 +45,5 @@ runs:
 
         # Replace environment variables
         echo "Configuration data: $configurationdata"
-        confproperties=$(echo $configurationdata | envsubst)
-        export deploymentname=$(echo "$configurationname" )
-
-        echo "configuration-data=$(echo $confproperties)" >> $GITHUB_OUTPUT
+        echo "configuration-data=$(echo $configurationdata)" >> $GITHUB_OUTPUT
       shell: bash
