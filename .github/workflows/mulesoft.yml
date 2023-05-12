@@ -149,8 +149,8 @@ jobs:
           ## Get the git commit hash 
           commitHash=$(git rev-parse --short "$GITHUB_SHA")
 
-          echo "Test properties: $${{ steps.configuration-tests.outputs.configuration-data }}"
-          mvn package -DskipTests $${{ steps.configuration-tests.outputs.configuration-data }}
+          echo "Test properties: ${{ steps.configuration-tests.outputs.configuration-data }}"
+          mvn package -DskipTests ${{ steps.configuration-tests.outputs.configuration-data }}
 
       - name: Deploy to anypoint exchange
         if: ${{ false }}    
