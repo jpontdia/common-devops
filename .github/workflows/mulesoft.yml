@@ -148,7 +148,7 @@ jobs:
           ## Get the git commit hash 
           commitHash=$(git rev-parse --short "$GITHUB_SHA")
 
-          echo "Get properties.."
+          echo "Get properties from data: ${{ steps.configuration-tests.outputs.configuration-data }}"
           confproperties=$(echo "${{ steps.configuration-tests.outputs.configuration-data }}" | yq -r ".test-properties")          
           confproperties=$(echo $confproperties | envsubst)
           echo "  Test properties: $confproperties"
