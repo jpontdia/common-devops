@@ -337,10 +337,17 @@ jobs:
 
           # Verify if deployment is for update or new application
           operation="deploy"
-          if [ "$STATUS" != "" ]; then
-            operation="modify"
+
+          if [ "$STATUS" = "DEPLOYING" ]; then
+            echo "The service was already in DEPLOYING state, wait until deployment finish or delete it"
+            exit 1 # terminate and indicate error 
+          else
+            if [ "$STATUS" != "" ]; then
+              operation="modify"
+            fi
           fi
 
+          # Execute deployment of the service
           echo ""
           echo "Deployment operation for serivce: $deploymentname is: $operation"
           end=$(date +%s)
@@ -349,18 +356,15 @@ jobs:
           command="anypoint-cli-v4 runtime-mgr cloudhub-application $operation \
           --client_id $cicd_connectedapp_clientid \
           --client_secret $cicd_connectedapp_secret "
-
           command="$command $confcloudhub $confproperties --output json $deploymentname $jar"
-
           echo "deployment command: $command"
           $command
-
-
           end=$(date +%s)
           echo ""
           echo "Deployment finished, verifying the deployment...."
           echo "  Elapsed time: $(($end-$start)) seconds" 
 
+          # Process to verify if the service was deployed correctly
           iteration=1
           limit=60
           while true
@@ -392,17 +396,8 @@ jobs:
                 fi
             fi
 
-            # Temporal block
-            if  [ $iteration -eq 1 ]; then
-              echo ""
-              echo "$DEPLOYMENT_INFO"
-              echo ""
-            fi
             iteration=$(( $iteration + 1 ))
           done
-
-
-
 
           # Verify if service was successfully deployed 
           if [ "$operation" = "deploy" ]; then
