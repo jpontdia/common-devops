@@ -23,8 +23,37 @@ runs:
           cicd_connectedapp_clientid=cicd-connectedapp-clientid
           cicd_connectedapp_secret=cicd-connectedapp-secret
         login_credentials: ${{ inputs.azure-credentials }}
-    - id: random-number-generator
-      run: echo "random-number=$(echo $RANDOM)" >> $GITHUB_OUTPUT
+
+    - name: Get the mapping for the secrets 
+      run: |
+        #Configure environment variables
+        echo "configuration_access_token: $configuration_access_token"
+
+        # Get the secrets mapping
+        secretsmappingfile="secrets-mapping.txt"
+        urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$secretsmappingfile"
+        echo "Getting the secrets mapping file: $urlconfigurationfile"
+        initialsecretconfiguration=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
+
+        temporal=""
+        echo "$initialsecretconfiguration" | while read p; do
+          if [[ "$p" =~ ^#.*  ]]; then
+            echo "  A comment was found"
+          else
+            temporal=$(echo "$temporal $p")
+            echo "  Variable found: $p"
+          fi
+          echo "$temporal" > configurationmap.txt
+        done 
+
+        echo ""
+        configurationmap=$(cat configurationmap.txt)
+        echo "configurationmap: $configurationmap"
+        echo "initialsecretconfiguration: $initialsecretconfiguration"
       shell: bash
-    - run: echo "${{ github.action_path }}" >> $GITHUB_PATH
-      shell: bash
+
+    - name: Get Azure KeyVault secrets for the service
+      uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
+      with:
+        keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
+        secrets_file_path: configurationmap.txt
