@@ -53,3 +53,4 @@ runs:
         echo ""
 
         echo "configuration-data=$(echo $confproperties)" >> $GITHUB_OUTPUT
+      shell: bash
