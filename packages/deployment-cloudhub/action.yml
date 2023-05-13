@@ -26,7 +26,9 @@ runs:
           # Assign variables for the script
           echo "Assigning variables to the script"
           cicd_connectedapp_clientid="${{ inputs.connectedapp-clientid}}"
+          echo "cicd_connectedapp_clientid: $cicd_connectedapp_clientid" | sed 's/./& /g'
           cicd_connectedapp_secret="${{ inputs.connectedapp-secret}}"
+          echo "cicd_connectedapp_secret: $cicd_connectedapp_secret" | sed 's/./& /g'
           deploymentname="${{ inputs.deployment-name}}"
           propscloud="${{ inputs.configuration-cloud}}"
           propsservice="${{ inputs.configuration-service}}"
