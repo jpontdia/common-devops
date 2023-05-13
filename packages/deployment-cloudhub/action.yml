@@ -26,9 +26,7 @@ runs:
           # Assign variables for the script
           echo "Assigning variables to the script"
           cicd_connectedapp_clientid="${{ inputs.connectedapp-clientid}}"
-          echo "cicd_connectedapp_clientid: $cicd_connectedapp_clientid" | sed 's/./& /g'
           cicd_connectedapp_secret="${{ inputs.connectedapp-secret}}"
-          echo "cicd_connectedapp_secret: $cicd_connectedapp_secret" | sed 's/./& /g'
           deploymentname="${{ inputs.deployment-name}}"
           propscloud="${{ inputs.configuration-cloud}}"
           propsservice="${{ inputs.configuration-service}}"
@@ -48,7 +46,7 @@ runs:
 
           # Get the current status of the service 
           DEPLOYMENT_INFO=$($QUERY_STATUS)
-          echo "Quering status: $DEPLOYMENT_INFO"
+          # echo "Quering status: $DEPLOYMENT_INFO"
           STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
           UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
           echo "Service: $deploymentname status: $STATUS, updateStatus: $UPDATE_STATUS"
@@ -89,10 +87,12 @@ runs:
             sleep 5
 
             # Get the current status of the service 
-            DEPLOYMENT_INFO=$(echo $QUERY_STATUS)
+            DEPLOYMENT_INFO=$($QUERY_STATUS)
+            # echo "Quering status: $DEPLOYMENT_INFO"
             STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
             UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
             echo "Service: $deploymentname status: $STATUS, updateStatus: $UPDATE_STATUS"
+
             end=$(date +%s)
             echo "  Elapsed time: $(($end-$start)) seconds, iteration: $iteration limit: $limit"
 
