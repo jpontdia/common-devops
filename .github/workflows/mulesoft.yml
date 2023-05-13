@@ -57,6 +57,7 @@ jobs:
       - name: configure settings file for maven
         run: |
           echo "Settings for maven: ${{ steps.settings-maven.outputs.configuration-data }}"
+          mkdir $HOME/.m2
           echo "${{ steps.settings-maven.outputs.configuration-data }}" > $HOME/.m2/settings.xml
           echo "Github run number: ${{ github.run_number }}"    
 
