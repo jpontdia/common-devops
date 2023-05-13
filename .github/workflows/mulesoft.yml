@@ -13,9 +13,6 @@ on:
       configurations-token:
         required: true
         description: Access token to get the configuration for the service
-env:
-  initialsecretconfiguration: ""
-  configurationmap: "" 
 jobs:
 
   ##########################################################################
@@ -25,9 +22,6 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    env:
-      #For testing dynamic content
-      MavenCompile: mvn compile
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so the job can access it
@@ -74,8 +68,8 @@ jobs:
         with:
           java-version: '8'
           distribution: 'temurin'
-          #check-latest: true
-          cache: 'maven'
+          check-latest: true
+          #cache: 'maven'
         
       - name: DEBUG - Show settings file
         run: |
@@ -94,8 +88,6 @@ jobs:
         with:
           configuration-access-token: $configuration_access_token
           yaml-path: ".test-properties"
-          prefix: ""
-          suffix: ""
       
       - name: Compile code
         run: mvn compile
@@ -106,23 +98,20 @@ jobs:
           commitHash=$(git rev-parse --short "$GITHUB_SHA")
 
           echo "Test properties: ${{ steps.configuration-tests.outputs.configuration-data }}"
-          mvn package -DskipTests ${{ steps.configuration-tests.outputs.configuration-data }}
+          mvn package ${{ steps.configuration-tests.outputs.configuration-data }}
 
       - name: Deploy to anypoint exchange
-        if: ${{ false }}    
         run: |
           ## Deploy to anypoint exchange
           mvn deploy -DskipTests 
 
       - name: Publish - MUnit Application Coverage Report
-        if: ${{ false }}
         uses: actions/upload-artifact@master
         with:
           name: munit-application-coverage-report
           path: target/site/munit/coverage/*
       
       - name: Publish - MUnit Report
-        if: ${{ false }}    
         uses: actions/upload-artifact@master
         with:
           name: munit-test-report
@@ -140,14 +129,12 @@ jobs:
           name: pom
           path: pom.xml
 
-
   ##########################################################################
   # DEPLOYMENT TO DEV
   ##########################################################################
   
   deploy-dev:
     name: Development
-    if: ${{ false }}
     needs: [build]
     runs-on: ubuntu-latest
 
