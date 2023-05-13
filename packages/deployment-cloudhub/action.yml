@@ -25,11 +25,11 @@ runs:
 
           # Assign variables for the script
           echo "Assigning variables to the script"
-          cicd_connectedapp_clientid=${{ inputs.connectedapp-clientid}}
-          cicd_connectedapp_secret=${{ inputs.connectedapp-secret}}
-          deploymentname=${{ inputs.deployment-name}}
-          propscloud=${{ inputs.configuration-cloud}}
-          propsservice=${{ inputs.configuration-service}}
+          cicd_connectedapp_clientid="${{ inputs.connectedapp-clientid}}"
+          cicd_connectedapp_secret="${{ inputs.connectedapp-secret}}"
+          deploymentname="${{ inputs.deployment-name}}"
+          propscloud="${{ inputs.configuration-cloud}}"
+          propsservice="${{ inputs.configuration-service}}"
 
           # Get the jar file
           jar=$(ls *.jar)
@@ -48,6 +48,7 @@ runs:
 
           # Get the current status of the service 
           DEPLOYMENT_INFO=$(echo $QUERY_STATUS)
+          echo "Quering status: $DEPLOYMENT_INFO"
           STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
           UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
           echo "Service: $deploymentname status: $STATUS, updateStatus: $UPDATE_STATUS"
