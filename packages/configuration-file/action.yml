@@ -9,9 +9,11 @@ inputs:
     description: Path to get the node in the yaml file
   prefix:
     required: false
+    default: ""
     description: Prefix for the configuration file
   suffix:
     required: false
+    default: ""
     description: Suffix for the configuration file
 outputs:
   configuration-data:

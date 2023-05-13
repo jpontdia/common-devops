@@ -1,0 +1,30 @@
+name: 'Get configuration file'
+description: 'Get the configuration file'
+inputs:
+  configuration-access-token:
+    required: true
+    description: Token to access the configuration repository
+  file:
+    required: true
+    description: Configuration file name
+outputs:
+  configuration-data:
+    description: "The contents of the configuration file"
+    value: ${{ steps.configuration.outputs.configuration-data }}
+runs:
+  using: "composite"
+  steps:
+    - id: configuration
+      name: Get configuration for the service 
+      run: |
+
+        # Get the configuration file
+        urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/${{ inputs.file }}"
+        echo "Getting the configuration file: $urlconfigurationfile"
+        configurationdata=$(curl -sH "Authorization: token ${{ inputs.configuration-access-token }}" $urlconfigurationfile)
+        pathdata=$(echo "$configurationdata")
+
+        # Replace environment variables
+        echo "Configuration data: $pathdata"
+        echo "configuration-data=$(echo $pathdata)" >> $GITHUB_OUTPUT
+      shell: bash

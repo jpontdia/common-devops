@@ -1,4 +1,4 @@
-name: 'Get secrets'
+name: 'Get secrets from Azure KeyVault'
 description: 'Get secrets from Azure KeyVault'
 inputs:
   keyvault-key:
@@ -11,16 +11,12 @@ runs:
   using: "composite"
   steps:
 
-    - name: Get secrets for the pipeline
+    - name: Get the configuration access token to read files on repository mule-configurations
       uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
       with:
         keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
         secrets: |
           configuration_access_token=configuration-access-token
-          mulesoft_nexus_ee_password=mulesoft-nexus-ee-password
-          mulesoft_nexus_ee_user=mulesoft-nexus-ee-user
-          cicd_connectedapp_clientid=cicd-connectedapp-clientid
-          cicd_connectedapp_secret=cicd-connectedapp-secret
         login_credentials: ${{ inputs.azure-credentials }}
 
     - name: Get the mapping for the secrets 

@@ -17,11 +17,6 @@ env:
   initialsecretconfiguration: ""
   configurationmap: "" 
 jobs:
-
-  ##########################################################################
-  # BUILD MULESOFT SERVICE
-  ##########################################################################
-
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -34,31 +29,11 @@ jobs:
       - name: Get the source code
         uses: actions/checkout@v3
 
-      - name: Get default secrets for the pipeline
+      - name: Get secrets
         uses: jpontdia/devops-pipelines/packages/get-secrets@main
         with:
           keyvault-key: jpworks-keyvault
           azure-credentials: ${{ secrets.azure-credentials }}
-
-      - id: configuration-settings
-        name: Get configuration file for test cases
-        uses: jpontdia/devops-pipelines/packages/configuration-file@main
-        with:
-          configuration-access-token: $configuration_access_token
-          yaml-path: ".settings"
-
-      - id: settings-maven
-        name: Get the settings file for maven
-        uses: jpontdia/devops-pipelines/packages/configuration@main
-        with:
-          configuration-access-token: $configuration_access_token
-          file: "${{ steps.configuration-settings.outputs.configuration-data }}"
-
-      - name: configure settings file for maven
-        run: |
-          echo "Settings for maven: ${{ steps.settings-maven.outputs.configuration-data }}"
-          echo ${{ steps.settings-maven.outputs.configuration-data }} > $HOME/.m2/settings.xml
-          echo "Github run number: ${{ github.run_number }}"    
 
       - name: Cache local Maven repository
         uses: actions/cache@v3
@@ -75,12 +50,81 @@ jobs:
           distribution: 'temurin'
           #check-latest: true
           cache: 'maven'
+
+      # Creates a settings.xml file and configure the anypoint repositories for the organization and the mulesoft EE
+      - name: Maven settings.xml
+        uses: whelk-io/maven-settings-xml-action@v21
+        with:
+          servers: >
+            [
+              {
+                "id": "anypoint-exchange-v3",
+                "username": "~~~Client~~~",
+                "password": "$cicd_connectedapp_clientid }}~?~$cicd_connectedapp_secret" 
+              },
+              {
+                "id": "mulesoft-enterprise-repository",
+                "username": "$mulesoft_nexus_ee_user",
+                "password": "$mulesoft_nexus_ee_password" 
+              }
+            ]
+          repositories: >
+            [
+              {
+                "id": "anypoint-exchange-v3",
+                "name": "Assets for your anypoint organization",
+                "url": "https://maven.anypoint.mulesoft.com/api/v3/maven/"
+              },
+              {
+                "id": "mulesoft-releases",
+                "name": "mulesoft-releases",
+                "url": "https://repository-master.mulesoft.org/releases/"
+              },
+              {
+                "id": "mulesoft-snapshots",
+                "name": "MuleSoft Snapshot Repository",
+                "url": "https://repository-master.mulesoft.org/snapshots/"
+              },
+              {
+                "id": "mulesoft-enterprise-repository",
+                "name": "MuleSoft Enterprise Repository",
+                "url": "https://repository.mulesoft.org/nexus-ee/content/repositories/releases-ee/"
+              }
+            ]
+          plugin_repositories: >
+            [
+              {
+                "id": "mulesoft-plugins",
+                "name": "Mulesoft plugins-release",
+                "url": "https://repository.mulesoft.org/nexus/content/repositories/public/"
+              },
+              {
+                "id": "central-plugins",
+                "name": "plugins-release",
+                "url": "https://repo1.maven.org/maven2"
+              },
+              {
+                "id": "mulesoft-snapshots",
+                "name": "MuleSoft Snapshot Repository",
+                "url": "https://repository-master.mulesoft.org/snapshots/"
+              },
+              {
+                "id": "mulesoft-plugins-release",
+                "name": "Mulesoft plugins-release",
+                "url": "https://repository.mulesoft.org/releases/",
+                "snapshots": {
+                  "enabled": "false",
+                  "updatePolicy": "always",
+                  "checksumPolicy": "fail"
+                }
+              }              
+            ]
         
       - name: DEBUG - Show settings file
         run: |
           ls -la $HOME
           cat $HOME/.m2/settings.xml
-          echo "Github run number: ${{ github.run_number }}"
+          echo ${{ github.run_number }}
 
       - name: Copy Anypoint Exchange documentation
         run: |
@@ -141,13 +185,15 @@ jobs:
           path: pom.xml
 
 
+
+          
+
   ##########################################################################
   # DEPLOYMENT TO DEV
   ##########################################################################
   
   deploy-dev:
     name: Development
-    if: ${{ false }}
     needs: [build]
     runs-on: ubuntu-latest
 
