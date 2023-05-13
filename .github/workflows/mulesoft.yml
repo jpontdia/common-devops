@@ -98,8 +98,7 @@ jobs:
           suffix: ""
       
       - name: Compile code
-        # I am using an environment variable just for testing dinamic content execution
-        run: $MavenCompile
+        run: mvn compile
 
       - name: Run test cases and package
         run: |
