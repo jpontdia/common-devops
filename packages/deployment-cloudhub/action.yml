@@ -37,6 +37,9 @@ runs:
 
           start=$(date +%s)
           echo "Deployment process start"
+          
+          echo "anypoint-cli-v4 --version: "
+          anypoint-cli-v4 --version
 
           QUERY_STATUS="anypoint-cli-v4 runtime-mgr cloudhub-application describe \
               --client_id '$cicd_connectedapp_clientid' \
