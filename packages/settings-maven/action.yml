@@ -1,0 +1,48 @@
+name: 'Get the settings.xml file for maven'
+description: 'Get the settings.xml file for maven'
+inputs:
+  configuration-access-token:
+    required: true
+    description: Token to access the configuration repository
+  default-settings-xml:
+    required: true
+    description: Default file for settings.xml in case the service doesn't have any configured
+runs:
+  using: "composite"
+  steps:
+
+    - id: service-info
+      name: Get the pom service information
+      uses: jpontdia/devops-pipelines/packages/service-info@main
+
+    - id: configuration
+      name: Get configuration for the service 
+      run: |
+        configuration_settings_xml=${{ inputs.default-settings-xml}}
+
+        # Get the configuration file for the service
+        configurationfile=$(echo "${{ steps.service-info.outputs.name }}.yml")
+        urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$configurationfile"
+        echo "Getting file: $urlconfigurationfile"
+        configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
+
+        if [[ $configurationdata != *"Not Found"* ]]; then
+          configuration_settings_xml=$(echo "$configurationdata" | yq -r ".settings")
+        fi
+
+        echo "The maven settings file is: $configuration_settings_xml"
+
+        urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$configuration_settings_xml"
+        echo "Getting file: $urlconfigurationfile"
+        configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
+
+        //Replace variables
+        configurationdata=$(echo $configurationdata)
+
+        echo "Maven settings: $configurationdata"
+
+        # mkdir $HOME/.m2
+        echo "$$configurationdata" > $HOME/.m2/settings.xml
+        echo "Github run number: ${{ github.run_number }}"  
+
+      shell: bash
