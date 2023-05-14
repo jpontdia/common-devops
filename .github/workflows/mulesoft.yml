@@ -10,9 +10,7 @@ on:
       azure-credentials:
         required: true
         description: Azure Credentials for login
-      configurations-token:
-        required: true
-        description: Access token to get the configuration for the service
+        
 jobs:
 
   ##########################################################################
@@ -138,10 +136,9 @@ jobs:
     name: Development
     needs: [build]
     runs-on: ubuntu-latest
-
     environment:
       name: dev
-      url: 'https://dev.myapp.com'
+      #url: 'https://dev.myapp.com'
     steps:
       - name: Get JAR file
         uses: actions/download-artifact@v2
