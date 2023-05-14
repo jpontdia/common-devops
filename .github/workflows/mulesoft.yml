@@ -10,7 +10,9 @@ on:
       azure-credentials:
         required: true
         description: Azure Credentials for login
-        
+env:
+  DEFAULT_SETTINGS_XML: settings.xml        
+
 jobs:
 
   ##########################################################################
@@ -49,32 +51,11 @@ jobs:
           keyvault-key: jpworks-keyvault
           azure-credentials: ${{ secrets.azure-credentials }}
 
-      - id: configuration-settings
-        name: Get configuration file for test cases
-        uses: jpontdia/devops-pipelines/packages/configuration-file@main
+      - name: Get the settings file for maven
+        uses: jpontdia/devops-pipelines/packages/settigns-maven@main
         with:
           configuration-access-token: $configuration_access_token
-          yaml-path: ".settings"
-
-      - id: settings-maven
-        name: Get the settings file for maven
-        uses: jpontdia/devops-pipelines/packages/configuration@main
-        with:
-          configuration-access-token: $configuration_access_token
-          file: "${{ steps.configuration-settings.outputs.configuration-data }}"
-
-      - name: configure settings file for maven
-        run: |
-          echo "Settings for maven: ${{ steps.settings-maven.outputs.configuration-data }}"
-          # mkdir $HOME/.m2
-          echo "${{ steps.settings-maven.outputs.configuration-data }}" > $HOME/.m2/settings.xml
-          echo "Github run number: ${{ github.run_number }}"    
-        
-      - name: DEBUG - Show settings file
-        run: |
-          ls -la $HOME
-          cat $HOME/.m2/settings.xml
-          echo "Github run number: ${{ github.run_number }}"
+          default-settings-xml: $DEFAULT_SETTINGS_XML 
 
       - id: configuration-tests
         name: Get configuration file for test cases
@@ -90,110 +71,3 @@ jobs:
       
       - name: Compile code
         run: mvn compile
-
-      - name: Run test cases and package
-        run: |
-          ## Get the git commit hash 
-          commitHash=$(git rev-parse --short "$GITHUB_SHA")
-
-          echo "Test properties: ${{ steps.configuration-tests.outputs.configuration-data }}"
-          mvn package ${{ steps.configuration-tests.outputs.configuration-data }}
-
-      - name: Deploy to anypoint exchange
-        run: |
-          ## Deploy to anypoint exchange
-          mvn deploy -DskipTests 
-
-      - name: Publish - MUnit Application Coverage Report
-        uses: actions/upload-artifact@master
-        with:
-          name: munit-application-coverage-report
-          path: target/site/munit/coverage/*
-      
-      - name: Publish - MUnit Report
-        uses: actions/upload-artifact@master
-        with:
-          name: munit-test-report
-          path: target/surefire-reports/*
-
-      - name: Publish - JAR 
-        uses: actions/upload-artifact@master
-        with:
-          name: jar
-          path: target/*.jar
-
-      - name: Publish - POM 
-        uses: actions/upload-artifact@master
-        with:
-          name: pom
-          path: pom.xml
-
-  ##########################################################################
-  # DEPLOYMENT TO DEV
-  ##########################################################################
-  
-  deploy-dev:
-    name: Development
-    needs: [build]
-    runs-on: ubuntu-latest
-    environment:
-      name: dev
-      #url: 'https://dev.myapp.com'
-    steps:
-      - name: Get JAR file
-        uses: actions/download-artifact@v2
-        with:
-          name: jar
-
-      - name: Get POM file
-        uses: actions/download-artifact@v2
-        with:
-          name: pom
-
-      - name: Get secrets
-        uses: jpontdia/devops-pipelines/packages/get-secrets@main
-        with:
-          keyvault-key: jpworks-keyvault
-          azure-credentials: ${{ secrets.azure-credentials }}
-
-      - id: install-anypoint-cli
-        name: Install Mulesoft Anypoint CLI
-        uses: jpontdia/devops-pipelines/packages/install-anypoint-cli@main
-
-      - id: configuration-cloudhub
-        name: Get the configuration for cloud deployment
-        uses: jpontdia/devops-pipelines/packages/configuration-file@main
-        with:
-          configuration-access-token: $configuration_access_token
-          yaml-path: ".cloudhub"
-          suffix: "-dev"
-
-      - id: configuration-service
-        name: Get the configuration for the service
-        uses: jpontdia/devops-pipelines/packages/configuration-file@main
-        with:
-          configuration-access-token: $configuration_access_token
-          yaml-path: ".properties"
-          suffix: "-dev"
-  
-      - id: configuration-deployment-name
-        name: Get the configuration for the service
-        uses: jpontdia/devops-pipelines/packages/configuration-file@main
-        with:
-          configuration-access-token: $configuration_access_token
-          yaml-path: ".deployment-name"
-          suffix: "-dev"
-
-      - id: service-info
-        name: Get the pom service information
-        uses: jpontdia/devops-pipelines/packages/service-info@main
-
-      - id: deployment-development
-        name: Deploy the service to dev environment
-        uses: jpontdia/devops-pipelines/packages/deployment-cloudhub@main
-        with:
-          deployment-name: "${{ steps.configuration-deployment-name.outputs.configuration-data }}"
-          connectedapp-clientid: "$cicd_connectedapp_clientid"
-          connectedapp-secret: "$cicd_connectedapp_secret" 
-          configuration-cloud: "${{ steps.configuration-cloudhub.outputs.configuration-data }}"
-          configuration-service: "${{ steps.configuration-service.outputs.configuration-data }}"
