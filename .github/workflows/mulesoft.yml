@@ -52,7 +52,7 @@ jobs:
           azure-credentials: ${{ secrets.azure-credentials }}
 
       - name: Get the settings file for maven
-        uses: jpontdia/devops-pipelines/packages/settigns-maven@main
+        uses: jpontdia/devops-pipelines/packages/settings-maven@main
         with:
           configuration-access-token: $configuration_access_token
           default-settings-xml: $DEFAULT_SETTINGS_XML 
