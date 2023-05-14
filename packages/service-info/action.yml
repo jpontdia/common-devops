@@ -23,7 +23,7 @@ runs:
 
         # Get the pom configurtion
         echo "Getting the service metadata from POM file"
-        service=$(sed -n 's:.*<name>\(.*\)</name>.*:\1:p' pom.xml | sed -n 1p)
+        name=$(sed -n 's:.*<name>\(.*\)</name>.*:\1:p' pom.xml | sed -n 1p)
         group=$(sed -n 's:.*<groupId>\(.*\)</groupId>.*:\1:p' pom.xml | sed -n 2p)
         artifact=$(sed -n 's:.*<artifactId>\(.*\)</artifactId>.*:\1:p' pom.xml | sed -n 2p)
         version=$(sed -n 's:.*<version>\(.*\)</version>.*:\1:p' pom.xml | sed -n 2p)
@@ -31,7 +31,7 @@ runs:
         # Show variables for the script
         echo ""
         echo "Service information from the pom.xml"
-        echo "Service name: $service"
+        echo "Service name: $name"
         echo "Service group: $group"
         echo "Service artifact: $artifact"
         echo "Service version: $version"
