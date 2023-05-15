@@ -18,6 +18,7 @@ runs:
     - id: configuration
       name: Get configuration for the service 
       run: |
+      
         settings_xml=${{ inputs.default-settings-xml}}
 
         # Get the configuration file for the service
@@ -38,7 +39,7 @@ runs:
         echo "Getting file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
 
-        //Replace variables
+        # Replace variables
         echo "1"
         configurationdata=$(echo "$configurationdata")
         echo "2"
