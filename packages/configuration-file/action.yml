@@ -32,7 +32,7 @@ runs:
       run: |
 
         # Get the configuration file for the service
-        configurationfile=$(echo "${{ steps.service-info.outputs.name }}.yml")
+        configurationfile=$(echo "${{ inputs.prefix }}${{ steps.service-info.outputs.name }}${{ inputs.suffix }}.yml")
         urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$configurationfile"
         echo "Getting file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
