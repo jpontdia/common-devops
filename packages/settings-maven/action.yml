@@ -40,11 +40,12 @@ runs:
         configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
 
         # Replace variables
-        configurationdata=$(echo "$configurationdata")
-        echo "Maven settings: $configurationdata"
+        configurationdata2=$(echo "$configurationdata")
+        echo "Maven settings: $configurationdata2"
 
         # mkdir $HOME/.m2
-        echo "$configurationdata" > $HOME/.m2/settings.xml
+        output=$(echo "$configurationdata2" | envsubst)
+        echo "$output" > $HOME/.m2/settings.xml
         echo "Github run number: ${{ github.run_number }}"  
 
       shell: bash
