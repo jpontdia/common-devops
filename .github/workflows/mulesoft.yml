@@ -101,12 +101,12 @@ jobs:
   ##########################################################################
   
   deploy-dev:
+    if: $deployment_dev = true
     name: Development
     needs: [build]
     runs-on: ubuntu-latest
     environment:
       name: dev
-    if: ${{ $deployment_dev = true }}
     steps:
       - name: test
         run: echo "deployment dev"
