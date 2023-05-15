@@ -33,7 +33,7 @@ runs:
           if [ "$settings_xml_temp" = "null" ] || [ "$settings_xml_temp" = "" ] ; then
             echo "The settings.xml file was not configured for the service, assigning the default one"
           else
-            settings_xml=settings_xml_temp
+            settings_xml=$settings_xml_temp
           fi
         else
           echo "There wasn't a specific settings.xml file for the service, assigning the default file"
