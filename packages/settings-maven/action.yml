@@ -18,7 +18,7 @@ runs:
     - id: configuration
       name: Get configuration for the service 
       run: |
-        configuration_settings_xml=${{ inputs.default-settings-xml}}
+        settings_xml=${{ inputs.default-settings-xml}}
 
         # Get the configuration file for the service
         configurationfile=$(echo "${{ steps.service-info.outputs.name }}.yml")
@@ -27,15 +27,16 @@ runs:
         configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
 
         if [[ $configurationdata != *"Not Found"* ]]; then
-          configuration_settings_xml=$(echo "$configurationdata" | yq -r ".settings")
+          settings_xml=$(echo "$configurationdata" | yq -r ".settings")
         fi
 
-        echo "The maven settings file is: $configuration_settings_xml"
+        echo "The maven settings file is: $settings_xml"
 
-        urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$configuration_settings_xml"
+        urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$settings_xml"
         echo "Getting file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
-
+        echo "Raw configurationdata: $configurationdata"
+        
         //Replace variables
         configurationdata=$(echo $configurationdata)
 
