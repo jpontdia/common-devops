@@ -27,6 +27,7 @@ runs:
         echo "Getting file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
 
+        # Verify if configuration file was found
         if [[ $configurationdata != *"Not Found"* ]]; then
           echo "A configuration file for the service was found, getting the settings paramater"
           settings_xml_temp=$(echo "$configurationdata" | yq -r ".settings")
