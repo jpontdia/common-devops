@@ -40,7 +40,7 @@ runs:
         configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
 
         # Replace variables
-        configurationdata=$(echo $configurationdata)
+        configurationdata=$(echo "$configurationdata")
         echo "Maven settings: $configurationdata"
 
         # mkdir $HOME/.m2
