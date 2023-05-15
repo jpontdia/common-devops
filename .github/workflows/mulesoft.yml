@@ -94,6 +94,9 @@ jobs:
           echo "dev cloudhub: ${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}"
           if [ "${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}" != "" ] ; then
             echo "deployment_dev=$(echo 'true')" >> $GITHUB_ENV
+            echo "There is a configuration to deploy the service in development environment"
+          else
+            echo "The mulesoft asset doesn't have any deployment configuration"
           fi
          
   ##########################################################################
