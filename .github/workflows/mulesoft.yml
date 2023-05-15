@@ -12,9 +12,9 @@ on:
         description: Azure Credentials for login
 env:
   DEFAULT_SETTINGS_XML: settings.xml        
-  deployment_dev: ${{ false }}
-  deployment_tst: ${{ false }}
-  deployment_prd: ${{ false }}
+  deployment_dev: "false"
+  deployment_tst: "false"
+  deployment_prd: "false"
 
 jobs:
 
@@ -93,7 +93,7 @@ jobs:
         run: |
           echo "dev cloudhub: ${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}"
           if [ "${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}" != "" ] ; then
-            deployment_dev=${{ true }}
+            deployment_dev="true"
           fi
          
   ##########################################################################
@@ -101,7 +101,7 @@ jobs:
   ##########################################################################
   
   deploy-dev:
-    if: vars.deployment_dev = true
+    if: vars.deployment_dev == "true"
     name: Development
     needs: [build]
     runs-on: ubuntu-latest
