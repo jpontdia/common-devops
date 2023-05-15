@@ -74,3 +74,15 @@ jobs:
           ls -la $HOME
           cat $HOME/.m2/settings.xml
           echo "Github run number: ${{ github.run_number }}"
+          echo "testing: ${{ steps.configuration-tests.outputs.configuration-data }}"
+
+      - name: Compile code
+        run: mvn compile
+  
+      - name: Run test cases and package
+        run: |
+          ## Get the git commit hash 
+          commitHash=$(git rev-parse --short "$GITHUB_SHA")
+
+          echo "Test properties: ${{ steps.configuration-tests.outputs.configuration-data }}"
+          mvn package ${{ steps.configuration-tests.outputs.configuration-data }}
