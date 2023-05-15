@@ -74,6 +74,3 @@ jobs:
           ls -la $HOME
           cat $HOME/.m2/settings.xml
           echo "Github run number: ${{ github.run_number }}"
-
-      - name: Compile code
-        run: mvn compile
