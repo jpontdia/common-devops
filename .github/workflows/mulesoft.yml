@@ -12,6 +12,9 @@ on:
         description: Azure Credentials for login
 env:
   DEFAULT_SETTINGS_XML: settings.xml        
+  deployment_dev: ${{ false }}
+  deployment_tst: ${{ false }}
+  deployment_prd: ${{ false }}
 
 jobs:
 
@@ -29,7 +32,6 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Cache local Maven repository
-        if: ${{ false }}    
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
@@ -42,8 +44,8 @@ jobs:
         with:
           java-version: '8'
           distribution: 'temurin'
-          check-latest: true
-          #cache: 'maven'
+          #check-latest: true
+          cache: 'maven'
 
       - name: Get default secrets for the pipeline
         uses: jpontdia/devops-pipelines/packages/get-secrets@main
@@ -75,14 +77,36 @@ jobs:
           cat $HOME/.m2/settings.xml
           echo "Github run number: ${{ github.run_number }}"
           echo "testing: ${{ steps.configuration-tests.outputs.configuration-data }}"
-
-      - name: Compile code
-        run: mvn compile
-  
-      - name: Run test cases and package
-        run: |
           ## Get the git commit hash 
           commitHash=$(git rev-parse --short "$GITHUB_SHA")
+          echo "Github commit hash: $commitHash"
 
-          echo "Test properties: ${{ steps.configuration-tests.outputs.configuration-data }}"
-          mvn package ${{ steps.configuration-tests.outputs.configuration-data }}
+      - id: dev-configuration-cloudhub
+        name: Get the configuration for cloud deployment
+        uses: jpontdia/devops-pipelines/packages/configuration-file@main
+        with:
+          configuration-access-token: $configuration_access_token
+          yaml-path: ".cloudhub"
+          suffix: "-dev"
+
+      - name: Verify deployment
+        run: |
+          echo "dev cloudhub: ${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}"
+          if [ "${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}" != "" ] ; then
+            deployment_dev=${{ true }}
+          fi
+         
+  ##########################################################################
+  # DEPLOYMENT TO DEV
+  ##########################################################################
+  
+  deploy-dev:
+    name: Development
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    if: ${{ $deployment_dev = true }}
+    steps:
+      - name: test
+        run: echo "deployment dev"
