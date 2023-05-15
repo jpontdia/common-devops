@@ -28,6 +28,8 @@ runs:
 
         if [[ $configurationdata != *"Not Found"* ]]; then
           settings_xml=$(echo "$configurationdata" | yq -r ".settings")
+        else
+          echo "There wasn't a specific settings.xml file for the service, assigning the default file"
         fi
 
         echo "The maven settings file is: $settings_xml"
@@ -35,11 +37,11 @@ runs:
         urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$settings_xml"
         echo "Getting file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
-        echo "Raw configurationdata: $configurationdata"
 
         //Replace variables
+        echo "1"
         configurationdata=$(echo "$configurationdata")
-
+        echo "2"
         echo "Maven settings: $configurationdata"
 
         # mkdir $HOME/.m2
