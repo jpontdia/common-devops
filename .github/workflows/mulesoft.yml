@@ -69,5 +69,8 @@ jobs:
           cp -Rfpv README.md exchange-docs/home.md
           cp -Rfpv docs/*.* exchange-docs/docs/*.* 
       
-      - name: Compile code
-        run: mvn compile
+      - name: DEBUG - Show settings file
+        run: |
+          ls -la $HOME
+          cat $HOME/.m2/settings.xml
+          echo "Github run number: ${{ github.run_number }}"
