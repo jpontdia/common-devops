@@ -44,7 +44,7 @@ runs:
         echo "Maven settings: $configurationdata"
 
         # mkdir $HOME/.m2
-        echo "$$configurationdata" > $HOME/.m2/settings.xml
+        echo "$configurationdata" > $HOME/.m2/settings.xml
         echo "Github run number: ${{ github.run_number }}"  
 
       shell: bash
