@@ -101,7 +101,7 @@ jobs:
   ##########################################################################
   
   deploy-dev:
-    if: $deployment_dev = true
+    if: vars.deployment_dev = true
     name: Development
     needs: [build]
     runs-on: ubuntu-latest
