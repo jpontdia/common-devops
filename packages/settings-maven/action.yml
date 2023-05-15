@@ -29,7 +29,12 @@ runs:
 
         if [[ $configurationdata != *"Not Found"* ]]; then
           echo "A configuration file for the service was found, getting the settings paramater"
-          settings_xml=$(echo "$configurationdata" | yq -r ".settings")
+          settings_xml_temp=$(echo "$configurationdata" | yq -r ".settings")
+          if [ "$settings_xml_temp" = "null" ] || [ "$settings_xml_temp" = "" ] ; then
+            echo "The settings.xml file was not configured for the service, assigning the default one"
+          else
+            settings_xml=settings_xml_temp
+          fi
         else
           echo "There wasn't a specific settings.xml file for the service, assigning the default file"
         fi
