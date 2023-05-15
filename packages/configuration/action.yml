@@ -24,8 +24,6 @@ runs:
         configurationdata=$(curl -sH "Authorization: token ${{ inputs.configuration-access-token }}" $urlconfigurationfile)
         pathdata=$(echo "$configurationdata")
 
-        echo "mulesoft_nexus_ee_user: $mulesoft_nexus_ee_user"
-
         # Replace environment variables
         echo "Configuration data: $pathdata"
         echo "configuration-data=$(echo $pathdata)" >> $GITHUB_OUTPUT
