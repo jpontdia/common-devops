@@ -36,9 +36,9 @@ runs:
         echo "Getting file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
         echo "Raw configurationdata: $configurationdata"
-        
+
         //Replace variables
-        configurationdata=$(echo $configurationdata)
+        configurationdata=$(echo "$configurationdata")
 
         echo "Maven settings: $configurationdata"
 
