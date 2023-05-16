@@ -109,7 +109,7 @@ jobs:
   ##########################################################################
   
   deploy-dev:
-    # if: vars.deployment_dev == 'true'
+    if: needs.build.outputs.development == 'true'
     name: Development
     needs: [build]
     runs-on: ubuntu-latest
