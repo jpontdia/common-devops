@@ -25,7 +25,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-
+    outputs:
+      development: ${{ steps.verify-deployment.outputs.deployment }}
+      deploy: no
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so the job can access it
       - name: Get the source code
@@ -89,11 +91,14 @@ jobs:
           yaml-path: ".cloudhub"
           suffix: "-dev"
 
-      - name: Verify deployment
+      - id: verify-deployment
+        name: Verify deployment to development environment
         run: |
           echo "dev cloudhub: ${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}"
           if [ "${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}" != "" ] ; then
+            echo "deployment=true" >> $GITHUB_OUTPUT
             echo "deployment_dev=$(echo 'true')" >> $GITHUB_ENV
+            echo "deploy=true" >> $GITHUB_OUTPUT
             echo "There is a configuration to deploy the service in development environment"
           else
             echo "The mulesoft asset doesn't have any deployment configuration"
@@ -104,7 +109,7 @@ jobs:
   ##########################################################################
   
   deploy-dev:
-    if: vars.deployment_dev == 'true'
+    # if: vars.deployment_dev == 'true'
     name: Development
     needs: [build]
     runs-on: ubuntu-latest
@@ -112,4 +117,7 @@ jobs:
       name: dev
     steps:
       - name: test
-        run: echo "deployment dev"
+        run: |
+          echo "deployment_dev: $deployment_dev"
+          echo "build.outputs.development: ${{ needs.build.outputs.development}}"
+          echo "build.outputs.deploy: ${{ needs.build.outputs.deploy}}"
