@@ -44,10 +44,10 @@ runs:
                       --output json $deploymentname"
 
           # Get the current status of the service
-          echo "Getting the status for the service, query command: $QUERY_STATUS"
+          echo "Getting the status for the service,   query command: $QUERY_STATUS"
 
           # Get the current status of the service 
-          DEPLOYMENT_INFO=$(echo $QUERY_STATUS)
+          DEPLOYMENT_INFO=$($QUERY_STATUS || true)
           echo "Quering status: $DEPLOYMENT_INFO"
           STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
           UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
