@@ -44,7 +44,7 @@ runs:
                       --output json $deploymentname"
 
           # Get the current status of the service
-          echo "Getting the status for the service"
+          echo "Getting the status for the service, query command: $QUERY_STATUS"
 
           # Get the current status of the service 
           DEPLOYMENT_INFO=$($QUERY_STATUS)

@@ -81,23 +81,27 @@ jobs:
           echo "Github commit hash: $commitHash"
 
       - name: Compile code
+        if: ${{ false }}    
         run: mvn --batch-mode compile
   
       - name: Run test cases and package
         run: mvn --batch-mode package ${{ steps.configuration-tests.outputs.configuration-data }}
 
       - name: Deploy to anypoint exchange
+        if: ${{ false }}    
         run: |
           ## Deploy to anypoint exchange
           mvn --batch-mode deploy -DskipTests 
 
       - name: Publish - MUnit Application Coverage Report
+        if: ${{ false }}    
         uses: actions/upload-artifact@master
         with:
           name: munit-application-coverage-report
           path: target/site/munit/coverage/*
       
       - name: Publish - MUnit Report
+        if: ${{ false }}
         uses: actions/upload-artifact@master
         with:
           name: munit-test-report
