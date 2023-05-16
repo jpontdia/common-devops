@@ -256,8 +256,8 @@ jobs:
           yaml-path: ".deployment-name"
           suffix: "-tst"
 
-      - id: deployment-development
-        name: Deploy the service to dev environment
+      - id: deployment-tst
+        name: Deploy the service to tst environment
         uses: jpontdia/devops-pipelines/packages/deployment-cloudhub@main
         with:
           deployment-name: "${{ steps.tst-configuration-deployment-name.outputs.configuration-data }}"
