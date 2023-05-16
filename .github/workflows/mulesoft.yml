@@ -200,3 +200,68 @@ jobs:
           connectedapp-secret: "$cicd_connectedapp_secret" 
           configuration-cloud: "${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}"
           configuration-service: "${{ steps.dev-configuration-service.outputs.configuration-data }}"
+
+  ##########################################################################
+  # DEPLOYMENT TO TST
+  ##########################################################################
+  
+  deploy-tst:
+    name: Testing
+    needs: [deploy-dev]
+    runs-on: ubuntu-latest
+    environment:
+      name: tst
+    steps:
+      - name: Get JAR file
+        uses: actions/download-artifact@v2
+        with:
+          name: jar
+
+      - name: Get POM file
+        uses: actions/download-artifact@v2
+        with:
+          name: pom
+
+      - name: Get secrets
+        uses: jpontdia/devops-pipelines/packages/get-secrets@main
+        with:
+          keyvault-key: jpworks-keyvault
+          azure-credentials: ${{ secrets.azure-credentials }}
+
+      - id: install-anypoint-cli
+        name: Install Mulesoft Anypoint CLI
+        uses: jpontdia/devops-pipelines/packages/install-anypoint-cli@main
+
+      - id: tst-configuration-cloudhub
+        name: Get the configuration for cloud deployment
+        uses: jpontdia/devops-pipelines/packages/configuration-file@main
+        with:
+          configuration-access-token: $configuration_access_token
+          yaml-path: ".cloudhub"
+          suffix: "-tst"
+
+      - id: tst-configuration-service
+        name: Get the configuration properties for the service
+        uses: jpontdia/devops-pipelines/packages/configuration-file@main
+        with:
+          configuration-access-token: $configuration_access_token
+          yaml-path: ".properties"
+          suffix: "-tst"
+  
+      - id: tst-configuration-deployment-name
+        name: Get the deployment name for the service
+        uses: jpontdia/devops-pipelines/packages/configuration-file@main
+        with:
+          configuration-access-token: $configuration_access_token
+          yaml-path: ".deployment-name"
+          suffix: "-tst"
+
+      - id: deployment-development
+        name: Deploy the service to dev environment
+        uses: jpontdia/devops-pipelines/packages/deployment-cloudhub@main
+        with:
+          deployment-name: "${{ steps.tst-configuration-deployment-name.outputs.configuration-data }}"
+          connectedapp-clientid: "$cicd_connectedapp_clientid"
+          connectedapp-secret: "$cicd_connectedapp_secret" 
+          configuration-cloud: "${{ steps.tst-configuration-cloudhub.outputs.configuration-data }}"
+          configuration-service: "${{ steps.tst-configuration-service.outputs.configuration-data }}"
