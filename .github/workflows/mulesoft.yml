@@ -11,10 +11,7 @@ on:
         required: true
         description: Azure Credentials for login
 env:
-  DEFAULT_SETTINGS_XML: settings.xml        
-  deployment_dev: "false"
-  deployment_tst: "false"
-  deployment_prd: "false"
+  DEFAULT_SETTINGS_XML: settings.xml
 
 jobs:
 
@@ -26,6 +23,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     outputs:
+      # Indicates if the service will be deployed to devlopment environment
       deployment: ${{ steps.verify-deployment.outputs.deployment }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so the job can access it
