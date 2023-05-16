@@ -26,7 +26,7 @@ jobs:
       # Indicates if the service will be deployed to devlopment environment
       deployment: ${{ steps.verify-deployment.outputs.deployment }}
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so the job can access it
+
       - name: Get the source code
         uses: actions/checkout@v3
 
@@ -80,6 +80,41 @@ jobs:
           commitHash=$(git rev-parse --short "$GITHUB_SHA")
           echo "Github commit hash: $commitHash"
 
+      - name: Compile code
+        run: mvn --batch-mode compile
+  
+      - name: Run test cases and package
+        run: mvn --batch-mode package ${{ steps.configuration-tests.outputs.configuration-data }}
+
+      - name: Deploy to anypoint exchange
+        run: |
+          ## Deploy to anypoint exchange
+          mvn --batch-mode deploy -DskipTests 
+
+      - name: Publish - MUnit Application Coverage Report
+        uses: actions/upload-artifact@master
+        with:
+          name: munit-application-coverage-report
+          path: target/site/munit/coverage/*
+      
+      - name: Publish - MUnit Report
+        uses: actions/upload-artifact@master
+        with:
+          name: munit-test-report
+          path: target/surefire-reports/*
+
+      - name: Publish - JAR 
+        uses: actions/upload-artifact@master
+        with:
+          name: jar
+          path: target/*.jar
+
+      - name: Publish - POM 
+        uses: actions/upload-artifact@master
+        with:
+          name: pom
+          path: pom.xml
+          
       - id: dev-configuration-cloudhub
         name: Get the configuration for cloud deployment
         uses: jpontdia/devops-pipelines/packages/configuration-file@main
@@ -94,7 +129,7 @@ jobs:
           echo "dev cloudhub: ${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}"
           if [ "${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}" != "" ] ; then
             echo "deployment=true" >> $GITHUB_OUTPUT
-            echo "There is a configuration to deploy the service in development environment"
+            echo "The service has the configuration to deploy in development environment"
           else
             echo "deployment=false" >> $GITHUB_OUTPUT
             echo "The mulesoft asset doesn't have any deployment configuration"
@@ -112,6 +147,56 @@ jobs:
     environment:
       name: dev
     steps:
-      - name: test
-        run: |
-          echo "build.outputs.deploy: ${{ needs.build.outputs.deployment}}"
+      - name: Get JAR file
+        uses: actions/download-artifact@v2
+        with:
+          name: jar
+
+      - name: Get POM file
+        uses: actions/download-artifact@v2
+        with:
+          name: pom
+
+      - name: Get secrets
+        uses: jpontdia/devops-pipelines/packages/get-secrets@main
+        with:
+          keyvault-key: jpworks-keyvault
+          azure-credentials: ${{ secrets.azure-credentials }}
+
+      - id: install-anypoint-cli
+        name: Install Mulesoft Anypoint CLI
+        uses: jpontdia/devops-pipelines/packages/install-anypoint-cli@main
+
+      - id: dev-configuration-cloudhub
+        name: Get the configuration for cloud deployment
+        uses: jpontdia/devops-pipelines/packages/configuration-file@main
+        with:
+          configuration-access-token: $configuration_access_token
+          yaml-path: ".cloudhub"
+          suffix: "-dev"
+
+      - id: dev-configuration-service
+        name: Get the configuration properties for the service
+        uses: jpontdia/devops-pipelines/packages/configuration-file@main
+        with:
+          configuration-access-token: $configuration_access_token
+          yaml-path: ".properties"
+          suffix: "-dev"
+  
+      - id: dev-configuration-deployment-name
+        name: Get the deployment name for the service
+        uses: jpontdia/devops-pipelines/packages/configuration-file@main
+        with:
+          configuration-access-token: $configuration_access_token
+          yaml-path: ".deployment-name"
+          suffix: "-dev"
+
+      - id: deployment-development
+        name: Deploy the service to dev environment
+        uses: jpontdia/devops-pipelines/packages/deployment-cloudhub@main
+        with:
+          deployment-name: "${{ steps.dev-configuration-deployment-name.outputs.configuration-data }}"
+          connectedapp-clientid: "$cicd_connectedapp_clientid"
+          connectedapp-secret: "$cicd_connectedapp_secret" 
+          configuration-cloud: "${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}"
+          configuration-service: "${{ steps.dev-configuration-service.outputs.configuration-data }}"
