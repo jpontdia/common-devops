@@ -38,15 +38,17 @@ runs:
           start=$(date +%s)
           echo "Deployment process start. anypoint-cli-v4: $(anypoint-cli-v4 --version)"
 
-          QUERY_STATUS="anypoint-cli-v4 runtime-mgr cloudhub-application describe --client_id $cicd_connectedapp_clientid \
-            --client_secret $cicd_connectedapp_secret --output json $deploymentname"
+          QUERY_STATUS="anypoint-cli-v4 runtime-mgr cloudhub-application describe \
+                      --client_id $cicd_connectedapp_clientid \
+                      --client_secret $cicd_connectedapp_secret \
+                      --output json $deploymentname"
 
           # Get the current status of the service
           echo "Getting the status for the service"
 
           # Get the current status of the service 
           DEPLOYMENT_INFO=$($QUERY_STATUS)
-          # echo "Quering status: $DEPLOYMENT_INFO"
+          echo "Quering status: $DEPLOYMENT_INFO"
           STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
           UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
           echo "Service: $deploymentname status: $STATUS, updateStatus: $UPDATE_STATUS"
