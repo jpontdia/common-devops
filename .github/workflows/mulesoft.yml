@@ -204,6 +204,7 @@ jobs:
           connectedapp-secret: "$cicd_connectedapp_secret" 
           configuration-cloud: "${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}"
           configuration-service: "${{ steps.dev-configuration-service.outputs.configuration-data }}"
+          environment: "dev"
 
   ##########################################################################
   # DEPLOYMENT TO TST
@@ -269,3 +270,4 @@ jobs:
           connectedapp-secret: "$cicd_connectedapp_secret" 
           configuration-cloud: "${{ steps.tst-configuration-cloudhub.outputs.configuration-data }}"
           configuration-service: "${{ steps.tst-configuration-service.outputs.configuration-data }}"
+          environment: "tst"

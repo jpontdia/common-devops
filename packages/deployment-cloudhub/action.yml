@@ -16,6 +16,9 @@ inputs:
   configuration-service:
     required: true
     description: Configuration for the service
+  environment:
+    required: true
+    description: Deployment environment for the service
 runs:
   using: "composite"
   steps:
@@ -28,6 +31,7 @@ runs:
           cicd_connectedapp_clientid="${{ inputs.connectedapp-clientid}}"
           cicd_connectedapp_secret="${{ inputs.connectedapp-secret}}"
           deploymentname="${{ inputs.deployment-name}}"
+          deploymentenvironment="${{ inputs.environment}}"
           propscloud="${{ inputs.configuration-cloud}}"
           propsservice="${{ inputs.configuration-service}}"
 
@@ -41,6 +45,7 @@ runs:
           QUERY_STATUS="anypoint-cli-v4 runtime-mgr cloudhub-application describe \
                       --client_id $cicd_connectedapp_clientid \
                       --client_secret $cicd_connectedapp_secret \
+                      --environment $deploymentenvironment \
                       --output json $deploymentname"
 
           # Get the current status of the service
@@ -73,6 +78,7 @@ runs:
           CREATEUPDATE_APP="anypoint-cli-v4 runtime-mgr cloudhub-application $operation \
           --client_id $cicd_connectedapp_clientid \
           --client_secret $cicd_connectedapp_secret \
+          --environment $deploymentenvironment \
           $propscloud $propsservice --output json $deploymentname $jar"
           echo "deployment command: $CREATEUPDATE_APP"
           $CREATEUPDATE_APP
