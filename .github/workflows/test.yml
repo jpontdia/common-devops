@@ -1,0 +1,32 @@
+name: Integration Testing
+on:
+  workflow_call:
+    inputs:
+      keyvault-key:
+        required: true
+        description: Access key to KeyVault
+        type: string
+    secrets:
+      azure-credentials:
+        required: true
+        description: Azure Credentials for login
+env:
+  DEFAULT_SETTINGS_XML: settings.xml
+
+jobs:
+  testing:
+    name: Integration testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the source code
+        uses: actions/checkout@v3
+
+      - name: Install API Functional Monitoring
+        run: |
+          curl -o- 'https://s3.amazonaws.com/bat-wrapper/install.sh' | bash
+          echo "bat -version: $(bat -version)"
+
+      - name: Run tests
+        run: |
+          cd bat
+          bat --config=dev.dwl
