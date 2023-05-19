@@ -29,4 +29,12 @@ jobs:
       - name: Run tests
         run: |
           cd bat
+          mkdir output-reports
           bat --config=dev.dwl
+
+      - name: Publish - Test reports
+        if: ${{ false }}    
+        uses: actions/upload-artifact@master
+        with:
+            name: test-reports
+            path: output-reports/*
