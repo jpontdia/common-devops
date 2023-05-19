@@ -208,10 +208,10 @@ jobs:
   
   
   ##########################################################################
-  # Development Integration Testing
+  # INTEGRATION TESTING - DEVELOPMENT
   ##########################################################################
 
-  dev-testing:
+  testing-dev:
     name: Dev integration testing
     runs-on: ubuntu-latest
     steps:
@@ -243,7 +243,7 @@ jobs:
   
   deploy-tst:
     name: Testing
-    needs: [dev-testing]
+    needs: [testing-dev]
     runs-on: ubuntu-latest
     environment:
       name: tst
