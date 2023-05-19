@@ -205,6 +205,37 @@ jobs:
           configuration-cloud: "${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}"
           configuration-service: "${{ steps.dev-configuration-service.outputs.configuration-data }}"
           environment: "dev"
+  
+  
+  ##########################################################################
+  # Development Integration Testing
+  ##########################################################################
+
+  dev-testing:
+    name: Dev integration testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the source code
+        uses: actions/checkout@v3
+
+      - name: Install API Functional Monitoring
+        run: |
+          curl -o- 'https://s3.amazonaws.com/bat-wrapper/install.sh' | bash
+          echo "bat -version: $(bat -version)"
+
+      - name: Run tests
+        run: |
+          cd bat
+          mkdir output-reports
+          bat
+
+      - name: Publish - Test reports
+        # if: ${{ false }}    
+        uses: actions/upload-artifact@master
+        with:
+            name: test-reports
+            path: output-reports/*.*
+
 
   ##########################################################################
   # DEPLOYMENT TO TST
@@ -212,7 +243,7 @@ jobs:
   
   deploy-tst:
     name: Testing
-    needs: [deploy-dev]
+    needs: [dev-testing]
     runs-on: ubuntu-latest
     environment:
       name: tst
