@@ -213,6 +213,7 @@ jobs:
 
   testing-dev:
     name: Dev integration testing
+    needs: [deploy-dev]
     runs-on: ubuntu-latest
     steps:
       - name: Get the source code
