@@ -33,7 +33,7 @@ jobs:
           bat --config=dev.dwl
 
       - name: Publish - Test reports
-        if: ${{ false }}    
+        # if: ${{ false }}    
         uses: actions/upload-artifact@master
         with:
             name: test-reports
