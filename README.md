@@ -18,4 +18,4 @@ Reusable workflows
 
 | Workflow    | Description |
 | ----------- | ----------- |
-| workflow/mulesoft.yml | Build and deploy Mulesoft applications to Cloudhub/GovCloud |
+| workflow/mulesoft.yml | Build and deploy Mulesoft services to cloud (Cloudhub/GovCloud). The same workflow helps to deploy other kind of assets to Anypoint Exchange like parent poms, library projects, custom connectors, etc. |
