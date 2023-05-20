@@ -1,4 +1,4 @@
-name: Mulesoft
+name: Mule
 on:
   workflow_call:
     inputs:
@@ -81,27 +81,27 @@ jobs:
           echo "Github commit hash: $commitHash"
 
       - name: Compile code
-        if: ${{ false }}    
+        #if: ${{ false }}    
         run: mvn --batch-mode compile
   
       - name: Run test cases and package
         run: mvn --batch-mode package ${{ steps.configuration-tests.outputs.configuration-data }}
 
       - name: Deploy to anypoint exchange
-        if: ${{ false }}    
+        #if: ${{ false }}    
         run: |
           ## Deploy to anypoint exchange
           mvn --batch-mode deploy -DskipTests 
 
       - name: Publish - MUnit Application Coverage Report
-        if: ${{ false }}    
+        #if: ${{ false }}    
         uses: actions/upload-artifact@master
         with:
           name: munit-application-coverage-report
           path: target/site/munit/coverage/*
       
       - name: Publish - MUnit Report
-        if: ${{ false }}
+        #if: ${{ false }}
         uses: actions/upload-artifact@master
         with:
           name: munit-test-report
@@ -145,7 +145,7 @@ jobs:
   
   deploy-dev:
     if: needs.build.outputs.deployment == 'true'
-    name: Development
+    name: DEV
     needs: [build]
     runs-on: ubuntu-latest
     environment:
@@ -212,7 +212,7 @@ jobs:
   ##########################################################################
 
   testing-dev:
-    name: Dev integration testing
+    name: DEV test
     needs: [deploy-dev]
     runs-on: ubuntu-latest
     steps:
@@ -227,7 +227,7 @@ jobs:
       - name: Run tests
         run: |
           cd bat
-          mkdir output-reports
+          mkdir target
           bat
 
       - name: Publish - Test reports
@@ -243,7 +243,7 @@ jobs:
   ##########################################################################
   
   deploy-tst:
-    name: Testing
+    name: TST
     needs: [testing-dev]
     runs-on: ubuntu-latest
     environment:
