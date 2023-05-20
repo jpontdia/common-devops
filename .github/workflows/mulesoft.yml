@@ -23,7 +23,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     outputs:
-      # Indicates if the service will be deployed to devlopment environment
+      # Indicates if the service will be deployed to development environment
       deployment: ${{ steps.verify-deployment.outputs.deployment }}
     steps:
 
