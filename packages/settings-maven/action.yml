@@ -7,6 +7,12 @@ inputs:
   default-settings-xml:
     required: true
     description: Default file for settings.xml in case the service doesn't have any configured
+  github-organization:
+    required: true
+    description: Name of the github organization that is used to locate the secrets mapping file
+  configurations-repository:
+    required: true
+    description: Name of the repository for mulesoft configurations
 runs:
   using: "composite"
   steps:
@@ -23,7 +29,7 @@ runs:
 
         # Get the configuration file for the service
         configurationfile=$(echo "${{ steps.service-info.outputs.name }}.yml")
-        urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$configurationfile"
+        urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$configurationfile"
         echo "Getting file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
 
@@ -42,7 +48,7 @@ runs:
 
         echo "The maven settings file is: $settings_xml"
 
-        urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$settings_xml"
+        urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$settings_xml"
         echo "Getting file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
 
@@ -50,4 +56,16 @@ runs:
         output=$(echo "$configurationdata" | envsubst)
         echo "$output" > $HOME/.m2/settings.xml
 
+      shell: bash
+
+    - name: DEBUG - Show maven settings file
+      if: ${{ false }}
+      run: |
+        ls -la $HOME
+        cat $HOME/.m2/settings.xml
+        echo "Github run number: ${{ github.run_number }}"
+        echo "testing: ${{ steps.configuration-tests.outputs.configuration-data }}"
+        ## Get the git commit hash 
+        commitHash=$(git rev-parse --short "$GITHUB_SHA")
+        echo "Github commit hash: $commitHash"
       shell: bash

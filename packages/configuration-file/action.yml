@@ -1,6 +1,12 @@
 name: 'Get configuration file'
 description: 'Get the configuration file for the service defined in pom.xml'
 inputs:
+  github-organization:
+    required: true
+    description: Name of the github organization that is used to locate the secrets mapping file
+  configurations-repository:
+    required: true
+    description: Name of the repository for mulesoft configurations
   configuration-access-token:
     required: true
     description: Token to access the configuration repository
@@ -25,7 +31,7 @@ runs:
 
     - id: service-info
       name: Get the pom service information
-      uses: jpontdia/devops-pipelines/packages/service-info@main
+      uses: CoveredCA/devops-pipelines/packages/service-info@main
     
     - id: configuration
       name: Get configuration for the service 
@@ -33,7 +39,7 @@ runs:
 
         # Get the configuration file for the service
         configurationfile=$(echo "${{ inputs.prefix }}${{ steps.service-info.outputs.name }}${{ inputs.suffix }}.yml")
-        urlconfigurationfile="https://raw.githubusercontent.com/jpontdia/mule-configurations/main/$configurationfile"
+        urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$configurationfile"
         echo "Getting file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
         pathdata=""

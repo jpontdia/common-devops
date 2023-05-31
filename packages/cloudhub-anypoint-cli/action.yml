@@ -1,4 +1,4 @@
-name: 'Deployment to Cloudhub/GovCloud'
+name: 'Deployment to Cloudhub/GovCloud using anypoint-cli'
 description: 'Deploy the service to Cloudhub/GovCloud'
 inputs:
   deployment-name:
@@ -9,7 +9,7 @@ inputs:
     description: Connected App Client Id
   connectedapp-secret: 
     required: true
-    description: Connected App Client Id
+    description: Connected App Client Secret
   configuration-cloud:
     required: true
     description: Configuration for cloud deployment
@@ -19,6 +19,14 @@ inputs:
   environment:
     required: true
     description: Deployment environment for the service
+  organization:
+    required: true
+    description: OrganizationId within Anypoint Platform
+  host:
+    required: false
+    description: The host of your Anypoint Platform Installation. This value defaults to anypoint.mulesoft.com.
+    default: anypoint.mulesoft.com
+
 runs:
   using: "composite"
   steps:
@@ -32,6 +40,8 @@ runs:
           cicd_connectedapp_secret="${{ inputs.connectedapp-secret}}"
           deploymentname="${{ inputs.deployment-name}}"
           deploymentenvironment="${{ inputs.environment}}"
+          deploymentorganization="${{ inputs.organization}}"
+          deploymenthost="${{ inputs.host }}"
           propscloud="${{ inputs.configuration-cloud}}"
           propsservice="${{ inputs.configuration-service}}"
 
@@ -46,6 +56,8 @@ runs:
                       --client_id $cicd_connectedapp_clientid \
                       --client_secret $cicd_connectedapp_secret \
                       --environment $deploymentenvironment \
+                      --organization $deploymentorganization \
+                      --host $deploymenthost \
                       --output json $deploymentname"
 
           # Get the current status of the service
@@ -78,6 +90,8 @@ runs:
           CREATEUPDATE_APP="anypoint-cli-v4 runtime-mgr cloudhub-application $operation \
           --client_id $cicd_connectedapp_clientid \
           --client_secret $cicd_connectedapp_secret \
+          --organization $deploymentorganization \
+          --host $deploymenthost \
           --environment $deploymentenvironment \
           $propscloud $propsservice --output json $deploymentname $jar"
           echo "deployment command: $CREATEUPDATE_APP"

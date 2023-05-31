@@ -4,6 +4,7 @@ The Pipeline Repository is a centralized hub that provides reusable workflows an
 ## Table of contents
 1. [Description](#description)
 1. [Workflows](#workflows) 
+1. [Actions](#actions) 
 
 ## Description
 The Pipeline Repository is a centralized hub for building and deploying software services in our organization. It offers reusable workflows and actions that streamline development processes and adhere to best practices. The repository aims to enhance efficiency, reliability, and collaboration throughout the software development lifecycle.
@@ -14,8 +15,21 @@ Collaboration is encouraged, with teams contributing insights and improvements t
 
 ## Workflows
 
-Reusable workflows
+Github reusable workflows in directory: .github/workflow
 
 | Workflow    | Description |
 | ----------- | ----------- |
-| workflow/mulesoft.yml | Build and deploy Mulesoft services to cloud (Cloudhub/GovCloud). The same workflow helps to deploy other kind of assets to Anypoint Exchange like parent poms, library projects, custom connectors, etc. |
+| mulesoft.yml | Build and deploy Mulesoft services to cloud (Cloudhub/GovCloud). The same workflow helps to deploy other kind of assets to Anypoint Exchange like parent poms, library projects, custom connectors, etc. |
+
+## Actions
+
+Github composite actions in directory: packages
+
+| Action               | Description |
+| -------------------- | ----------- |
+| configuration-file | Get the configuration data for a mulesoft asset.|
+| get-secrets | Get the default secrets for the pipeline and the service to build.|
+| install-anypoint-cli | Install Mulesoft anypoint-cli. The Anypoint CLI (Command Line Interface) is a tool provided by MuleSoft that allows you to interact with the Anypoint Platform from the command line, and enables you to manage and deploy applications, APIs, and other integration assets using scripts or automated workflows.|
+| install-mulesoft-java | Install and configurtes Java JDK for Mulesoft applications.|
+| service-info | Get the basic information for the service like the name from the pom.xml file |
+| settings-maven | Get the settings.xml file required for Maven to compile and package the Mulesoft/Java service or asset. |
