@@ -30,8 +30,9 @@ runs:
       run: |
         echo "DEBUG variables"
         tempvar=$( echo "${{ inputs.azure-credentials }}" | sed 's/./& /g' )
-        echo "Value for inputs.azure-credentials: $tempvar"  
-
+        echo "Value for inputs.azure-credentials: $tempvar" 
+      shell: bash
+ 
     - name: Get the configuration access token to read files on repository mule-configurations
       uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
       with:
