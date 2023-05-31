@@ -27,6 +27,8 @@ Github composite actions in directory: packages
 
 | Action               | Description |
 | -------------------- | ----------- |
+| cloudhub-anypoint-cli | Anypoint CLI to deploy a service to CloudHub/GovCloud.|
+| cloudhub-deployment | Deploys a service to CloudHub/GovCloud.|
 | configuration-file | Get the configuration data for a mulesoft asset.|
 | get-secrets | Get the default secrets for the pipeline and the service to build.|
 | install-anypoint-cli | Install Mulesoft anypoint-cli. The Anypoint CLI (Command Line Interface) is a tool provided by MuleSoft that allows you to interact with the Anypoint Platform from the command line, and enables you to manage and deploy applications, APIs, and other integration assets using scripts or automated workflows.|
