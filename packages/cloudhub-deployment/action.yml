@@ -95,6 +95,6 @@ runs:
       connectedapp-secret: "$cicd_connectedapp_secret" 
       configuration-cloud: "${{ steps.configuration-cloudhub.outputs.configuration-data }}"
       configuration-service: "${{ steps.configuration-service.outputs.configuration-data }}"
-      host: ${{ inputs.deployment-env }}
+      host: ${{ inputs.host }}
       environment: ${{ inputs.deployment-env }}
       organization: "${{ steps.configuration-deployment-organization.outputs.configuration-data }}"
