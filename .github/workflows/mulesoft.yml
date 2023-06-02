@@ -35,7 +35,7 @@ jobs:
         uses: jpontdia/devops-pipelines/packages/install-mulesoft-java@main
 
       - name: Get default secrets for the pipeline
-        uses: jpontdia/devops-pipelines/packages/get-secrets@main
+        uses: jpontdia/devops-pipelines/packages/secrets@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
