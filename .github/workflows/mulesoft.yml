@@ -78,7 +78,7 @@ jobs:
           mvn --batch-mode deploy -DskipTests 
 
       - name: Job Summary - Add code coverage
-        uses: actions/code-coverage@master
+        uses: jpontdia/devops-pipelines/packages/code-coverage@main
 
       - name: Publish - MUnit Application Coverage Report
         #if: ${{ false }}    
@@ -107,7 +107,7 @@ jobs:
           path: pom.xml
           
       - id: dev-configuration-cloudhub
-        name: Get the configuration for cloud deployment
+        name: Deployment dev - Get configuration
         uses: jpontdia/devops-pipelines/packages/configuration-file@main
         with:
           configuration-access-token: $configuration_access_token
@@ -117,7 +117,7 @@ jobs:
           configurations-repository: $CONFIGURATIONS_REPOSITORY          
 
       - id: verify-deployment
-        name: Verify deployment to development environment
+        name: Deployment dev - Verify if asset has the configuration
         run: |
           echo "dev cloudhub: ${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}"
           if [ "${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}" != "" ] ; then
