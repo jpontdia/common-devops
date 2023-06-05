@@ -1,10 +1,24 @@
 name: 'Print the job summary with code coverage'
 description: 'Print the job summary with code coverage'
+inputs:
+  gist-token:
+    required: true
+    description: Personal access token for github gist
+  github-organization:
+    required: true
+    description: Name of the github organization
+  badge-gist-id:
+    required: true
+    description: Id for the badge gist
+  service-name:
+    required: true
+    description: Service name
 
 runs:
   using: "composite"
   steps:
     - name: Summary - Add code coverage
+      shell: bash
       run: |
         temporal=""
         line=0
@@ -40,5 +54,23 @@ runs:
         echo "<div>" >> $GITHUB_STEP_SUMMARY
         echo "$temporal" >> $GITHUB_STEP_SUMMARY
         echo "</div>" >> $GITHUB_STEP_SUMMARY
+
+    - name: Set badge color
       shell: bash
- 
+      run: |
+        echo "BADGE_COLOR=696969" >> $GITHUB_ENV
+
+    - name: Create badge
+      uses: emibcn/badge-action@d6f51ff11b5c3382b3b88689ae2d6db22d9737d1
+      with:
+        label: Code coverage
+        status: '${{ fromJSON( target/site/munit/coverage/munit-coverage.json ).coverage }} of ${{ fromJSON( target/site/munit/coverage/munit-coverage.json ).requiredApplicationCoverage }}'
+        color: ${{ env.BADGE_COLOR }}
+        path: ${{ inputs.service-name }}-cc.svg
+
+    - name: Upload badge to Gist
+      uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
+      with:
+        token: ${{ inputs.gist-token }}
+        gistURL: "https://gist.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.badge-gist-id }}"
+        file: ${{ inputs.service-name }}-cc.svg
