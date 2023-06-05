@@ -55,6 +55,17 @@ runs:
         echo "$temporal" >> $GITHUB_STEP_SUMMARY
         echo "</div>" >> $GITHUB_STEP_SUMMARY
 
+    - name: Set the code coverage results as environment variable
+      id: json_var
+      run: |
+        content=`cat target/site/munit/coverage/munit-coverage.json`
+        # the following lines are only required for multi line json
+        content="${content//'%'/'%25'}"
+        content="${content//$'\n'/'%0A'}"
+        content="${content//$'\r'/'%0D'}"
+        # end of optional handling for multi line json
+        echo "::set-output name=packageJson::$content"
+
     - name: Set badge color
       shell: bash
       run: |
@@ -64,7 +75,7 @@ runs:
       uses: emibcn/badge-action@d6f51ff11b5c3382b3b88689ae2d6db22d9737d1
       with:
         label: Code coverage
-        status: '${{ fromJSON("target/site/munit/coverage/munit-coverage.json" ).coverage }} of ${{ fromJSON("target/site/munit/coverage/munit-coverage.json").requiredApplicationCoverage }}'
+        status: '${{ fromJSON(steps.json_var.outputs.packageJson).coverage }} of ${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}'
         color: ${{ env.BADGE_COLOR }}
         path: ${{ inputs.service-name }}-cc.svg
 
