@@ -72,7 +72,10 @@ runs:
       run: |
         coverage=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
         minimum=${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}
-        if [ "$coverage" -ge "$minimum"]; then
+        echo "Application coverage: $coverage"
+        echo "Minimum: $minimum"
+        
+        if [ "$((coverage))" -ge "$((minimum))"]; then
           echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
         else
           echo "BADGE_COLOR=800000" >> $GITHUB_ENV
