@@ -48,11 +48,11 @@ runs:
         label: Unit test
         status: '${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }}'
         color: ${{ env.BADGE_COLOR }}
-        path: ${{ service-name }}-ut.svg
+        path: ${{ inputs.service-name }}-ut.svg
 
     - name: Upload badge to Gist
       uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
       with:
         token: ${{ inputs.gist-token }}
         gistURL: "https://gist.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.badge-gist-id }}"
-        file: ${{ service-name }}-ut.svg
+        file: ${{ inputs.service-name }}-ut.svg
