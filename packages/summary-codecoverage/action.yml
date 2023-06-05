@@ -57,6 +57,7 @@ runs:
 
     - name: Set the code coverage results as environment variable
       id: json_var
+      shell: bash
       run: |
         content=`cat target/site/munit/coverage/munit-coverage.json`
         # the following lines are only required for multi line json
