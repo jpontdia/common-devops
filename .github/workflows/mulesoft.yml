@@ -14,6 +14,7 @@ env:
   DEFAULT_SETTINGS_XML: settings.xml
   GITHUB_ORGANIZATION: jpontdia
   CONFIGURATIONS_REPOSITORY: mule-configurations
+  GIST_ID: 497b75eb7c74c14113baa9a875bed936
 jobs:
 
   ##########################################################################
@@ -23,6 +24,12 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    # Needed by the Unit Test Action
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write    
     outputs:
       # Indicates if the service will be deployed to development environment
       deployment: ${{ steps.verify-deployment.outputs.deployment }}
@@ -50,8 +57,8 @@ jobs:
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
 
-      - id: configuration-tests
-        name: Get configuration file for test cases
+      - name: Get configuration file for test cases
+        id: configuration-tests
         uses: jpontdia/devops-pipelines/packages/configuration-file@main
         with:
           configuration-access-token: $configuration_access_token
@@ -59,7 +66,7 @@ jobs:
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
           
-      - name: Copy Anypoint Exchange documentation
+      - name: Documentation - Anypoint Exchange
         run: |
           cp -Rfpv README.md exchange-docs/home.md
           cp -Rfpv docs/*.* exchange-docs/docs/*.* 
@@ -71,14 +78,25 @@ jobs:
       - name: Run test cases and package
         run: mvn --batch-mode package ${{ steps.configuration-tests.outputs.configuration-data }}
 
+      - name: Summary - Unit test cases
+        uses: jpontdia/devops-pipelines/packages/summary-testcases@main
+        with:
+          gist-token: ${{ secrets.GIST_TOKEN}}
+          github-organization: $GITHUB_ORGANIZATION
+          badge-gist-id: $GIST_ID
+
+      - name: Summary - Code coverage
+        uses: jpontdia/devops-pipelines/packages/summary-codecoverage@main
+        with:
+          gist-token: ${{ secrets.GIST_TOKEN}}
+          github-organization: $GITHUB_ORGANIZATION
+          badge-gist-id: $GIST_ID
+
       - name: Deploy to anypoint exchange
         #if: ${{ false }}    
         run: |
           ## Deploy to anypoint exchange
           mvn --batch-mode deploy -DskipTests 
-
-      - name: Job Summary - Add code coverage
-        uses: jpontdia/devops-pipelines/packages/code-coverage@main
 
       - name: Publish - MUnit Application Coverage Report
         #if: ${{ false }}    

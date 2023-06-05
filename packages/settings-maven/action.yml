@@ -17,8 +17,8 @@ runs:
   using: "composite"
   steps:
 
-    - id: service-info
-      name: Get the pom service information
+    - name: Get the pom service information
+      id: service-info
       uses: jpontdia/devops-pipelines/packages/service-info@main
 
     - id: configuration

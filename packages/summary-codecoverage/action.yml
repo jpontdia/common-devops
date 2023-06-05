@@ -10,13 +10,15 @@ inputs:
   badge-gist-id:
     required: true
     description: Id for the badge gist
-  service-name:
-    required: true
-    description: Service name
 
 runs:
   using: "composite"
   steps:
+
+    - name: Get the pom service information
+      id: service-info
+      uses: jpontdia/devops-pipelines/packages/service-info@main
+
     - name: Summary - Add code coverage
       shell: bash
       run: |
@@ -87,11 +89,11 @@ runs:
         label: Code coverage
         status: '${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}% of ${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}%'
         color: ${{ env.BADGE_COLOR }}
-        path: ${{ inputs.service-name }}-cc.svg
+        path: ${{ steps.service-info.outputs.name }}-cc.svg
 
     - name: Upload badge to Gist
       uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
       with:
         token: ${{ inputs.gist-token }}
         gistURL: "https://gist.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.badge-gist-id }}"
-        file: ${{ inputs.service-name }}-cc.svg
+        file: ${{ steps.service-info.outputs.name }}-cc.svg
