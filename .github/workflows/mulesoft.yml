@@ -82,15 +82,15 @@ jobs:
         uses: jpontdia/devops-pipelines/packages/summary-testcases@main
         with:
           gist-token: ${{ secrets.GIST_TOKEN}}
-          github-organization: $GITHUB_ORGANIZATION
-          badge-gist-id: $GIST_ID
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          badge-gist-id: ${{ env.GIST_ID }}
 
       - name: Summary - Code coverage
         uses: jpontdia/devops-pipelines/packages/summary-codecoverage@main
         with:
           gist-token: ${{ secrets.GIST_TOKEN}}
-          github-organization: $GITHUB_ORGANIZATION
-          badge-gist-id: $GIST_ID
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          badge-gist-id: ${{ env.GIST_ID }}
 
       - name: Deploy to anypoint exchange
         #if: ${{ false }}    
