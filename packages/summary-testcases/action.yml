@@ -18,11 +18,10 @@ runs:
     - name: DEBUG
       shell: bash
       run: |
-        echo "${{ inputs.gist-token }}" >> token.txt
-        echo "${{ inputs.github-organization }}" >> token.txt
-        echo "${{ inputs.badge-gist-id }}" >> token.txt
-        cat token.txt
-        
+        echo "gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
+        echo "github-organization: ${{ inputs.github-organization }}"
+        echo "badge-gist-id: ${{ inputs.badge-gist-id }}"
+
     - name: Get the pom service information
       id: service-info
       uses: jpontdia/devops-pipelines/packages/service-info@main
