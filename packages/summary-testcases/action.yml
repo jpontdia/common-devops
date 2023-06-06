@@ -15,6 +15,14 @@ runs:
   using: "composite"
   steps:
 
+    - name: DEBUG
+      shell: bash
+      run: |
+        echo "${{ inputs.gist-token }}" >> token.txt
+        echo "${{ inputs.github-organization }}" >> token.txt
+        echo "${{ inputs.badge-gist-id }}" >> token.txt
+        cat token.txt
+        
     - name: Get the pom service information
       id: service-info
       uses: jpontdia/devops-pipelines/packages/service-info@main
