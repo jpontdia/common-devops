@@ -28,6 +28,10 @@ runs:
     - id: configuration
       name: Get configuration for the service 
       run: |
+        echo
+        echo "*********************************************"
+        echo "Get the configuration file for the asset"
+        echo "*********************************************"
 
         settings_xml=${{ inputs.default-settings-xml}}
 
@@ -55,10 +59,11 @@ runs:
         urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$settings_xml"
         echo "Getting file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token {{inputs.github-configurations-accesstoken}}" $urlconfigurationfile)
-
+        echo "The content of the file is: $configurationdata"
         # mkdir $HOME/.m2
         output=$(echo "$configurationdata" | envsubst)
         echo "$output" > $HOME/.m2/settings.xml
+        echo
 
       shell: bash
 
