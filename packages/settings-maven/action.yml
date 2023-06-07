@@ -40,6 +40,7 @@ runs:
         urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$configurationfile"
         echo "Getting file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token ${{inputs.github-configurations-accesstoken}}" $urlconfigurationfile)
+        echo "The content of the file is: $configurationdata"
 
         # Verify if configuration file was found
         if [[ $configurationdata != *"Not Found"* ]]; then
