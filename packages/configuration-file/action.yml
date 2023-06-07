@@ -41,7 +41,7 @@ runs:
         configurationfile=$(echo "${{ inputs.prefix }}${{ steps.service-info.outputs.name }}${{ inputs.suffix }}.yml")
         urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$configurationfile"
         echo "Getting file: $urlconfigurationfile"
-        configurationdata=$(curl -sH "Authorization: token ${{ github-configurations-accesstoken}}" $urlconfigurationfile)
+        configurationdata=$(curl -sH "Authorization: token ${{ inputs.github-configurations-accesstoken}}" $urlconfigurationfile)
         pathdata=""
 
         # Verify if configuration file was found
