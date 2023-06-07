@@ -13,6 +13,10 @@ inputs:
   configurations-repository:
     required: true
     description: Name of the repository for mulesoft configurations
+  debug:
+    required: false
+    default: false
+    description: Flag to debug this action, default is false
 runs:
   using: "composite"
   steps:
@@ -61,10 +65,12 @@ runs:
     - name: DEBUG - Show maven settings file
       if: ${{ true }}
       run: |
+        echo "$HOME: $HOME"
+        echo "HOME Directory:" 
         ls -la $HOME
-        cat $HOME/.m2/settings.xml
+        temporal=$(cat $HOME/.m2/settings.xml)
+        echo "settings.xml file: $temporal"
         echo "Github run number: ${{ github.run_number }}"
-        echo "testing: ${{ steps.configuration-tests.outputs.configuration-data }}"
         ## Get the git commit hash 
         commitHash=$(git rev-parse --short "$GITHUB_SHA")
         echo "Github commit hash: $commitHash"
