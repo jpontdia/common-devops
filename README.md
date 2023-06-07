@@ -36,3 +36,39 @@ Github composite actions in directory: packages
 | install-mulesoft-java | Install and configurtes Java JDK for Mulesoft applications.|
 | service-info | Get the basic information for the service like the name from the pom.xml file |
 | settings-maven | Get the settings.xml file required for Maven to compile and package the Mulesoft/Java service or asset. |
+
+# Mulesoft Github CICD Pipeline
+
+## Table of contents
+1. [Pipeline resource](#pipeline-resource)
+1. [Azure KeyVault](#workflows) 
+1. [Repository: mulesoft-configurations](#repository-mulesoft-configurations) 
+
+## Pipeline resources
+
+Next is the list with the resources required by the pipeline:
+
+- Azure Keyvault: A KeyVualt to store all secrets required by services and pipeline
+- Github respository: mulesoft-configurations
+- Github respository: devops-pipelines
+- Github Gist: A Gist to store to code badges: code coverage, test unit, etc.
+
+
+## Azure KeyVault
+
+Mandatory secrets
+| Secret               | Description |
+| -------------------- | ----------- |
+| github-configurations-accesstoken | Personal access token for repository: mulesoft-configurations.|
+| github-gist-accesstoken | Personal access token for gist access.|
+
+## Repository mulesoft-configurations
+
+Repository with the configuration for the pipeline and services. The mandatory files are:
+
+| File                 | Description |
+| -------------------- | ----------- |
+| secrets-map.txt | Personal access token for repository: mulesoft-configurations.|
+| ettings.xml | Personal access token for gist access.|
+
+

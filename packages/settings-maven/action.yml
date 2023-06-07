@@ -1,7 +1,7 @@
 name: 'Get the settings.xml file for maven'
 description: 'Get the settings.xml file for maven'
 inputs:
-  configuration-access-token:
+  github-configurations-accesstoken:
     required: true
     description: Token to access the configuration repository
   default-settings-xml:
@@ -31,7 +31,7 @@ runs:
         configurationfile=$(echo "${{ steps.service-info.outputs.name }}.yml")
         urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$configurationfile"
         echo "Getting file: $urlconfigurationfile"
-        configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
+        configurationdata=$(curl -sH "Authorization: token $github-configurations-accesstoken" $urlconfigurationfile)
 
         # Verify if configuration file was found
         if [[ $configurationdata != *"Not Found"* ]]; then
@@ -50,7 +50,7 @@ runs:
 
         urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$settings_xml"
         echo "Getting file: $urlconfigurationfile"
-        configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
+        configurationdata=$(curl -sH "Authorization: token $github-configurations-accesstoken" $urlconfigurationfile)
 
         # mkdir $HOME/.m2
         output=$(echo "$configurationdata" | envsubst)

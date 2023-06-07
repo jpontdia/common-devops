@@ -7,7 +7,7 @@ inputs:
   configurations-repository:
     required: true
     description: Name of the repository for mulesoft configurations
-  configuration-access-token:
+  github-configurations-accesstoken:
     required: true
     description: Token to access the configuration repository
   yaml-path: 
@@ -41,7 +41,7 @@ runs:
         configurationfile=$(echo "${{ inputs.prefix }}${{ steps.service-info.outputs.name }}${{ inputs.suffix }}.yml")
         urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$configurationfile"
         echo "Getting file: $urlconfigurationfile"
-        configurationdata=$(curl -sH "Authorization: token $configuration_access_token" $urlconfigurationfile)
+        configurationdata=$(curl -sH "Authorization: token $github-configurations-accesstoken" $urlconfigurationfile)
         pathdata=""
 
         # Verify if configuration file was found
