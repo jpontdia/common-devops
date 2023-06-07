@@ -52,7 +52,7 @@ jobs:
       - name: Get the settings file for maven
         uses: jpontdia/devops-pipelines/packages/settings-maven@main
         with:
-          configuration-access-token: $github-configurations-accesstoken
+          github-configurations-accesstoken: $github_configurations_accesstoken
           default-settings-xml: $DEFAULT_SETTINGS_XML
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
@@ -61,7 +61,7 @@ jobs:
         id: configuration-tests
         uses: jpontdia/devops-pipelines/packages/configuration-file@main
         with:
-          configuration-access-token: $github-configurations-accesstoken
+          github-configurations-accesstoken: $github_configurations_accesstoken
           yaml-path: ".test-properties"
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
@@ -81,14 +81,14 @@ jobs:
       - name: Summary - Unit test cases
         uses: jpontdia/devops-pipelines/packages/summary-testcases@main
         with:
-          gist-token: $github-gist-accesstoken
+          gist-token: $github_gist_accesstoken
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           badge-gist-id: ${{ env.GIST_ID }}
 
       - name: Summary - Code coverage
         uses: jpontdia/devops-pipelines/packages/summary-codecoverage@main
         with:
-          gist-token: $github-gist-accesstoken
+          gist-token: $github_gist_accesstoken
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           badge-gist-id: ${{ env.GIST_ID }}
 
@@ -128,7 +128,7 @@ jobs:
         name: Deployment dev - Get configuration
         uses: jpontdia/devops-pipelines/packages/configuration-file@main
         with:
-          configuration-access-token: $github-configurations-accesstoken
+          github-configurations-accesstoken: $github_configurations_accesstoken
           yaml-path: ".cloudhub"
           suffix: "-dev"
           github-organization: $GITHUB_ORGANIZATION
