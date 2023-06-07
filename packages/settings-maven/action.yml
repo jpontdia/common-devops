@@ -59,7 +59,7 @@ runs:
       shell: bash
 
     - name: DEBUG - Show maven settings file
-      if: ${{ false }}
+      if: ${{ true }}
       run: |
         ls -la $HOME
         cat $HOME/.m2/settings.xml
