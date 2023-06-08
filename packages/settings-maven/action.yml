@@ -71,7 +71,7 @@ runs:
       shell: bash
 
     - name: DEBUG - Show maven settings file
-      if: ${{ inputs.debug }}
+      if: ${{ inputs.debug == 'debug' }}
       run: |
         echo "$HOME: $HOME"
         echo "HOME Directory:" 
