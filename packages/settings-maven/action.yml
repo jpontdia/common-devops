@@ -15,7 +15,7 @@ inputs:
     description: Name of the repository for mulesoft configurations
   debug:
     required: false
-    default: false
+    default: "false"
     description: Flag to debug this action, default is false
 runs:
   using: "composite"
