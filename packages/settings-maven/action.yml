@@ -59,8 +59,10 @@ runs:
 
         urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$settings_xml"
         echo "Getting file: $urlconfigurationfile"
-        configurationdata=$(curl -sH "Authorization: token {{inputs.github-configurations-accesstoken}}" $urlconfigurationfile)
+        configurationdata=$(curl -sH "Authorization: token ${{inputs.github-configurations-accesstoken}}" $urlconfigurationfile)
         echo "The content of the file is: $configurationdata"
+        
+        # Next command is not needed because a previous action configured java and maven wiht .m2 directory
         # mkdir $HOME/.m2
         output=$(echo "$configurationdata" | envsubst)
         echo "$output" > $HOME/.m2/settings.xml
@@ -69,7 +71,7 @@ runs:
       shell: bash
 
     - name: DEBUG - Show maven settings file
-      if: ${{ true }}
+      if: ${{ inputs.debug }}
       run: |
         echo "$HOME: $HOME"
         echo "HOME Directory:" 
