@@ -10,6 +10,10 @@ on:
       azure-credentials:
         required: true
         description: Azure Credentials for login
+      gist-accesstoken:
+        required: false
+        default: "false"
+        description: Github Gist personal access token
 env:
   DEFAULT_SETTINGS_XML: settings.xml
   GITHUB_ORGANIZATION: jpontdia
@@ -93,7 +97,7 @@ jobs:
       - name: Upload badge to Gist
         uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
         with:
-          token: $github_gist_accesstoken
+          token: ${{ secrets.gist-accesstoken }}
           gistURL: "https://gist.githubusercontent.com/${{ env.GITHUB_ORGANIZATION }}/${{ env.GIST_ID }}"
           file: ${{ steps.service-info.outputs.name }}-ut.svg
 
