@@ -81,7 +81,8 @@ jobs:
       - name: Summary - Unit test cases
         uses: jpontdia/devops-pipelines/packages/summary-testcases@main
         with:
-          gist-token: $github_gist_accesstoken
+          #gist-token: $github_gist_accesstoken
+          gist-token: "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"
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           badge-gist-id: ${{ env.GIST_ID }}
           debug: "true"
