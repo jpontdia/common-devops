@@ -14,7 +14,7 @@ env:
   DEFAULT_SETTINGS_XML: settings.xml
   GITHUB_ORGANIZATION: jpontdia
   CONFIGURATIONS_REPOSITORY: mule-configurations
-  GIST_ID: 497b75eb7c74c14113baa9a875bed936
+  GIST_ID: ef8cdef1ff940eac4d8716f6361d2363
 jobs:
 
   ##########################################################################
