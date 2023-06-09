@@ -29,13 +29,15 @@ runs:
         version=$(sed -n 's:.*<version>\(.*\)</version>.*:\1:p' pom.xml | sed -n 2p)
 
         # Show variables for the script
-        echo ""
-        echo "Service information from the pom.xml"
+        echo " "
+        echo "***************************************"
+        echo "* Service information from the pom.xml"
+        echo "***************************************"
         echo "Service name: $name"
         echo "Service group: $group"
         echo "Service artifact: $artifact"
         echo "Service version: $version"
-        echo ""
+        echo " "
         export name
         export group
         export artifact

@@ -50,9 +50,9 @@ Next is the list with the resources required by the pipeline:
 
 - Azure Keyvault: A KeyVualt to store all secrets required by services and pipeline
 - Github respository: mulesoft-configurations
-- Github respository: devops-pipelines
+- Github respository: mulesoft-pipeline
 - Github Gist: A Gist to store to code badges: code coverage, test unit, etc.
-
+- Github repository secrets: Tokens to access configuration resources like Azure Keyvault
 
 ## Azure KeyVault
 
@@ -69,6 +69,14 @@ Repository with the configuration for the pipeline and services. The mandatory f
 | File                 | Description |
 | -------------------- | ----------- |
 | secrets-map.txt | Personal access token for repository: mulesoft-configurations.|
-| ettings.xml | Personal access token for gist access.|
+| settings.xml | Personal access token for gist access.|
 
+## Github repository secrets
+
+Github repository secrets to connect the system resources:
+
+| Secret                 | Value |
+| -------------------- | ----------- |
+| AZURE_CREDENTIALS | Configuration token to access Azure Keyvault.|
+| GIST_ACCESSTOKEN | Personal access token with write gist access.|
 

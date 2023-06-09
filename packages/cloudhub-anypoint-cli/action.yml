@@ -33,6 +33,11 @@ runs:
     - id: deployment
       name: Deploy the service to the cloud 
       run: |
+          echo " "
+          echo "***************************************"
+          echo "* Deploy the service to the cloud"
+          echo "***************************************"
+          echo " "
 
           # Assign variables for the script
           echo "Assigning variables to the script"
@@ -162,4 +167,5 @@ runs:
               echo "Deployment successful.."
             fi
           fi
+          echo " "
       shell: bash

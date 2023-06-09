@@ -36,6 +36,10 @@ runs:
     - id: configuration
       name: Get configuration for the service 
       run: |
+        echo " "
+        echo "*************************************************"
+        echo "* Get the configuration file for the service"
+        echo "*************************************************"
 
         # Get the configuration file for the service
         configurationfile=$(echo "${{ inputs.prefix }}${{ steps.service-info.outputs.name }}${{ inputs.suffix }}.yml")
@@ -59,4 +63,5 @@ runs:
         # Replace environment variables
         echo "Configuration data: $pathdata"
         echo "configuration-data=$(echo $pathdata)" >> $GITHUB_OUTPUT
+        echo " "
       shell: bash
