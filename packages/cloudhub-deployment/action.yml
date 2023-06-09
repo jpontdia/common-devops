@@ -50,7 +50,7 @@ runs:
     name: Get the configuration for cloud deployment
     uses: jpontdia/devops-pipelines/packages/configuration-file@main
     with:
-      configuration-access-token: $github_configurations_accesstoken
+      github-configurations-accesstoken: $github_configurations_accesstoken
       yaml-path: ".cloudhub"
       suffix: "-${{ inputs.deployment-env }}"
       github-organization: ${{ inputs.github-organization }}
@@ -60,7 +60,7 @@ runs:
     name: Get the configuration properties for the service
     uses: jpontdia/devops-pipelines/packages/configuration-file@main
     with:
-      configuration-access-token: $$github_configurations_accesstoken
+      github-configurations-accesstoken: $$github_configurations_accesstoken
       yaml-path: ".properties"
       suffix: "-${{ inputs.deployment-env }}"
       github-organization: ${{ inputs.github-organization }}
@@ -70,7 +70,7 @@ runs:
     name: Get the deployment name for the service
     uses: jpontdia/devops-pipelines/packages/configuration-file@main
     with:
-      configuration-access-token: $$github_configurations_accesstoken
+      github-configurations-accesstoken: $$github_configurations_accesstoken
       yaml-path: ".deployment-name"
       suffix: "-${{ inputs.deployment-env }}"
       github-organization: ${{ inputs.github-organization }}
@@ -80,7 +80,7 @@ runs:
     name: Get the deployment organization
     uses: jpontdia/devops-pipelines/packages/configuration-file@main
     with:
-      configuration-access-token: $$github_configurations_accesstoken
+      github-configurations-accesstoken: $$github_configurations_accesstoken
       yaml-path: ".deployment-organization"
       suffix: "-${{ inputs.deployment-env }}"
       github-organization: ${{ inputs.github-organization }}
