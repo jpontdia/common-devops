@@ -69,6 +69,7 @@ runs:
         color: ${{ env.BADGE_COLOR }}
         path: ${{ steps.service-info.outputs.name }}-ut.svg
 
+    # Just testing this other action
     - name: Upload badge to Gist
       if: ${{ false }}
       uses: exuanbo/actions-deploy-gist@v1
@@ -80,7 +81,6 @@ runs:
         file_type: binary
 
     - name: Upload badge to Gist
-      if: ${{ false }}
       uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
       with:
         token: ${{ inputs.gist-token }}

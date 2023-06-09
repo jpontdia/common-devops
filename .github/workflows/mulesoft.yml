@@ -73,10 +73,6 @@ jobs:
         run: |
           cp -Rfpv README.md exchange-docs/home.md
           cp -Rfpv docs/*.* exchange-docs/docs/*.* 
-
-      - name: Get the pom service information
-        id: service-info
-        uses: jpontdia/devops-pipelines/packages/service-info@main
         
       - name: Compile code
         #if: ${{ false }}    
@@ -88,17 +84,10 @@ jobs:
       - name: Summary - Unit test cases
         uses: jpontdia/devops-pipelines/packages/summary-testcases@main
         with:
-          gist-token: $github_gist_accesstoken
+          gist-token: ${{ secrets.gist-accesstoken }}
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           badge-gist-id: ${{ env.GIST_ID }}
           debug: "true"
-      
-      - name: Upload badge to Gist
-        uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
-        with:
-          token: ${{ secrets.gist-accesstoken }}
-          gistURL: "https://gist.githubusercontent.com/${{ env.GITHUB_ORGANIZATION }}/${{ env.GIST_ID }}"
-          file: ${{ steps.service-info.outputs.name }}-ut.svg
 
       - name: Summary - Code coverage
         uses: jpontdia/devops-pipelines/packages/summary-codecoverage@main
@@ -113,7 +102,7 @@ jobs:
           ## Deploy to anypoint exchange
           mvn --batch-mode deploy -DskipTests 
 
-      - name: Publish - MUnit Application Coverage Report
+      - name: Publish - Application Coverage Report
         #if: ${{ false }}    
         uses: actions/upload-artifact@master
         with:
