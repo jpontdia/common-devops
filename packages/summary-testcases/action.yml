@@ -30,6 +30,7 @@ runs:
         echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
         echo "  github-organization: ${{ inputs.github-organization }}"
         echo "  badge-gist-id: ${{ inputs.badge-gist-id }}"
+        echo "."
 
     - name: Get the pom service information
       id: service-info
@@ -70,6 +71,7 @@ runs:
     - name: Upload badge to Gist
       uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
       with:
-        token: ${{ inputs.gist-token }}
+        #token: ${{ inputs.gist-token }}
+        token: $github_gist_accesstoken
         gistURL: "https://gist.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.badge-gist-id }}"
         file: ${{ steps.service-info.outputs.name }}-ut.svg
