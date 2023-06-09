@@ -103,7 +103,7 @@ jobs:
       - name: Summary - Code coverage
         uses: jpontdia/devops-pipelines/packages/summary-codecoverage@main
         with:
-          gist-token: ${{ github_gist_accesstoken }}
+          gist-token: ${{ secrets.gist-accesstoken }}
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           badge-gist-id: ${{ env.GIST_ID }}
 
