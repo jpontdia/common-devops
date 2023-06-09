@@ -10,10 +10,28 @@ inputs:
   badge-gist-id:
     required: true
     description: Id for the badge gist
+  debug:
+    required: false
+    type: boolean
+    default: false
+    description: Flag to debug this action, default is false
 
 runs:
   using: "composite"
   steps:
+
+    - name: DEBUG
+      if: ${{ inputs.debug }}
+      shell: bash
+      run: |
+        echo "*****************************************************"
+        echo "* summary-testcases action"
+        echo "*****************************************************"
+        echo "Input variables: "
+        echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
+        echo "  github-organization: ${{ inputs.github-organization }}"
+        echo "  badge-gist-id: ${{ inputs.badge-gist-id }}"
+        echo ".."
 
     - name: Get the pom service information
       id: service-info
@@ -92,6 +110,15 @@ runs:
         path: ${{ steps.service-info.outputs.name }}-cc.svg
 
     - name: Upload badge to Gist
+      uses: exuanbo/actions-deploy-gist@v1
+      with:
+        token: ${{ inputs.gist-token }}
+        gist_id: ${{ inputs.badge-gist-id }}
+        file_path: ${{ steps.service-info.outputs.name }}-cc.svg
+        file_type: binary
+
+    - name: Upload badge to Gist
+      if: ${{ false }}
       uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
       with:
         token: ${{ inputs.gist-token }}

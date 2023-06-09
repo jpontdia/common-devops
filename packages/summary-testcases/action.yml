@@ -69,7 +69,6 @@ runs:
         path: ${{ steps.service-info.outputs.name }}-ut.svg
 
     - name: Upload badge to Gist
-      if: ${{ false }}
       uses: exuanbo/actions-deploy-gist@v1
       with:
         token: ${{ inputs.gist-token }}
