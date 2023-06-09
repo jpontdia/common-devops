@@ -110,6 +110,7 @@ runs:
         path: ${{ steps.service-info.outputs.name }}-cc.svg
 
     - name: Upload badge to Gist
+      if: ${{ false }}
       uses: exuanbo/actions-deploy-gist@v1
       with:
         token: ${{ inputs.gist-token }}
@@ -119,7 +120,6 @@ runs:
         file_type: binary
 
     - name: Upload badge to Gist
-      if: ${{ false }}
       uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
       with:
         token: ${{ inputs.gist-token }}
