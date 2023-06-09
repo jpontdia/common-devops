@@ -18,7 +18,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-
+ 
     - name: DEBUG
       if: ${{ inputs.debug == 'true' }}
       shell: bash
