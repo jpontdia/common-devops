@@ -84,6 +84,7 @@ jobs:
           gist-token: $github_gist_accesstoken
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           badge-gist-id: ${{ env.GIST_ID }}
+          debug: "true"
 
       - name: Summary - Code coverage
         uses: jpontdia/devops-pipelines/packages/summary-codecoverage@main
