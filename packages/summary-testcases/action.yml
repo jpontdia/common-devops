@@ -10,17 +10,26 @@ inputs:
   badge-gist-id:
     required: true
     description: Id for the badge gist
+  debug:
+    required: false
+    default: "false"
+    description: Flag to debug this action, default is false
 
 runs:
   using: "composite"
   steps:
 
     - name: DEBUG
+      if: ${{ inputs.debug == 'true' }}
       shell: bash
       run: |
-        echo "gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
-        echo "github-organization: ${{ inputs.github-organization }}"
-        echo "badge-gist-id: ${{ inputs.badge-gist-id }}"
+        echo "*****************************************************
+        echo "* summary-testcases action
+        echo "*****************************************************
+        echo "Input variables: "
+        echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
+        echo "  github-organization: ${{ inputs.github-organization }}"
+        echo "  badge-gist-id: ${{ inputs.badge-gist-id }}"
 
     - name: Get the pom service information
       id: service-info
