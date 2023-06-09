@@ -12,7 +12,6 @@ on:
         description: Azure Credentials for login
       gist-accesstoken:
         required: false
-        default: "false"
         description: Github Gist personal access token
 env:
   DEFAULT_SETTINGS_XML: settings.xml
