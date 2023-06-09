@@ -30,7 +30,7 @@ runs:
         echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
         echo "  github-organization: ${{ inputs.github-organization }}"
         echo "  badge-gist-id: ${{ inputs.badge-gist-id }}"
-        echo "."
+        echo ".."
 
     - name: Get the pom service information
       id: service-info
@@ -69,6 +69,16 @@ runs:
         path: ${{ steps.service-info.outputs.name }}-ut.svg
 
     - name: Upload badge to Gist
+      if: ${{ false }}
+      uses: exuanbo/actions-deploy-gist@v1
+      with:
+        token: ${{ inputs.gist-token }}
+        gist_id: ${{ inputs.badge-gist-id }}
+        file_path: ${{ steps.service-info.outputs.name }}-ut.svg
+        file_type: binary
+
+    - name: Upload badge to Gist
+      if: ${{ false }}
       uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
       with:
         #token: ${{ inputs.gist-token }}
