@@ -1,4 +1,4 @@
-# devops-pipelines
+# mulesoft-pipeline
 The Pipeline Repository is a centralized hub that provides reusable workflows and actions for building and deploying software services within our organization
 
 ## Table of contents

@@ -35,7 +35,7 @@ runs:
 
     - name: Get the pom service information
       id: service-info
-      uses: jpontdia/devops-pipelines/packages/service-info@main
+      uses: jpontdia/mulesoft-pipeline/packages/service-info@main
 
     - name: Summary - Add code coverage
       shell: bash

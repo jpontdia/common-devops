@@ -35,7 +35,7 @@ runs:
       name: pom
 
   - name: Get default secrets for the pipeline
-    uses: jpontdia/devops-pipelines/packages/secrets@main
+    uses: jpontdia/mulesoft-pipeline/packages/secrets@main
     with:
       keyvault-key: ${{ inputs.keyvault-key }}
       azure-credentials: ${{ inputs.azure-credentials }}
@@ -44,11 +44,11 @@ runs:
 
   - id: install-anypoint-cli
     name: Install Mulesoft Anypoint CLI
-    uses: jpontdia/devops-pipelines/packages/install-anypoint-cli@main
+    uses: jpontdia/mulesoft-pipeline/packages/install-anypoint-cli@main
 
   - id: configuration-cloudhub
     name: Get the configuration for cloud deployment
-    uses: jpontdia/devops-pipelines/packages/configuration-file@main
+    uses: jpontdia/mulesoft-pipeline/packages/configuration-file@main
     with:
       github-configurations-accesstoken: $github_configurations_accesstoken
       yaml-path: ".cloudhub"
@@ -58,7 +58,7 @@ runs:
 
   - id: configuration-service
     name: Get the configuration properties for the service
-    uses: jpontdia/devops-pipelines/packages/configuration-file@main
+    uses: jpontdia/mulesoft-pipeline/packages/configuration-file@main
     with:
       github-configurations-accesstoken: $github_configurations_accesstoken
       yaml-path: ".properties"
@@ -68,7 +68,7 @@ runs:
 
   - id: configuration-deployment-name
     name: Get the deployment name for the service
-    uses: jpontdia/devops-pipelines/packages/configuration-file@main
+    uses: jpontdia/mulesoft-pipeline/packages/configuration-file@main
     with:
       github-configurations-accesstoken: $github_configurations_accesstoken
       yaml-path: ".deployment-name"
@@ -78,7 +78,7 @@ runs:
 
   - id: configuration-deployment-organization
     name: Get the deployment organization
-    uses: jpontdia/devops-pipelines/packages/configuration-file@main
+    uses: jpontdia/mulesoft-pipeline/packages/configuration-file@main
     with:
       github-configurations-accesstoken: $github_configurations_accesstoken
       yaml-path: ".deployment-organization"
@@ -88,7 +88,7 @@ runs:
 
   - id: deployment
     name: Deploy the service to dev environment
-    uses: jpontdia/devops-pipelines/packages/cloudhub-anypoint-cli@main
+    uses: jpontdia/mulesoft-pipeline/packages/cloudhub-anypoint-cli@main
     with:
       deployment-name: "${{ steps.configuration-deployment-name.outputs.configuration-data }}"
       connectedapp-clientid: "$cicd_connectedapp_clientid"
