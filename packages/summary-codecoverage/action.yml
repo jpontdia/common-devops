@@ -95,7 +95,7 @@ runs:
         echo "Application coverage: $coverage"
         echo "Minimum: $minimum"
         
-        if [ "$((coverage))" -ge "$((minimum))"]; then
+        if [[ "$((coverage))" -ge "$((minimum))" ]]; then
           echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
         else
           echo "BADGE_COLOR=800000" >> $GITHUB_ENV
