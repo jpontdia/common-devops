@@ -43,7 +43,7 @@ runs:
         file_type: binary
 
     - name: Upload badge to Gist
-      uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
+      uses: jpontdia/append-gist-action@main
       with:
         token: ${{ inputs.gist-token }}
         gistURL: "https://gist.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.badge-gist-id }}"
