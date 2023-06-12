@@ -39,7 +39,7 @@ runs:
 
     - name: Summary - Publish test results
       id: unit-test-results
-      uses: EnricoMi/publish-unit-test-result-action@v2
+      uses: EnricoMi/publish-unit-test-result-action@v2.7.0
       if: always()
       with:
         files: |
