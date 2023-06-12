@@ -121,7 +121,7 @@ runs:
       if: ${{ (inputs.gist-token != '') && (env.COVERAGE_PROCESS=='True') }}
       uses: jpontdia/mulesoft-pipeline/packages/badge@main
       with:
-        gist-token: ${{ inputs.gist-accesstoken }}
+        gist-token: ${{ inputs.gist-token }}
         github-organization: ${{ inputs.github-organization }}
         badge-gist-id: ${{ inputs.badge-gist-id }}
         status: '${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}% of ${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}%'
