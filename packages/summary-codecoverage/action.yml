@@ -88,6 +88,7 @@ runs:
         echo "::set-output name=packageJson::$content"
 
     - name: Set badge color
+      if: ${{ inputs.gist-token != '' }}
       shell: bash
       run: |
         coverage=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
@@ -102,26 +103,12 @@ runs:
         fi
 
     - name: Create badge
-      uses: emibcn/badge-action@d6f51ff11b5c3382b3b88689ae2d6db22d9737d1
+      if: ${{ inputs.gist-token != '' }}
+      uses: jpontdia/mulesoft-pipeline/packages/badge@main
       with:
-        label: Code coverage
+        gist-token: ${{ inputs.gist-accesstoken }}
+        github-organization: ${{ inputs.github-organization }}
+        badge-gist-id: ${{ inputs.badge-gist-id }}
         status: '${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}% of ${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}%'
         color: ${{ env.BADGE_COLOR }}
-        path: ${{ steps.service-info.outputs.name }}-cc.svg
-
-    - name: Upload badge to Gist
-      if: ${{ false }}
-      uses: exuanbo/actions-deploy-gist@v1
-      with:
-        token: ${{ inputs.gist-token }}
-        gist_id: ${{ inputs.github-organization }}/${{ inputs.badge-gist-id }}
-        #gist_id: ${{ inputs.badge-gist-id }}
-        file_path: ${{ steps.service-info.outputs.name }}-cc.svg
-        file_type: binary
-
-    - name: Upload badge to Gist
-      uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
-      with:
-        token: ${{ inputs.gist-token }}
-        gistURL: "https://gist.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.badge-gist-id }}"
         file: ${{ steps.service-info.outputs.name }}-cc.svg
