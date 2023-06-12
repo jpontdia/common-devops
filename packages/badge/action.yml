@@ -1,0 +1,50 @@
+name: 'Summary - Publish test results'
+description: 'Summary - Publish test results'
+inputs:
+  gist-token:
+    required: true
+    description: Personal access token for github gist
+  github-organization:
+    required: true
+    description: Name of the github organization
+  badge-gist-id:
+    required: true
+    description: Id for the badge gist
+  status:
+    required: true
+    description: Text status for the badge
+  color:
+    required: true
+    description: Badge color
+  file:
+    required: true
+    description: Name of the badge file
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Create badge
+      uses: emibcn/badge-action@d6f51ff11b5c3382b3b88689ae2d6db22d9737d1
+      with:
+        label: Unit test
+        status: ${{ inputs.status }}
+        color: ${{ inputs.color }}
+        path: ${{ inputs.file }}
+
+    # Just testing this other action
+    - name: Upload badge to Gist
+      if: ${{ false }}
+      uses: exuanbo/actions-deploy-gist@v1
+      with:
+        token: ${{ inputs.gist-token }}
+        gist_id: ${{ inputs.github-organization }}/${{ inputs.badge-gist-id }}
+        file_path: ${{ steps.service-info.outputs.name }}-ut.svg
+        file_type: binary
+
+    - name: Upload badge to Gist
+      uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
+      with:
+        token: ${{ inputs.gist-token }}
+        gistURL: "https://gist.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.badge-gist-id }}"
+        file: ${{ inputs.file }}
