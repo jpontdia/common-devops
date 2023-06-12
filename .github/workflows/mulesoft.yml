@@ -87,7 +87,7 @@ jobs:
           gist-token: ${{ secrets.gist-accesstoken }}
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           badge-gist-id: ${{ env.GIST_ID }}
-          debug: "true"
+          debug: "false"
 
       - name: Summary - Code coverage
         uses: jpontdia/mulesoft-pipeline/packages/summary-codecoverage@main

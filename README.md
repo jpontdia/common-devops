@@ -7,6 +7,8 @@ DevOps centralized hub that provides reusable workflows and actions for building
 1. [Azure KeyVault](#workflows) 
 1. [Repository: mulesoft-configurations](#repository-mulesoft-configurations) 
 1. [Repository: mulesoft-pipeline](#repository-mulesoft-pipeline) 
+    1. [Workflows](#workflows)
+    2. [Actions](#actions)
 1. [Github Secrets](#github-secrets)
 
 ## Features
@@ -71,15 +73,17 @@ Github composite actions in directory: packages
 
 | Action               | Description |
 | -------------------- | ----------- |
+| badge | Creates a badge image in the Gist repository.|
 | cloudhub-anypoint-cli | Anypoint CLI to deploy a service to CloudHub/GovCloud.|
 | cloudhub-deployment | Deploys a service to CloudHub/GovCloud.|
-| code-coverage | Prints a job summary with the code coverage report.|
 | configuration-file | Get the configuration data for a mulesoft asset.|
 | secrets | Get the default secrets for the pipeline and the service to build.|
 | install-anypoint-cli | Install Mulesoft anypoint-cli. The Anypoint CLI (Command Line Interface) is a tool provided by MuleSoft that allows you to interact with the Anypoint Platform from the command line, and enables you to manage and deploy applications, APIs, and other integration assets using scripts or automated workflows.|
 | install-mulesoft-java | Install and configurtes Java JDK for Mulesoft applications.|
 | service-info | Get the basic information for the service like the name from the pom.xml file |
 | settings-maven | Get the settings.xml file required for Maven to compile and package the Mulesoft/Java service or asset. |
+| summary-codecoverage | Prints a job summary with the code coverage report.|
+| summary-testcases | Prints a job summary with the test unit report.|
 
 
 ## Github secrets
