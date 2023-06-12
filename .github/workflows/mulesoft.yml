@@ -204,11 +204,12 @@ jobs:
             path: bat/target/*.*
 
       - name: Job summary with test results
-        uses: EnricoMi/publish-unit-test-result-action@v2
+        uses: EnricoMi/publish-unit-test-result-action@v2.7.0
         if: always()
         with:
           files: |
             bat/target/JUnit.xml
+          check_name: Dev Integration Test
 
   ##########################################################################
   # TESTING ENVIRONMENT
