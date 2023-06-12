@@ -40,42 +40,57 @@ runs:
     - name: Summary - Add code coverage
       shell: bash
       run: |
-        temporal=""
-        line=0
-        trigger=0
-        while IFS= read -r p; do
-        
-          if [[ "$p" == *"<div class=\"col-md-8 col-md-offset-2\">"* ]]; then
-            echo "Summary starts at line: $line"
-            ((line=line+1))
-            trigger=1
-            continue
-          fi
 
-          if [[ $trigger == 1 ]]; then
-            # echo "${p:0:6}"
-            echo "$p"
-            if [[ "${p:0:6}" == "</div>" ]]; then
-              echo "Exit condition at line: $line"
-              break
-            else
-              temporal+=$p
+        summary_report=target/site/munit/coverage/summary.html
+
+        # Verify if summary report exists
+        if test -f "$summary_report"; then
+
+          temporal=""
+          line=0
+          trigger=0
+          while IFS= read -r p; do
+          
+            if [[ "$p" == *"<div class=\"col-md-8 col-md-offset-2\">"* ]]; then
+              echo "Summary starts at line: $line"
+              ((line=line+1))
+              trigger=1
+              continue
             fi
-          fi
 
-          ((line=line+1))
-        done < target/site/munit/coverage/summary.html
+            if [[ $trigger == 1 ]]; then
+              # echo "${p:0:6}"
+              echo "$p"
+              if [[ "${p:0:6}" == "</div>" ]]; then
+                echo "Exit condition at line: $line"
+                break
+              else
+                temporal+=$p
+              fi
+            fi
 
-        # Remove html tag: <a>
-        temporal=$(sed -e 's/<\/a[^>]*>//g' <<<"$temporal")
-        temporal=$(sed -e 's/<a[^>]*>//g' <<<"$temporal")
+            ((line=line+1))
+          done < $summary_report
 
-        # Add job summary 
-        echo "<div>" >> $GITHUB_STEP_SUMMARY
-        echo "$temporal" >> $GITHUB_STEP_SUMMARY
-        echo "</div>" >> $GITHUB_STEP_SUMMARY
+          # Remove html tag: <a>
+          temporal=$(sed -e 's/<\/a[^>]*>//g' <<<"$temporal")
+          temporal=$(sed -e 's/<a[^>]*>//g' <<<"$temporal")
+
+          # Add job summary 
+          echo "<div>" >> $GITHUB_STEP_SUMMARY
+          echo "$temporal" >> $GITHUB_STEP_SUMMARY
+          echo "</div>" >> $GITHUB_STEP_SUMMARY
+
+          # The coverage process was executed
+          echo "COVERAGE_PROCESS='True'" >> $GITHUB_ENV
+        else
+          # There is no summary report
+          echo "COVERAGE_PROCESS='False'" >> $GITHUB_ENV
+        fi
+
 
     - name: Set the code coverage results as environment variable
+      if: ${{ (inputs.gist-token != '') && (env.COVERAGE_PROCESS=='True') }}
       id: json_var
       shell: bash
       run: |
@@ -88,7 +103,7 @@ runs:
         echo "::set-output name=packageJson::$content"
 
     - name: Set badge color
-      if: ${{ inputs.gist-token != '' }}
+      if: ${{ (inputs.gist-token != '') && (env.COVERAGE_PROCESS=='True') }}
       shell: bash
       run: |
         coverage=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
@@ -103,7 +118,7 @@ runs:
         fi
 
     - name: Create badge
-      if: ${{ inputs.gist-token != '' }}
+      if: ${{ (inputs.gist-token != '') && (env.COVERAGE_PROCESS=='True') }}
       uses: jpontdia/mulesoft-pipeline/packages/badge@main
       with:
         gist-token: ${{ inputs.gist-accesstoken }}
