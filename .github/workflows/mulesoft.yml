@@ -52,7 +52,7 @@ jobs:
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
 
-      - name: Get the settings file for maven
+      - name: Settings file for maven
         uses: jpontdia/mulesoft-pipeline/packages/settings-maven@main
         with:
           github-configurations-accesstoken: $github_configurations_accesstoken
@@ -70,7 +70,11 @@ jobs:
         run: mvn --batch-mode compile
   
       - name: Run test cases and package asset
-        run: mvn --batch-mode package ${{ steps.configuration-tests.outputs.configuration-data }}
+        uses: jpontdia/mulesoft-pipeline/packages/package@main
+        with:
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
+          github-configurations-accesstoken: $github_configurations_accesstoken
 
       - name: Summary - Unit test cases
         uses: jpontdia/mulesoft-pipeline/packages/summary-testcases@main

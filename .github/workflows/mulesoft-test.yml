@@ -45,7 +45,7 @@ jobs:
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
 
-      - name: Get the settings file for maven
+      - name: Settings file for maven
         uses: jpontdia/mulesoft-pipeline/packages/settings-maven@main
         with:
           github-configurations-accesstoken: $github_configurations_accesstoken
