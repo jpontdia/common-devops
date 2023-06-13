@@ -18,8 +18,8 @@ runs:
   using: "composite"
   steps:
        
-  - id: configuration-service
-    name: Get the configuration properties for the service
+  - id: configuration-skiptest
+    name: Get the skiptest property for the service
     uses: jpontdia/mulesoft-pipeline/packages/configuration-file@main
     with:
       github-configurations-accesstoken: $github_configurations_accesstoken
@@ -40,7 +40,7 @@ runs:
     shell: bash
     run: |
       skiptest=" "
-      if [[ ${{ steps.configuration-tests.outputs.configuration-data }} != "" ]]; then
+      if [ "${{ steps.configuration-tests.outputs.configuration-skiptest }}" != "" ]; then
         echo " SKIP tag found"
       else
         echo " SKIP not found"
