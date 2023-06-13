@@ -41,13 +41,12 @@ runs:
     run: |
       echo "skiptest output: >${{steps.configuration-skiptest.outputs.configuration-data}}<"
       skiptest=" "
-      if [[ "${{ steps.configuration-skiptest.outputs.configuration-data }}" == "true"
-          ]]; then
-        echo " SKIP tag found"
+      if [[ "${{ steps.configuration-skiptest.outputs.configuration-data }}" == "true" ]]; then
+        skiptest="-DskipTests"
+        echo "  Test will be skipped"
       else
-        echo " SKIP FALSE"
+        echo "  Asset will be tested"
       fi
-      skiptest="-DskipTests"
 
-      # mvn --batch-mode package ${{ steps.configuration-tests.outputs.configuration-data }}
+      mvn --batch-mode $skiptest package ${{ steps.configuration-tests.outputs.configuration-data }}
  

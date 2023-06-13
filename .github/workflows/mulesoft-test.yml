@@ -41,8 +41,16 @@ jobs:
           azure-credentials: ${{ secrets.azure-credentials }}
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
+
+      - name: Get the settings file for maven
+        uses: jpontdia/mulesoft-pipeline/packages/settings-maven@main
+        with:
+          github-configurations-accesstoken: $github_configurations_accesstoken
+          default-settings-xml: $DEFAULT_SETTINGS_XML
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
       
-      - name: Build the maven package command
+      - name: Run test cases and package asset
         uses: jpontdia/mulesoft-pipeline/packages/package-command@main
         with:
           github-organization: $GITHUB_ORGANIZATION

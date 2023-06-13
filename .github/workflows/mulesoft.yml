@@ -59,15 +59,6 @@ jobs:
           default-settings-xml: $DEFAULT_SETTINGS_XML
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
-
-      - name: Get the properties for test cases
-        id: configuration-tests
-        uses: jpontdia/mulesoft-pipeline/packages/configuration-file@main
-        with:
-          github-configurations-accesstoken: $github_configurations_accesstoken
-          yaml-path: ".test-properties"
-          github-organization: $GITHUB_ORGANIZATION
-          configurations-repository: $CONFIGURATIONS_REPOSITORY
           
       - name: Documentation - Anypoint Exchange
         run: |
@@ -78,7 +69,7 @@ jobs:
         #if: ${{ false }}    
         run: mvn --batch-mode compile
   
-      - name: Run test cases and package
+      - name: Run test cases and package asset
         run: mvn --batch-mode package ${{ steps.configuration-tests.outputs.configuration-data }}
 
       - name: Summary - Unit test cases
