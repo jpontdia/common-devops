@@ -97,7 +97,7 @@ Next is the list of the secrets that must be configured in Github to connect to 
 | AZURE_CREDENTIALS | Configuration token to access Azure Keyvault.|
 | GIST_ACCESSTOKEN | Personal access token with write gist access.|
 
-## Github secrets
+## Examples
 
 Example of a CICD pipeline with 4 jobs:
 - Build
