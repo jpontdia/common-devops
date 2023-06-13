@@ -60,7 +60,7 @@ jobs:
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
 
-      - name: Get configuration file for test cases
+      - name: Get the properties for test cases
         id: configuration-tests
         uses: jpontdia/mulesoft-pipeline/packages/configuration-file@main
         with:

@@ -1,0 +1,44 @@
+name: Mulesoft
+on:
+  workflow_call:
+    inputs:
+      keyvault-key:
+        required: true
+        description: Access key to KeyVault
+        type: string
+    secrets:
+      azure-credentials:
+        required: true
+        description: Azure Credentials for login
+      gist-accesstoken:
+        required: false
+        description: Github Gist personal access token
+env:
+  DEFAULT_SETTINGS_XML: settings.xml
+  GITHUB_ORGANIZATION: jpontdia
+  CONFIGURATIONS_REPOSITORY: mulesoft-configurations
+  GIST_ID: ef8cdef1ff940eac4d8716f6361d2363
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    # Needed by the Unit Test Action
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write    
+    outputs:
+      # Indicates if the service will be deployed to development environment
+      deployment: ${{ steps.verify-deployment.outputs.deployment }}
+    steps:
+
+      - name: Get the source code
+        uses: actions/checkout@v3
+      
+      - name: Build the maven package command
+        uses: jpontdia/mulesoft-pipeline/packages/package-command@main
+        with:
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
