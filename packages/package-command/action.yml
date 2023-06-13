@@ -41,7 +41,8 @@ runs:
     run: |
       echo "skiptest output: >${{steps.configuration-skiptest.outputs.configuration-data}}<"
       skiptest=" "
-      if [[ "${{ steps.configuration-skiptest.outputs.configuration-data }}" != "" ]]; then
+      if [[ "${{ steps.configuration-skiptest.outputs.configuration-data }}" == "true"
+          ]]; then
         echo " SKIP tag found"
       else
         echo " SKIP FALSE"
