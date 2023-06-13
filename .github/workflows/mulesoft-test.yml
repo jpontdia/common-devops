@@ -34,6 +34,9 @@ jobs:
       - name: Get the source code
         uses: actions/checkout@v3
 
+      - name: Install Java JDK for Mulesoft Applications
+        uses: jpontdia/mulesoft-pipeline/packages/install-mulesoft-java@main
+
       - name: Get default secrets for the pipeline
         uses: jpontdia/mulesoft-pipeline/packages/secrets@main
         with:
