@@ -1,6 +1,9 @@
 name: 'Configure the test and package command for maven'
 description: 'Configure the test and package command for maven'
 inputs:
+  github-configurations-accesstoken:
+    required: true
+    description: Token to access the configuration repository
   github-organization:
     required: true
     description: Name of the github organization that is used to locate the secrets mapping file
