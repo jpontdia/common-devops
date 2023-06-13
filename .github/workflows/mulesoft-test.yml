@@ -28,17 +28,24 @@ jobs:
       contents: read
       issues: read
       checks: write
-      pull-requests: write    
-    outputs:
-      # Indicates if the service will be deployed to development environment
-      deployment: ${{ steps.verify-deployment.outputs.deployment }}
+      pull-requests: write
     steps:
 
       - name: Get the source code
         uses: actions/checkout@v3
+
+      - name: Get default secrets for the pipeline
+        uses: jpontdia/mulesoft-pipeline/packages/secrets@main
+        with:
+          keyvault-key: ${{ inputs.keyvault-key }}
+          azure-credentials: ${{ secrets.azure-credentials }}
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
       
       - name: Build the maven package command
         uses: jpontdia/mulesoft-pipeline/packages/package-command@main
         with:
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
+          github-configurations-accesstoken: $github_configurations_accesstoken
+
