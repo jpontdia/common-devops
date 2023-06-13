@@ -39,12 +39,12 @@ runs:
   - name: Run test cases and package
     shell: bash
     run: |
-      echo "skiptest output: ${{steps.configuration-tests.outputs.configuration-skiptest}}"
+      echo "skiptest output: >${{steps.configuration-tests.outputs.configuration-skiptest}}<"
       skiptest=" "
       if [[ "${{ steps.configuration-tests.outputs.configuration-skiptest }}" != "" ]]; then
         echo " SKIP tag found"
       else
-        echo " SKIP not found"
+        echo " SKIP FALSE"
       fi
       skiptest="-DskipTests"
 
