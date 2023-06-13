@@ -54,7 +54,7 @@ jobs:
           configurations-repository: $CONFIGURATIONS_REPOSITORY
       
       - name: Run test cases and package asset
-        uses: jpontdia/mulesoft-pipeline/packages/package-command@main
+        uses: jpontdia/mulesoft-pipeline/packages/package@main
         with:
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
