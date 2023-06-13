@@ -10,6 +10,8 @@ DevOps centralized hub that provides reusable workflows and actions for building
     1. [Workflows](#workflows)
     2. [Actions](#actions)
 1. [Github Secrets](#github-secrets)
+1. [Examples](#examples)
+
 
 ## Features
 
@@ -49,11 +51,11 @@ Repository with the configuration for the pipeline and services. The mandatory f
 
 | File                 | Description |
 | -------------------- | ----------- |
-| secrets-map.txt | Personal access token for repository: mulesoft-configurations.|
-| settings.xml | Personal access token for gist access.|
+| secrets-map.txt | Configuration file with the map rules between environment variables and secrets.|
+| settings.xml | Maven settings file used to build mulesoft assets|
 
 ## Repository mulesoft-pipeline
-The Pipeline Repository is a centralized hub for building and deploying software services in our organization. It offers reusable workflows and actions that streamline development processes and adhere to best practices. The repository aims to enhance efficiency, reliability, and collaboration throughout the software development lifecycle.
+The Pipeline Repository is a centralized hub for building and deploying software services. It offers reusable workflows and actions that streamline development processes and adhere to best practices. The repository aims to enhance efficiency, reliability, and collaboration throughout the software development lifecycle.
 
 Teams can access meticulously crafted workflows and actions covering various aspects of software delivery. These automate tasks such as building, testing, and deploying services, saving time and ensuring reproducibility. The workflows are customizable to fit specific requirements, allowing teams to integrate preferred tools, testing frameworks, and coding standards.
 
@@ -88,12 +90,19 @@ Github composite actions in directory: packages
 
 ## Github secrets
 
-Github secrets to connect the system resources:
+Next is the list of the secrets that must be configured in Github to connect to Azure KeyVault and Gist:
 
 | Secret                 | Value |
 | -------------------- | ----------- |
 | AZURE_CREDENTIALS | Configuration token to access Azure Keyvault.|
 | GIST_ACCESSTOKEN | Personal access token with write gist access.|
 
+## Github secrets
 
+Example of a CICD pipeline with 4 jobs:
+- Build
+- Deployment to dev environment
+- Integration testing in dev environment
+- Deployment to tst
 
+![Example](docs/example-build.png)
