@@ -63,7 +63,7 @@ jobs:
       - name: Documentation - Anypoint Exchange
         run: |
           cp -Rfpv README.md exchange-docs/home.md
-          cp -Rfpv docs/*.* exchange-docs/docs/*.* 
+          cp -Rfpv docs/*.* exchange-docs/docs 
         
       - name: Compile code
         #if: ${{ false }}    
