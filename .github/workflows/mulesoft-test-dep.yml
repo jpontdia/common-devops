@@ -55,10 +55,9 @@ jobs:
         uses: jpontdia/mulesoft-pipeline/packages/verify-deployment@main
         with:
           github-configurations-accesstoken: $github_configurations_accesstoken
-          environment: dev
+          environment: tst
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
-          debug: true
 
       #- id: publish-deployment-dev
       #  run: echo "deployment=${{ steps.verify-deployment-dev.outputs.deployment }}" >> $GITHUB_OUTPUT
