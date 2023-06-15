@@ -34,8 +34,9 @@ jobs:
       checks: write
       pull-requests: write    
     outputs:
-      # Indicates if the service will be deployed to development environment
-      deployment: ${{ steps.verify-deployment.outputs.deployment }}
+      # Indicates if the service is deployable
+      deployment-dev: ${{ steps.verify-deployment-dev.outputs.deployment }}
+      deployment-tst: ${{ steps.verify-deployment-tst.outputs.deployment }}
     steps:
 
       - name: Get the source code
@@ -123,34 +124,30 @@ jobs:
           name: pom
           path: pom.xml
           
-      - id: dev-configuration-cloudhub
-        name: Deployment dev - Get configuration
-        uses: jpontdia/mulesoft-pipeline/packages/configuration-file@main
+      - id: verify-deployment-dev
+        name: Verify if asset is deployable in dev
+        uses: jpontdia/mulesoft-pipeline/packages/verify-deployment@main
         with:
           github-configurations-accesstoken: $github_configurations_accesstoken
-          yaml-path: ".cloudhub"
-          suffix: "-dev"
+          environment: dev
           github-organization: $GITHUB_ORGANIZATION
-          configurations-repository: $CONFIGURATIONS_REPOSITORY          
-
-      - id: verify-deployment
-        name: Deployment dev - Verify if asset has the configuration
-        run: |
-          echo "dev cloudhub: ${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}"
-          if [ "${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}" != "" ] ; then
-            echo "deployment=true" >> $GITHUB_OUTPUT
-            echo "The service has the configuration to deploy in development environment"
-          else
-            echo "deployment=false" >> $GITHUB_OUTPUT
-            echo "The mulesoft asset doesn't have any deployment configuration"
-          fi
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
   
+      - id: verify-deployment-tst
+        name: Verify if asset is deployable in tst
+        uses: jpontdia/mulesoft-pipeline/packages/verify-deployment@main
+        with:
+          github-configurations-accesstoken: $github_configurations_accesstoken
+          environment: tst
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
+
   ##########################################################################
   # DEPLOYMENT TO DEV
   ##########################################################################
   
   deploy-dev:
-    if: needs.build.outputs.deployment == 'true'
+    if: needs.build.outputs.deployment-dev == 'true'
     name: DEV
     needs: [build]
     runs-on: ubuntu-latest
@@ -180,19 +177,32 @@ jobs:
       - name: Get the source code
         uses: actions/checkout@v3
 
+      - name: Verify if running test
+        id: verify-testing
+        run: |
+          if [ -d "bat" ]; then
+            # BAT script exist, the complete action will be executed
+            echo "SKIP_TEST=false" >> $GITHUB_OUTPUT
+          else
+            # Integration testing doesn´t exist
+            echo "SKIP_TEST=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Install API Functional Monitoring
+        if: steps.verify-testing.outputs.SKIP_TEST == 'false'
         run: |
           curl -o- 'https://s3.amazonaws.com/bat-wrapper/install.sh' | bash
           echo "bat -version: $(bat -version)"
 
       - name: Run tests
+        if: steps.verify-testing.outputs.SKIP_TEST == 'false'
         run: |
           cd bat
           mkdir target
           bat
 
       - name: Publish - Test reports
-        # if: ${{ false }}    
+        if: always() && steps.verify-testing.outputs.SKIP_TEST == 'false'
         uses: actions/upload-artifact@master
         with:
             name: dev-testing-reports
@@ -200,7 +210,7 @@ jobs:
 
       - name: Job summary with test results
         uses: EnricoMi/publish-unit-test-result-action@v2.7.0
-        if: always()
+        if: always() && steps.verify-testing.outputs.SKIP_TEST == 'false'
         with:
           files: |
             bat/target/JUnit.xml
@@ -211,6 +221,7 @@ jobs:
   ##########################################################################
   
   deploy-tst:
+    if: needs.build.outputs.deployment-tst == 'true'
     name: TST
     needs: [testing-dev]
     runs-on: ubuntu-latest
