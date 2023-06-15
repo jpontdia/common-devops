@@ -103,10 +103,10 @@ jobs:
         run: |
           if [ -d "bat" ]; then
             # BAT script exist, the complete action will be executed
-            echo "::set-output name=SKIP_TEST::false"
+            echo "SKIP_TEST=false" >> $GITHUB_OUTPUT
           else
             # Integration testing doesn´t exist
-            echo "::set-output name=SKIP_TEST::true"
+            echo "SKIP_TEST=true" >> $GITHUB_OUTPUT
           fi
       
       - name: Install API Functional Monitoring
