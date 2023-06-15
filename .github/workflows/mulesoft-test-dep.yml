@@ -64,7 +64,7 @@ jobs:
         uses: jpontdia/mulesoft-pipeline/packages/verify-deployment@main
         with:
           github-configurations-accesstoken: $github_configurations_accesstoken
-          environment: dev
+          environment: tst
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
 
