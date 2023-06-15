@@ -142,6 +142,7 @@ jobs:
   ##########################################################################
   
   deploy-tst:
+    if: needs.build.outputs.deployment-tst == 'true'
     name: TST
     needs: [testing-dev]
     runs-on: ubuntu-latest
