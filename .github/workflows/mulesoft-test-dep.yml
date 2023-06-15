@@ -35,7 +35,8 @@ jobs:
       pull-requests: write    
     outputs:
       # Indicates if the service will be deployed to development environment
-      deployment-dev: ${{ steps.publish-deployment-dev.outputs.deployment }}
+      #deployment-dev: ${{ steps.publish-deployment-dev.outputs.deployment }}
+      deployment-dev: ${{ steps.verify-deployment-dev.outputs.deployment }}
     steps:
 
       - name: Get the source code
@@ -59,8 +60,8 @@ jobs:
           configurations-repository: $CONFIGURATIONS_REPOSITORY
           debug: true
 
-      - id: publish-deployment-dev
-        run: echo "deployment=${{ steps.verify-deployment-dev.outputs.deployment }}" >> $GITHUB_OUTPUT
+      #- id: publish-deployment-dev
+      #  run: echo "deployment=${{ steps.verify-deployment-dev.outputs.deployment }}" >> $GITHUB_OUTPUT
   
   ##########################################################################
   # DEPLOYMENT TO DEV
