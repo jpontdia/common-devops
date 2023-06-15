@@ -35,7 +35,7 @@ jobs:
       pull-requests: write    
     outputs:
       # Indicates if the service will be deployed to development environment
-      deployment: ${{ steps.publish-deployment-dev.outputs.deployment }}
+      deployment-dev: ${{ steps.publish-deployment-dev.outputs.deployment }}
     steps:
 
       - name: Get the source code
@@ -50,7 +50,7 @@ jobs:
           configurations-repository: $CONFIGURATIONS_REPOSITORY
           
       - id: verify-deployment-dev
-        name: Verify deployment in dev
+        name: Verify if asset dep in dev
         uses: jpontdia/mulesoft-pipeline/packages/verify-deployment@main
         with:
           github-configurations-accesstoken: $github_configurations_accesstoken
