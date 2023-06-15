@@ -34,9 +34,9 @@ jobs:
       checks: write
       pull-requests: write    
     outputs:
-      # Indicates if the service will be deployed to development environment
-      #deployment-dev: ${{ steps.publish-deployment-dev.outputs.deployment }}
+      # Indicates if the service is deployable
       deployment-dev: ${{ steps.verify-deployment-dev.outputs.deployment }}
+      deployment-tst: ${{ steps.verify-deployment-tst.outputs.deployment }}
     steps:
 
       - name: Get the source code
@@ -51,17 +51,23 @@ jobs:
           configurations-repository: $CONFIGURATIONS_REPOSITORY
           
       - id: verify-deployment-dev
-        name: Verify if asset dep in dev
+        name: Verify if asset is deployable in dev
         uses: jpontdia/mulesoft-pipeline/packages/verify-deployment@main
         with:
           github-configurations-accesstoken: $github_configurations_accesstoken
-          environment: tst
+          environment: dev
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
 
-      #- id: publish-deployment-dev
-      #  run: echo "deployment=${{ steps.verify-deployment-dev.outputs.deployment }}" >> $GITHUB_OUTPUT
-  
+      - id: verify-deployment-tst
+        name: Verify if asset is deployable in tst
+        uses: jpontdia/mulesoft-pipeline/packages/verify-deployment@main
+        with:
+          github-configurations-accesstoken: $github_configurations_accesstoken
+          environment: dev
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
+
   ##########################################################################
   # DEPLOYMENT TO DEV
   ##########################################################################
@@ -92,19 +98,32 @@ jobs:
       - name: Get the source code
         uses: actions/checkout@v3
 
+      - name: Verify if running test
+        id: verify-testing
+        run: |
+          if [ -d "bat" ]; then
+            # BAT script exist, the complete action will be executed
+            echo "::set-output name=SKIP_TEST::false"
+          else
+            # Integration testing doesn´t exist
+            echo "::set-output name=SKIP_TEST::true"
+          fi
+      
       - name: Install API Functional Monitoring
+        if: steps.verify-testing.outputs.SKIP_TEST == 'false'
         run: |
           curl -o- 'https://s3.amazonaws.com/bat-wrapper/install.sh' | bash
           echo "bat -version: $(bat -version)"
 
       - name: Run tests
+        if: steps.verify-testing.outputs.SKIP_TEST == 'false'
         run: |
           cd bat
           mkdir target
           bat
 
       - name: Publish - Test reports
-        # if: ${{ false }}    
+        if: always() && steps.verify-testing.outputs.SKIP_TEST == 'false'
         uses: actions/upload-artifact@master
         with:
             name: dev-testing-reports
@@ -112,7 +131,7 @@ jobs:
 
       - name: Job summary with test results
         uses: EnricoMi/publish-unit-test-result-action@v2.7.0
-        if: always()
+        if: always() && steps.verify-testing.outputs.SKIP_TEST == 'false'
         with:
           files: |
             bat/target/JUnit.xml
