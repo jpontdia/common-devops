@@ -59,6 +59,9 @@ jobs:
           configurations-repository: $CONFIGURATIONS_REPOSITORY
           debug: true
 
+      - name: show variables
+        run: |
+          echo "deployment: ${{ steps.verify-deployment-dev.outputs.deployment }}"
   
   ##########################################################################
   # DEPLOYMENT TO DEV
