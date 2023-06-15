@@ -1,0 +1,63 @@
+name: 'Verify if asset must be deployed to an environment'
+description: 'Verify if asset must be deployed to an environment'
+inputs:
+  github-configurations-accesstoken:
+    required: true
+    description: ""
+  environment:
+    required: true
+    description: ""
+  github-organization:
+    required: true
+    description: Name of the github organization
+  configurations-repository:
+    required: true
+    description: ""
+  debug:
+    required: false
+    type: boolean
+    default: false
+    description: Flag to debug this action, default is false
+outputs:
+  deployment:
+    description: "True if asset must be deployed"
+    value: ${{ steps.verify-deployment.outputs.deployment }}
+runs:
+  using: "composite"
+  steps:
+ 
+    - name: DEBUG
+      if: ${{ inputs.debug }}
+      shell: bash
+      run: |
+        echo "*****************************************************"
+        echo "* Verify if asset must be deployed to an environment "
+        echo "*****************************************************"
+        echo "Input variables: "
+        echo "  github-configurations-accesstoken: $(echo ${{inputs.github-configurations-accesstoken}} | sed 's/./& /g')"  
+        echo "  environment: ${{ inputs.environment }}"
+        echo "  github-organization: ${{ inputs.github-organization }}"
+        echo " "
+
+    - id: dev-configuration-cloudhub
+      name: Deployment dev - Get configuration
+      uses: jpontdia/mulesoft-pipeline/packages/configuration-file@main
+      with:
+        github-configurations-accesstoken: ${{ inputs.github-configurations-accesstoken }}
+        yaml-path: ".cloudhub"
+        suffix: "-${{ inputs.environment }}"
+        github-organization: $GITHUB_ORGANIZATION
+        configurations-repository: $CONFIGURATIONS_REPOSITORY          
+
+    - id: verify-deployment
+      name: Deployment dev - Verify if asset has the configuration
+      shell: bash
+      run: |
+        echo "dev cloudhub: ${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}"
+        if [ "${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}" != "" ] ; then
+          echo "deployment=true" >> $GITHUB_OUTPUT
+          echo "The service has the configuration to deploy in development environment"
+        else
+          echo "deployment=false" >> $GITHUB_OUTPUT
+          echo "The mulesoft asset doesn't have any deployment configuration"
+        fi

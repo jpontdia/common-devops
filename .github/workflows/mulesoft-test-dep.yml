@@ -1,0 +1,133 @@
+name: Mulesoft
+on:
+  workflow_call:
+    inputs:
+      keyvault-key:
+        required: true
+        description: Access key to KeyVault
+        type: string
+    secrets:
+      azure-credentials:
+        required: true
+        description: Azure Credentials for login
+      gist-accesstoken:
+        required: false
+        description: Github Gist personal access token
+env:
+  DEFAULT_SETTINGS_XML: settings.xml
+  GITHUB_ORGANIZATION: jpontdia
+  CONFIGURATIONS_REPOSITORY: mulesoft-configurations
+  GIST_ID: ef8cdef1ff940eac4d8716f6361d2363
+jobs:
+
+  ##########################################################################
+  # BUILD MULESOFT SERVICE
+  ##########################################################################
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    # Needed by the Unit Test Action
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write    
+    outputs:
+      # Indicates if the service will be deployed to development environment
+      deployment: ${{ steps.verify-deployment-dev.outputs.deployment }}
+    steps:
+
+      - name: Get the source code
+        uses: actions/checkout@v3
+
+      - name: Get default secrets for the pipeline
+        uses: jpontdia/mulesoft-pipeline/packages/secrets@main
+        with:
+          keyvault-key: ${{ inputs.keyvault-key }}
+          azure-credentials: ${{ secrets.azure-credentials }}
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
+          
+      - id: verify-deployment-dev
+        name: Verify deployment in dev
+        uses: jpontdia/mulesoft-pipeline/packages/verify-deployment@main
+        with:
+          github-configurations-accesstoken: $github_configurations_accesstoken
+          environment: dev
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
+          debug: true
+
+  
+  ##########################################################################
+  # DEPLOYMENT TO DEV
+  ##########################################################################
+  
+  deploy-dev:
+    if: needs.build.outputs.deployment-dev == 'true'
+    name: DEV
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+
+      - name: Run tests
+        run: |
+          echo "deployment dev"
+
+
+  ##########################################################################
+  # INTEGRATION TESTING - DEVELOPMENT
+  ##########################################################################
+
+  testing-dev:
+    name: DEV Test
+    needs: [deploy-dev]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the source code
+        uses: actions/checkout@v3
+
+      - name: Install API Functional Monitoring
+        run: |
+          curl -o- 'https://s3.amazonaws.com/bat-wrapper/install.sh' | bash
+          echo "bat -version: $(bat -version)"
+
+      - name: Run tests
+        run: |
+          cd bat
+          mkdir target
+          bat
+
+      - name: Publish - Test reports
+        # if: ${{ false }}    
+        uses: actions/upload-artifact@master
+        with:
+            name: dev-testing-reports
+            path: bat/target/*.*
+
+      - name: Job summary with test results
+        uses: EnricoMi/publish-unit-test-result-action@v2.7.0
+        if: always()
+        with:
+          files: |
+            bat/target/JUnit.xml
+          check_name: Dev Integration Test
+
+  ##########################################################################
+  # TESTING ENVIRONMENT
+  ##########################################################################
+  
+  deploy-tst:
+    name: TST
+    needs: [testing-dev]
+    runs-on: ubuntu-latest
+    environment:
+      name: tst
+    steps:
+
+      - name: Run tests
+        run: |
+          echo "deployment tst"
