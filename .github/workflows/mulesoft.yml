@@ -93,6 +93,7 @@ jobs:
           github-configurations-accesstoken: $github_configurations_accesstoken
 
       - name: Summary - Unit test cases
+        if: ${{ hashFiles('target/surefire-reports/*') != '' }}
         uses: jpontdia/mule-common-devops/packages/summary-testcases@main
         with:
           gist-token: ${{ secrets.gist-accesstoken }}
