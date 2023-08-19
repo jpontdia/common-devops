@@ -114,7 +114,8 @@ jobs:
           mvn --batch-mode deploy -DskipTests 
 
       - name: Publish - Application Coverage Report
-        #if: ${{ false }}    
+        #if: ${{ false }}
+        if: ${{ hashFiles('target/site/munit/coverage/*') != '' }}
         uses: actions/upload-artifact@master
         with:
           name: munit-application-coverage-report
@@ -122,6 +123,7 @@ jobs:
       
       - name: Publish - MUnit Report
         #if: ${{ false }}
+        if: ${{ hashFiles('target/surefire-reports/*') != '' }}
         uses: actions/upload-artifact@master
         with:
           name: munit-test-report
@@ -129,6 +131,7 @@ jobs:
 
       - name: Publish - JAR 
         uses: actions/upload-artifact@master
+        if: ${{ hashFiles('target/*.jar') != '' }}
         with:
           name: jar
           path: target/*.jar
