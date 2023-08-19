@@ -1,4 +1,4 @@
-# Mulesoft Github CICD Pipeline
+# Mulesoft DevOps Tools
 DevOps centralized hub that provides reusable workflows and actions for building CICD pipelines with a detached multi-environment configuration and secrets management.
 
 ## Table of contents
@@ -17,9 +17,9 @@ DevOps centralized hub that provides reusable workflows and actions for building
 
 - Standardization of source code layout. Enforces Github and AnypointExchange documentation.
 - Pipeline created with reusable components with simple configuration in yaml files. No need to hardcode any service specific data.
-- Creation of readme.md bages for test cases and code coverage.
-- Publish first binary assets to Exchange.
-- Service configuration based on environment files
+- Creation of code repository bages for test cases and code coverage.
+- Anypoint Exchange as an artifact repository.
+- Configuration Management using configuration repositories and secrets.
 - Uses Azure KeyVault as a secret managment, almost a free aproach. No need to use anymore security configuration files in code.
 - Separation of roles: Security Manager configures the KeyVault, and DevOps engeniers responsible of service configuration.
 - Integration testing with Mulesoft Blackbox Automated Testing (BDD tool), say goodby to postman or manual human QA test.

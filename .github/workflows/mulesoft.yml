@@ -1,3 +1,11 @@
+##########################################################################
+# CICD Pipeline
+##########################################################################
+
+# Configuration for this template:
+# 1.- Replace the predefined repository jpontdia/mule-common-devops with your own.
+# 2.- Update the global environment variables for the script 
+
 name: Mulesoft
 on:
   workflow_call:
@@ -43,10 +51,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Java JDK for Mulesoft Applications
-        uses: jpontdia/mulesoft-pipeline/packages/install-mulesoft-java@main
+        uses: jpontdia/mule-common-devops/packages/install-mulesoft-java@main
 
       - name: Get default secrets for the pipeline
-        uses: jpontdia/mulesoft-pipeline/packages/secrets@main
+        uses: jpontdia/mule-common-devops/packages/secrets@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
@@ -54,7 +62,7 @@ jobs:
           configurations-repository: $CONFIGURATIONS_REPOSITORY
 
       - name: Settings file for maven
-        uses: jpontdia/mulesoft-pipeline/packages/settings-maven@main
+        uses: jpontdia/mule-common-devops/packages/settings-maven@main
         with:
           github-configurations-accesstoken: $github_configurations_accesstoken
           default-settings-xml: $DEFAULT_SETTINGS_XML
@@ -63,22 +71,29 @@ jobs:
           
       - name: Documentation - Anypoint Exchange
         run: |
-          cp -Rfpv README.md exchange-docs/home.md
-          cp -Rfpv docs/*.* exchange-docs/docs 
+          if [ -d "exchange-docs" ] 
+            then
+              echo "Directory exchange-docs exists and will not be overriden with README.md" 
+            else
+              mkdir -p exchange-docs
+              mkdir -p exchange-docs/docs
+              cp -Rfpv README.md exchange-docs/home.md
+              cp -Rfpv docs/*.* exchange-docs/docs 
+            fi
         
       - name: Compile code
         #if: ${{ false }}    
         run: mvn --batch-mode compile
   
       - name: Run test cases and package asset
-        uses: jpontdia/mulesoft-pipeline/packages/package@main
+        uses: jpontdia/mule-common-devops/packages/package@main
         with:
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
           github-configurations-accesstoken: $github_configurations_accesstoken
 
       - name: Summary - Unit test cases
-        uses: jpontdia/mulesoft-pipeline/packages/summary-testcases@main
+        uses: jpontdia/mule-common-devops/packages/summary-testcases@main
         with:
           gist-token: ${{ secrets.gist-accesstoken }}
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
@@ -86,7 +101,7 @@ jobs:
           debug: "false"
 
       - name: Summary - Code coverage
-        uses: jpontdia/mulesoft-pipeline/packages/summary-codecoverage@main
+        uses: jpontdia/mule-common-devops/packages/summary-codecoverage@main
         with:
           gist-token: ${{ secrets.gist-accesstoken }}
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
@@ -126,7 +141,7 @@ jobs:
           
       - id: verify-deployment-dev
         name: Verify if asset is deployable in dev
-        uses: jpontdia/mulesoft-pipeline/packages/verify-deployment@main
+        uses: jpontdia/mule-common-devops/packages/verify-deployment@main
         with:
           github-configurations-accesstoken: $github_configurations_accesstoken
           environment: dev
@@ -135,7 +150,7 @@ jobs:
   
       - id: verify-deployment-tst
         name: Verify if asset is deployable in tst
-        uses: jpontdia/mulesoft-pipeline/packages/verify-deployment@main
+        uses: jpontdia/mule-common-devops/packages/verify-deployment@main
         with:
           github-configurations-accesstoken: $github_configurations_accesstoken
           environment: tst
@@ -156,7 +171,7 @@ jobs:
     steps:
 
       - name: Deploy the service in the cloud
-        uses: jpontdia/mulesoft-pipeline/packages/cloudhub-deployment@main
+        uses: jpontdia/mule-common-devops/packages/cloudhub-deployment@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
@@ -230,7 +245,7 @@ jobs:
     steps:
 
       - name: Deploy the service in the cloud
-        uses: jpontdia/mulesoft-pipeline/packages/cloudhub-deployment@main
+        uses: jpontdia/mule-common-devops/packages/cloudhub-deployment@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
