@@ -55,10 +55,20 @@ jobs:
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
 
-      - name: Test - Verify env variables
+      - name: Test - Env variables from secrets
         shell: bash  
         run: |
           echo "env variable salesforce_principal: " $salesforce_principal 
+
+      - name: Import vars example
+        uses: zlatko-ms/varfiletoenv@v3
+        with:
+          paths: global.yaml
+
+      - name: Test - Env variables from yaml
+        shell: bash  
+        run: |
+          echo "env variable micorpcustomersapi_dev_host: " $micorpcustomersapi_dev_host 
 
       - name: Execute Mulesoft BAT
         uses: jpontdia/mule-common-devops/packages/bat@main
