@@ -1,0 +1,17 @@
+name: 'Execute Mulesoft BAT'
+description: 'Execute Mulesoft BAT'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Mulesoft BAT
+      run: |
+          curl -o- 'https://s3.amazonaws.com/bat-wrapper/install.sh' | bash
+          echo "bat -version: $(bat -version)"
+      shell: bash
+
+    - name: Run tests
+      run: |
+        cd bat
+        mkdir target
+        bat

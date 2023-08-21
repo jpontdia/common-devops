@@ -1,0 +1,72 @@
+##########################################################################
+# CICD Pipeline
+##########################################################################
+
+# Configuration for this template:
+# 1.- Replace the predefined repository jpontdia/mule-common-devops with your own.
+# 2.- Update the global environment variables for the script 
+
+name: Mulesoft
+on:
+  workflow_call:
+    inputs:
+      keyvault-key:
+        required: true
+        description: Access key to KeyVault
+        type: string
+    secrets:
+      azure-credentials:
+        required: true
+        description: Azure Credentials for login
+      gist-accesstoken:
+        required: false
+        description: Github Gist personal access token
+env:
+  DEFAULT_SETTINGS_XML: settings.xml
+  GITHUB_ORGANIZATION: jpontdia
+  CONFIGURATIONS_REPOSITORY: mulesoft-configurations
+  GIST_ID: ef8cdef1ff940eac4d8716f6361d2363
+
+jobs:
+
+  ##########################################################################
+  # TEST BAT
+  ##########################################################################
+
+  BAT:
+    name: BAT
+    runs-on: ubuntu-latest
+    # Needed by the Unit Test Action
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write    
+    steps:
+
+      - name: Get the source code
+        uses: actions/checkout@v3
+
+      - name: Get default secrets for the pipeline
+        uses: jpontdia/mule-common-devops/packages/secrets@main
+        with:
+          keyvault-key: ${{ inputs.keyvault-key }}
+          azure-credentials: ${{ secrets.azure-credentials }}
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
+
+      - name: Install API Functional Monitoring
+        uses: jpontdia/mule-common-devops/packages/bat@main
+    
+      - name: Publish - Test reports
+        uses: actions/upload-artifact@master
+        with:
+            name: dev-testing-reports
+            path: bat/target/*.*
+
+      - name: Job summary with test results
+        uses: EnricoMi/publish-unit-test-result-action@v2.7.0
+        with:
+          files: |
+            bat/target/JUnit.xml
+          check_name: Dev Integration Test

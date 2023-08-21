@@ -76,6 +76,7 @@ Github composite actions in directory: packages
 | Action               | Description |
 | -------------------- | ----------- |
 | badge | Creates a badge image in the Gist repository.|
+| bat | Install and execute Mulesoft BAT.|
 | cloudhub-anypoint-cli | Anypoint CLI to deploy a service to CloudHub/GovCloud.|
 | cloudhub-deployment | Deploys a service to CloudHub/GovCloud.|
 | configuration-file | Get the configuration data for a mulesoft asset.|
