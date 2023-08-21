@@ -55,7 +55,12 @@ jobs:
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
 
-      - name: Install API Functional Monitoring
+      - name: Test - Verify env variables
+        shell: bash  
+        run: |
+          echo "env variable salesforce_principal: " $salesforce_principal 
+
+      - name: Execute Mulesoft BAT
         uses: jpontdia/mule-common-devops/packages/bat@main
     
       - name: Publish - Test reports
