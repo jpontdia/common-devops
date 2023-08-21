@@ -5,12 +5,13 @@ runs:
   using: "composite"
   steps:
     - name: Install Mulesoft BAT
+      shell: bash
       run: |
           curl -o- 'https://s3.amazonaws.com/bat-wrapper/install.sh' | bash
           echo "bat -version: $(bat -version)"
-      shell: bash
 
     - name: Run tests
+      shell: bash  
       run: |
         cd bat
         mkdir target
