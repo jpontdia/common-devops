@@ -15,10 +15,11 @@ DevOps centralized hub that provides reusable workflows and actions for building
 
 ## Instalation
 
-Change github organization and if required the name of the common-devops
+Configure the Github organization and if required the name of the common-devops repository
 
 grep --exclude="*.md" -r -l 'jpontdia/mulesoft-pipeline' * | xargs sed -i "" 's+jpontdia/mulesoft-pipeline+jpontdia/common-devops+g'
 
+ERROR: ABOVE command is not working on directory .github/workflows 
 
 ## Features
 
