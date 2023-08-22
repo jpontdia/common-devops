@@ -41,7 +41,7 @@ runs:
 
     - id: dev-configuration-cloudhub
       name: Deployment dev - Get configuration
-      uses: jpontdia/mulesoft-pipeline/packages/configuration-file@main
+      uses: jpontdia/common-devops/packages/configuration-file@main
       with:
         github-configurations-accesstoken: ${{ inputs.github-configurations-accesstoken }}
         yaml-path: ".cloudhub"

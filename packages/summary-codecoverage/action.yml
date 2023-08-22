@@ -35,7 +35,7 @@ runs:
 
     - name: Get the pom service information
       id: service-info
-      uses: jpontdia/mulesoft-pipeline/packages/service-info@main
+      uses: jpontdia/common-devops/packages/service-info@main
 
     - name: Summary - Add code coverage
       shell: bash
@@ -119,7 +119,7 @@ runs:
 
     - name: Create badge
       if: ${{ (inputs.gist-token != '') && (env.COVERAGE_PROCESS=='True') }}
-      uses: jpontdia/mulesoft-pipeline/packages/badge@main
+      uses: jpontdia/common-devops/packages/badge@main
       with:
         gist-token: ${{ inputs.gist-token }}
         github-organization: ${{ inputs.github-organization }}

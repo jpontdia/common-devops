@@ -31,7 +31,7 @@ runs:
 
     - id: service-info
       name: Get the pom service information
-      uses: jpontdia/mulesoft-pipeline/packages/service-info@main
+      uses: jpontdia/common-devops/packages/service-info@main
     
     - id: configuration
       name: Get configuration for the service 

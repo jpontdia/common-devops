@@ -20,7 +20,7 @@ runs:
        
   - id: configuration-skiptest
     name: Get the skiptest property for the service
-    uses: jpontdia/mulesoft-pipeline/packages/configuration-file@main
+    uses: jpontdia/common-devops/packages/configuration-file@main
     with:
       github-configurations-accesstoken: $github_configurations_accesstoken
       yaml-path: ".skiptests"
@@ -29,7 +29,7 @@ runs:
 
   - name: Get the properties for test cases
     id: configuration-tests
-    uses: jpontdia/mulesoft-pipeline/packages/configuration-file@main
+    uses: jpontdia/common-devops/packages/configuration-file@main
     with:
       github-configurations-accesstoken: $github_configurations_accesstoken
       yaml-path: ".test-properties"

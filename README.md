@@ -2,6 +2,7 @@
 DevOps centralized hub that provides reusable workflows and actions for building CICD pipelines with a detached multi-environment configuration and secrets management.
 
 ## Table of contents
+1. [Installation](#Installation)
 1. [Features](#features)
 1. [Pipeline resources](#pipeline-resources)
 1. [Azure KeyVault](#workflows) 
@@ -11,6 +12,12 @@ DevOps centralized hub that provides reusable workflows and actions for building
     2. [Actions](#actions)
 1. [Github Secrets](#github-secrets)
 1. [Examples](#examples)
+
+## Instalation
+
+Change github organization and if required the name of the common-devops
+
+grep --exclude="*.md" -r -l 'jpontdia/mulesoft-pipeline' * | xargs sed -i "" 's+jpontdia/mulesoft-pipeline+jpontdia/common-devops+g'
 
 
 ## Features
