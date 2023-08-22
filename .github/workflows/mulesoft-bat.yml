@@ -3,7 +3,7 @@
 ##########################################################################
 
 # Configuration for this template:
-# 1.- Replace the predefined repository jpontdia/mule-common-devops with your own.
+# 1.- Replace the predefined repository jpontdia/common-devops with your own.
 # 2.- Update the global environment variables for the script 
 
 name: Mulesoft
@@ -48,7 +48,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Get default secrets for the pipeline
-        uses: jpontdia/mule-common-devops/packages/secrets@main
+        uses: jpontdia/common-devops/packages/secrets@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
@@ -71,7 +71,7 @@ jobs:
           echo "env variable micorpcustomersapi_dev_host: " $micorpcustomersapi_dev_host 
 
       - name: Execute Mulesoft BAT
-        uses: jpontdia/mule-common-devops/packages/bat@main
+        uses: jpontdia/common-devops/packages/bat@main
     
       - name: Publish - Test reports
         uses: actions/upload-artifact@master
