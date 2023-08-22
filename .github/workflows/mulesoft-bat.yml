@@ -47,8 +47,8 @@ jobs:
       - name: Get the source code
         uses: actions/checkout@v3
 
-      - name: Get default secrets for the pipeline
-        uses: jpontdia/common-devops/packages/secrets@main
+      - name: Get global configuration for the pipeline
+        uses: jpontdia/common-devops/packages/configuration@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
