@@ -24,7 +24,7 @@ on:
 env:
   DEFAULT_SETTINGS_XML: settings.xml
   GITHUB_ORGANIZATION: jpontdia
-  CONFIGURATIONS_REPOSITORY: mulesoft-configurations
+  CONFIGURATIONS_REPOSITORY: common-configurations
   GIST_ID: ef8cdef1ff940eac4d8716f6361d2363
 
 jobs:
