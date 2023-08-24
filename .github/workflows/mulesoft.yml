@@ -164,12 +164,12 @@ jobs:
           configurations-repository: $CONFIGURATIONS_REPOSITORY
 
   ##########################################################################
-  # DEPLOYMENT TO DEV
+  # DEV DEPLOYMENT
   ##########################################################################
   
-  deploy-dev:
+  dev:
     if: needs.build.outputs.deployment-dev == 'true'
-    name: DEV
+    name: dev
     needs: [build]
     runs-on: ubuntu-latest
     environment:
@@ -187,43 +187,22 @@ jobs:
 
 
   ##########################################################################
-  # INTEGRATION TESTING - DEVELOPMENT
+  # DEV TEST
   ##########################################################################
 
-  testing-dev:
-    name: DEV Test
-    needs: [deploy-dev]
+  dev-test:
+    name: dev-test
+    if: ${{ hashFiles('bat') != '' }}
+    needs: [dev]
     runs-on: ubuntu-latest
     steps:
       - name: Get the source code
         uses: actions/checkout@v3
 
-      - name: Verify if running test
-        id: verify-testing
-        run: |
-          if [ -d "bat" ]; then
-            # BAT script exist, the complete action will be executed
-            echo "SKIP_TEST=false" >> $GITHUB_OUTPUT
-          else
-            # Integration testing doesn´t exist
-            echo "SKIP_TEST=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Install API Functional Monitoring
-        if: steps.verify-testing.outputs.SKIP_TEST == 'false'
-        run: |
-          curl -o- 'https://s3.amazonaws.com/bat-wrapper/install.sh' | bash
-          echo "bat -version: $(bat -version)"
-
-      - name: Run tests
-        if: steps.verify-testing.outputs.SKIP_TEST == 'false'
-        run: |
-          cd bat
-          mkdir target
-          bat
+      - name: Execute Mulesoft BAT
+        uses: jpontdia/common-devops/packages/bat@main
 
       - name: Publish - Test reports
-        if: always() && steps.verify-testing.outputs.SKIP_TEST == 'false'
         uses: actions/upload-artifact@master
         with:
             name: dev-testing-reports
@@ -231,7 +210,6 @@ jobs:
 
       - name: Job summary with test results
         uses: EnricoMi/publish-unit-test-result-action@v2.7.0
-        if: always() && steps.verify-testing.outputs.SKIP_TEST == 'false'
         with:
           files: |
             bat/target/JUnit.xml
