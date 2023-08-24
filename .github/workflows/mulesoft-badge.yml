@@ -41,7 +41,7 @@ jobs:
       actions: none
       contents: read
       checks: none
-      pull-requests: write
+      pull-requests: none
     steps:
 
       - name: Get the source code
