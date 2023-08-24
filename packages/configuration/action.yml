@@ -46,7 +46,7 @@ runs:
     - name: Get secrets configuration
       shell: bash
       env:
-        SECRET_MAP_FILE: secrets-mapping.txt 
+        SECRET_MAP_FILE: _secrets.env 
       run: |
         echo
         echo "*********************************************"
@@ -89,7 +89,7 @@ runs:
     - name: Get global configuration
       shell: bash
       env:
-        SECRET_MAP_FILE: global.yml
+        SECRET_MAP_FILE: _global.yml
       run: |
         echo
         echo "*********************************************"
