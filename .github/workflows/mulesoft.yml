@@ -199,6 +199,14 @@ jobs:
       - name: Get the source code
         uses: actions/checkout@v3
 
+      - name: Get global configuration for the pipeline
+        uses: jpontdia/common-devops/packages/configuration@main
+        with:
+          keyvault-key: ${{ inputs.keyvault-key }}
+          azure-credentials: ${{ secrets.azure-credentials }}
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
+        
       - name: Execute Mulesoft BAT
         uses: jpontdia/common-devops/packages/bat@main
 

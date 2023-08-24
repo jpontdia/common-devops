@@ -34,8 +34,8 @@ runs:
     with:
       name: pom
 
-  - name: Get default secrets for the pipeline
-    uses: jpontdia/common-devops/packages/secrets@main
+  - name: Get global configuration for the pipeline
+    uses: jpontdia/common-devops/packages/configuration@main
     with:
       keyvault-key: ${{ inputs.keyvault-key }}
       azure-credentials: ${{ inputs.azure-credentials }}
