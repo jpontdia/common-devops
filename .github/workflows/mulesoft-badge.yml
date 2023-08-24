@@ -65,13 +65,6 @@ jobs:
           default-settings-xml: $DEFAULT_SETTINGS_XML
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
-  
-      - name: Run test cases and package asset
-        uses: jpontdia/common-devops/packages/package@main
-        with:
-          github-organization: $GITHUB_ORGANIZATION
-          configurations-repository: $CONFIGURATIONS_REPOSITORY
-          github-configurations-accesstoken: $github_configurations_accesstoken
 
       - name: Summary - Unit test cases
         if: ${{ hashFiles('target/surefire-reports/*') != '' }}
