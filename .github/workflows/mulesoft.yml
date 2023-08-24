@@ -192,14 +192,25 @@ jobs:
 
   dev-test:
     name: dev-test
-    if: ${{ hashFiles('bat') != '' }}
     needs: [dev]
     runs-on: ubuntu-latest
     steps:
       - name: Get the source code
         uses: actions/checkout@v3
 
+      - name: Verify if running test
+        id: verify-testing
+        run: |
+          if [ -d "bat" ]; then
+            # BAT script exist, the complete action will be executed
+            echo "SKIP_TEST=false" >> $GITHUB_OUTPUT
+          else
+            # Integration testing doesn´t exist
+            echo "SKIP_TEST=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Get global configuration for the pipeline
+        if: steps.verify-testing.outputs.SKIP_TEST == 'false'
         uses: jpontdia/common-devops/packages/configuration@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
@@ -208,15 +219,18 @@ jobs:
           configurations-repository: $CONFIGURATIONS_REPOSITORY
         
       - name: Execute Mulesoft BAT
+        if: steps.verify-testing.outputs.SKIP_TEST == 'false'
         uses: jpontdia/common-devops/packages/bat@main
 
       - name: Publish - Test reports
+        if: always() && steps.verify-testing.outputs.SKIP_TEST == 'false'
         uses: actions/upload-artifact@master
         with:
             name: dev-testing-reports
             path: bat/target/*.*
 
       - name: Job summary with test results
+        if: always() && steps.verify-testing.outputs.SKIP_TEST == 'false'
         uses: EnricoMi/publish-unit-test-result-action@v2.7.0
         with:
           files: |
@@ -224,13 +238,13 @@ jobs:
           check_name: Dev Integration Test
 
   ##########################################################################
-  # TESTING ENVIRONMENT
+  # TST DEPLOYMENT
   ##########################################################################
   
-  deploy-tst:
+  tst:
     if: needs.build.outputs.deployment-tst == 'true'
-    name: TST
-    needs: [testing-dev]
+    name: tst
+    needs: [dev-test]
     runs-on: ubuntu-latest
     environment:
       name: tst
