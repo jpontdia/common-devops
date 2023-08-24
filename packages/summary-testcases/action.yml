@@ -4,6 +4,9 @@ inputs:
   gist-token:
     required: true
     description: Personal access token for github gist
+  gist-token-keyvault:
+    required: false
+    description: Personal access token for github gist
   github-organization:
     required: true
     description: Name of the github organization
@@ -29,6 +32,7 @@ runs:
         echo "*****************************************************"
         echo "Input variables: "
         echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
+        echo "  gist-token-keyvault: $(echo ${{inputs.gist-token-keyvault}} | sed 's/./& /g')"  
         echo "  github-organization: ${{ inputs.github-organization }}"
         echo "  badge-gist-id: ${{ inputs.badge-gist-id }}"
         echo ".."

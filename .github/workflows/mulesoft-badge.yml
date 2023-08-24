@@ -78,6 +78,7 @@ jobs:
         uses: jpontdia/common-devops/packages/summary-testcases@main
         with:
           gist-token: ${{ secrets.gist-accesstoken }}
+          gist-token-keyvault: $github_gist_accesstoken
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           badge-gist-id: ${{ env.GIST_ID }}
-          debug: "false"
+          debug: "true"
