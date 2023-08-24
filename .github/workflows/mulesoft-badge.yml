@@ -37,11 +37,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     # Needed by the Unit Test Action
-    permissions:
-      contents: read
-      issues: read
-      checks: write
-      pull-requests: write
+    permissions: write-all
     steps:
 
       - name: Get the source code

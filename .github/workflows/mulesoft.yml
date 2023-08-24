@@ -27,7 +27,6 @@ env:
   CONFIGURATIONS_REPOSITORY: common-configurations
   GIST_ID: ef8cdef1ff940eac4d8716f6361d2363
 
-  
 jobs:
 
   ##########################################################################
