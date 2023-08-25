@@ -39,7 +39,6 @@ runs:
       with:
         keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
         secrets: |
-          github_gist_accesstoken=github-gist-accesstoken
           github_configurations_accesstoken=github-configurations-accesstoken
         login_credentials: ${{ inputs.azure-credentials }}
 
@@ -50,7 +49,7 @@ runs:
       run: |
         echo
         echo "*********************************************"
-        echo "Get secrets map"
+        echo "Get the configuration for secrets"
         echo "*********************************************"
 
         echo "github_configurations_accesstoken: $github_configurations_accesstoken"
@@ -64,6 +63,8 @@ runs:
         echo "$initialsecretconfiguration" | while read p; do
           if [[ "$p" =~ ^#.*  ]]; then
             echo "   A comment found"
+          elif [[ "$p" =~ ^ .*  ]]; then
+            echo "   An empty line found"
           else
             temporal=$(echo "$temporal $p")
             echo "   Variable found: $p"
