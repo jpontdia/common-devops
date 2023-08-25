@@ -50,7 +50,7 @@ jobs:
       - name: Install Java JDK for Mulesoft Applications
         uses: jpontdia/common-devops/packages/install-mulesoft-java@main
 
-      - name: Get default secrets for the pipeline
+      - name: Get global configuration for the pipeline
         uses: jpontdia/common-devops/packages/configuration@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}

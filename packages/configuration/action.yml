@@ -63,8 +63,6 @@ runs:
         echo "$initialsecretconfiguration" | while read p; do
           if [[ "$p" =~ ^#.*  ]]; then
             echo "   A comment found"
-          elif [[ "$p" =~ ^ .*  ]]; then
-            echo "   An empty line found"
           else
             temporal=$(echo "$temporal $p")
             echo "   Variable found: $p"
