@@ -37,11 +37,11 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     # Needed by the Unit Test Action
-    permissions:
-      actions: none
-      contents: read
-      checks: none
-      pull-requests: none
+    #permissions:
+    #  actions: none
+    #  contents: read
+    #  checks: none
+    #  pull-requests: none
     steps:
 
       - name: Get the source code
