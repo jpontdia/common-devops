@@ -104,7 +104,7 @@ jobs:
         with:
           gist-token: ${{ env.github_gist_accesstoken }}
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
-          badge-gist-id: ${{ env.gihub_gist_id }}
+          badge-gist-id: ${{ env.github_gist_id }}
           debug: ${{ env.cicd_debug }}
 
       - name: Summary - Code coverage
@@ -112,7 +112,7 @@ jobs:
         with:
           gist-token: ${{ env.github_gist_accesstoken }}
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
-          badge-gist-id: ${{ env.gihub_gist_id }}
+          badge-gist-id: ${{ env.github_gist_id }}
           debug: ${{ env.cicd_debug }}
 
 
