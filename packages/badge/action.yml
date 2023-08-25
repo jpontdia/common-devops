@@ -27,6 +27,7 @@ runs:
     - name: Debug message
       shell: bash
       run: |
+        echo " "
         echo "*****************************************************"
         echo "* Create badge"
         echo "*****************************************************"
@@ -44,6 +45,7 @@ runs:
     - name: Debug message
       shell: bash
       run: |
+        echo " "
         echo "*****************************************************"
         echo "* Upload badge"
         echo "*****************************************************"

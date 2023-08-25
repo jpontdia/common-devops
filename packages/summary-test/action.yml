@@ -55,6 +55,7 @@ runs:
       if: ${{ inputs.gist-token != '' }}
       shell: bash
       run: |
+        echo " "
         echo "*****************************************************"
         echo "* Unit test - Set badge color"
         echo "*****************************************************"
@@ -88,6 +89,7 @@ runs:
     - name: Summary - Add code coverage
       shell: bash
       run: |
+        echo " "
         echo "*****************************************************"
         echo "* Code coverage - Get the summary report if exists"
         echo "*****************************************************"
