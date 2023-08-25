@@ -25,8 +25,7 @@ env:
   DEFAULT_SETTINGS_XML: settings.xml
   GITHUB_ORGANIZATION: jpontdia
   CONFIGURATIONS_REPOSITORY: common-configurations
-  GIST_ID: ef8cdef1ff940eac4d8716f6361d2363
-
+  
 jobs:
 
   ##########################################################################
@@ -99,15 +98,17 @@ jobs:
         with:
           gist-token: ${{ secrets.gist-accesstoken }}
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
-          badge-gist-id: ${{ env.GIST_ID }}
-          debug: "false"
+          badge-gist-id: $cicd_gist_id
+          debug: $cicd_debug
 
       - name: Summary - Code coverage
         uses: jpontdia/common-devops/packages/summary-codecoverage@main
         with:
           gist-token: ${{ secrets.gist-accesstoken }}
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
-          badge-gist-id: ${{ env.GIST_ID }}
+          badge-gist-id: $cicd_gist_id
+          debug: $cicd_debug
+
 
       - name: Deploy to anypoint exchange
         #if: ${{ false }}    
