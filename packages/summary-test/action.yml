@@ -1,12 +1,12 @@
 name: 'Summary - Publish test results'
 description: 'Summary - Publish test results'
 inputs:
-  gist-token:
-    required: true
-    description: Personal access token for github gist
   github-organization:
     required: true
     description: Name of the github organization
+  gist-token:
+    required: true
+    description: Personal access token for github gist
   gist-id:
     required: true
     description: Id for the badge gist
