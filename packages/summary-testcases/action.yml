@@ -28,7 +28,7 @@ runs:
       shell: bash
       run: |
         echo "*****************************************************"
-        echo "* summary-testcases action"
+        echo "* Summary - Publish test results"
         echo "*****************************************************"
         echo "Input variables: "
         echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
@@ -41,6 +41,9 @@ runs:
       id: service-info
       uses: jpontdia/common-devops/packages/service-info@main
 
+    # ***************************
+    # Unit test 
+    # ***************************
     - name: Summary - Publish test results
       id: unit-test-results
       uses: EnricoMi/publish-unit-test-result-action@v2.7.0
@@ -54,6 +57,10 @@ runs:
       if: ${{ inputs.gist-token != '' }}
       shell: bash
       run: |
+        echo "*****************************************************"
+        echo "* Unit test - PSet badge color"
+        echo "*****************************************************"
+        echo " "      
         case ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }} in
           success)
             echo "BADGE_COLOR=31c653" >> $GITHUB_ENV

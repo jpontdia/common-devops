@@ -4,13 +4,10 @@ inputs:
   gist-token:
     required: true
     description: Personal access token for github gist
-  gist-token-keyvault:
-    required: false
-    description: Personal access token for github gist
   github-organization:
     required: true
     description: Name of the github organization
-  badge-gist-id:
+  gist-id:
     required: true
     description: Id for the badge gist
   debug:
@@ -35,13 +32,16 @@ runs:
         echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
         echo "  gist-token-keyvault: $(echo ${{inputs.gist-token-keyvault}} | sed 's/./& /g')"  
         echo "  github-organization: ${{ inputs.github-organization }}"
-        echo "  badge-gist-id: ${{ inputs.badge-gist-id }}"
+        echo "  gist-id: ${{ inputs.gist-id }}"
         echo ".."
 
     - name: Get the pom service information
       id: service-info
       uses: jpontdia/common-devops/packages/service-info@main
 
+    # ***************************
+    # Unit test 
+    # ***************************
     - name: Summary - Publish test results
       id: unit-test-results
       uses: EnricoMi/publish-unit-test-result-action@v2.7.0
@@ -55,6 +55,10 @@ runs:
       if: ${{ inputs.gist-token != '' }}
       shell: bash
       run: |
+        echo "*****************************************************"
+        echo "* Unit test - Set badge color"
+        echo "*****************************************************"
+        echo " "            
         case ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }} in
           success)
             echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
@@ -67,13 +71,122 @@ runs:
             ;;
         esac
 
-    - name: Create badge
+    - name: Create badge for unit test
       if: ${{ inputs.gist-token != '' }}
       uses: jpontdia/common-devops/packages/badge@main
       with:
-        gist-token: ${{ inputs.gist-token }}
         github-organization: ${{ inputs.github-organization }}
-        badge-gist-id: ${{ inputs.badge-gist-id }}
+        gist-token: ${{ inputs.gist-token }}
+        gist-id: ${{ inputs.gist-id }}
         status: '${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }}'
         color: ${{ env.BADGE_COLOR }}
         file: ${{ steps.service-info.outputs.name }}-ut.svg
+
+    # ***************************
+    # Code coverage
+    # ***************************
+    - name: Summary - Add code coverage
+      shell: bash
+      run: |
+        echo "*****************************************************"
+        echo "* Code coverage - Get the summary report if exists"
+        echo "*****************************************************"
+        echo " "            
+
+        summary_report=target/site/munit/coverage/summary.html
+
+        # Verify if summary report exists
+        if test -f "$summary_report"; then
+
+          temporal=""
+          line=0
+          trigger=0
+          while IFS= read -r p; do
+          
+            if [[ "$p" == *"<div class=\"col-md-8 col-md-offset-2\">"* ]]; then
+              echo "Summary starts at line: $line"
+              ((line=line+1))
+              trigger=1
+              continue
+            fi
+
+            if [[ $trigger == 1 ]]; then
+              # echo "${p:0:6}"
+              echo "$p"
+              if [[ "${p:0:6}" == "</div>" ]]; then
+                echo "Exit condition at line: $line"
+                break
+              else
+                temporal+=$p
+              fi
+            fi
+
+            ((line=line+1))
+          done < $summary_report
+
+          # Remove html tag: <a>
+          temporal=$(sed -e 's/<\/a[^>]*>//g' <<<"$temporal")
+          temporal=$(sed -e 's/<a[^>]*>//g' <<<"$temporal")
+
+          # Add job summary 
+          echo "<div>" >> $GITHUB_STEP_SUMMARY
+          echo "$temporal" >> $GITHUB_STEP_SUMMARY
+          echo "</div>" >> $GITHUB_STEP_SUMMARY
+
+          # The coverage process was executed
+          echo "COVERAGE_PROCESS='True'" >> $GITHUB_ENV
+        else
+          # There is no summary report
+          echo "COVERAGE_PROCESS='False'" >> $GITHUB_ENV
+        fi
+
+
+    - name: Set the code coverage results as environment variable
+      if: ${{ (inputs.gist-token != '') && (env.COVERAGE_PROCESS=='True') }}
+      id: json_var
+      shell: bash
+      run: |
+        echo " "
+        echo "******************************************************"
+        echo "* Code coverage - export the summary report as env var"
+        echo "******************************************************"
+        echo " "  
+
+        content=`cat target/site/munit/coverage/munit-coverage.json`
+        # the following lines are only required for multi line json
+        content="${content//'%'/'%25'}"
+        content="${content//$'\n'/'%0A'}"
+        content="${content//$'\r'/'%0D'}"
+        # end of optional handling for multi line json
+        echo "::set-output name=packageJson::$content"
+
+    - name: Set badge color
+      if: ${{ (inputs.gist-token != '') && (env.COVERAGE_PROCESS=='True') }}
+      shell: bash
+      run: |
+        echo " "
+        echo "*****************************************************"
+        echo "* Code coverage - Set badge color"
+        echo "*****************************************************"
+        echo " "      
+        coverage=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
+        minimum=${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}
+        echo "Application coverage: $coverage"
+        echo "Minimum: $minimum"
+        
+        if [[ "$((coverage))" -ge "$((minimum))" ]]; then
+          echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
+        else
+          echo "BADGE_COLOR=800000" >> $GITHUB_ENV
+        fi
+
+    - name: Create badge for code coverage
+      if: ${{ (inputs.gist-token != '') && (env.COVERAGE_PROCESS=='True') }}
+      uses: jpontdia/common-devops/packages/badge@main
+      with:
+        github-organization: ${{ inputs.github-organization }}
+        gist-token: ${{ inputs.gist-token }}
+        gist-id: ${{ inputs.gist-id }}
+        status: '${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}% of ${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}%'
+        color: ${{ env.BADGE_COLOR }}
+        file: ${{ steps.service-info.outputs.name }}-cc.svg

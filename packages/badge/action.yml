@@ -1,13 +1,13 @@
 name: 'Summary - Publish test results'
 description: 'Summary - Publish test results'
 inputs:
-  gist-token:
-    required: true
-    description: Personal access token for github gist
   github-organization:
     required: true
     description: Name of the github organization
-  badge-gist-id:
+  gist-token:
+    required: true
+    description: Personal access token for github gist
+  gist-id:
     required: true
     description: Id for the badge gist
   status:
@@ -24,6 +24,14 @@ runs:
   using: "composite"
   steps:
 
+    - name: Debug message
+      shell: bash
+      run: |
+        echo "*****************************************************"
+        echo "* Create badge"
+        echo "*****************************************************"
+        echo " "            
+
     - name: Create badge
       # uses: emibcn/badge-action@d6f51ff11b5c3382b3b88689ae2d6db22d9737d1
       uses: emibcn/badge-action@master
@@ -32,6 +40,14 @@ runs:
         status: ${{ inputs.status }}
         color: ${{ inputs.color }}
         path: ${{ inputs.file }}
+    
+    - name: Debug message
+      shell: bash
+      run: |
+        echo "*****************************************************"
+        echo "* Upload badge"
+        echo "*****************************************************"
+        echo " "            
 
     # Just testing this other action
     - name: Upload badge to Gist
@@ -39,7 +55,7 @@ runs:
       uses: exuanbo/actions-deploy-gist@v1
       with:
         token: ${{ inputs.gist-token }}
-        gist_id: ${{ inputs.github-organization }}/${{ inputs.badge-gist-id }}
+        gist_id: ${{ inputs.github-organization }}/${{ inputs.gist-id }}
         file_path: ${{ steps.service-info.outputs.name }}-ut.svg
         file_type: binary
 
@@ -47,5 +63,5 @@ runs:
       uses: jpontdia/append-gist-action@master
       with:
         token: ${{ inputs.gist-token }}
-        gistURL: "https://gist.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.badge-gist-id }}"
+        gistURL: "https://gist.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.gist-id }}"
         file: ${{ inputs.file }}

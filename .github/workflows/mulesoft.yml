@@ -93,22 +93,14 @@ jobs:
         #if: ${{ false }}    
         run: |
           ## Global variables
-          echo "gist_id: " $cicd_gist_id 
+          echo "github_gist_id: " $github_gist_id 
           echo "cicd_debug: " $cicd_debug 
 
       # To investigate. When sending badge-gist-id as $cicd_gist_id IS NOT working only in this step
       # only works with: ${{ env.cicd_gist_id }}
       - name: Summary - Unit test cases
         if: ${{ hashFiles('target/surefire-reports/*') != '' }}
-        uses: jpontdia/common-devops/packages/summary-testcases@main
-        with:
-          gist-token: ${{ env.github_gist_accesstoken }}
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
-          badge-gist-id: ${{ env.github_gist_id }}
-          debug: ${{ env.cicd_debug }}
-
-      - name: Summary - Code coverage
-        uses: jpontdia/common-devops/packages/summary-codecoverage@main
+        uses: jpontdia/common-devops/packages/summary-test@main
         with:
           gist-token: ${{ env.github_gist_accesstoken }}
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
