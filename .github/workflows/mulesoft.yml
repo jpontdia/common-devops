@@ -92,14 +92,22 @@ jobs:
           configurations-repository: $CONFIGURATIONS_REPOSITORY
           github-configurations-accesstoken: $github_configurations_accesstoken
 
+      - name: Debug - global variables
+        #if: ${{ false }}    
+        run: |
+          ## Global variables
+          echo "gist_id: " $cicd_gist_id 
+          echo "cicd_debug: " $cicd_debug 
+
+
       - name: Summary - Unit test cases
         if: ${{ hashFiles('target/surefire-reports/*') != '' }}
         uses: jpontdia/common-devops/packages/summary-testcases@main
         with:
           gist-token: ${{ secrets.gist-accesstoken }}
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
-          badge-gist-id: $cicd_gist_id
-          debug: $cicd_debug
+          badge-gist-id: ${{ env.cicd_gist_id }}
+          debug: ${{ env.cicd_debug }}
 
       - name: Summary - Code coverage
         uses: jpontdia/common-devops/packages/summary-codecoverage@main
