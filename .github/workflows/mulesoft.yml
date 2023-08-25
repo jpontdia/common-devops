@@ -102,9 +102,9 @@ jobs:
         if: ${{ hashFiles('target/surefire-reports/*') != '' }}
         uses: jpontdia/common-devops/packages/summary-test@main
         with:
-          gist-token: ${{ env.github_gist_accesstoken }}
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
-          badge-gist-id: ${{ env.github_gist_id }}
+          gist-id: ${{ env.github_gist_id }}
+          gist-token: ${{ env.github_gist_accesstoken }}
           debug: ${{ env.cicd_debug }}
 
 
