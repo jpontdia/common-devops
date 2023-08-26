@@ -52,7 +52,6 @@ runs:
         check_name: Unit Test Results
 
     - name: Set badge color
-      if: ${{ inputs.gist-token != '' }}
       shell: bash
       run: |
         echo " "
@@ -73,7 +72,6 @@ runs:
         esac
 
     - name: Create badge for unit test
-      if: ${{ inputs.gist-token != '' }}
       uses: jpontdia/common-devops/packages/badge@main
       with:
         github-organization: ${{ inputs.github-organization }}
@@ -142,9 +140,18 @@ runs:
           echo "COVERAGE_PROCESS='False'" >> $GITHUB_ENV
         fi
 
+    - name: Summary - Add code coverage
+      shell: bash
+      run: |
+        echo " "
+        echo "*****************************************************"
+        echo "* Debug step"
+        echo "*****************************************************"
+        echo " "            
+        echo " variable COVERAGE_PROCESS = " $COVERAGE_PROCESS
 
     - name: Set the code coverage results as environment variable
-      if: ${{ (inputs.gist-token != '') && (env.COVERAGE_PROCESS=='True') }}
+      if: ${{ env.COVERAGE_PROCESS=='True' }}
       id: json_var
       shell: bash
       run: |
@@ -163,7 +170,7 @@ runs:
         echo "::set-output name=packageJson::$content"
 
     - name: Set badge color
-      if: ${{ (inputs.gist-token != '') && (env.COVERAGE_PROCESS=='True') }}
+      if: ${{ env.COVERAGE_PROCESS=='True' }}
       shell: bash
       run: |
         echo " "
@@ -183,7 +190,7 @@ runs:
         fi
 
     - name: Create badge for code coverage
-      if: ${{ (inputs.gist-token != '') && (env.COVERAGE_PROCESS=='True') }}
+      if: ${{ env.COVERAGE_PROCESS=='True' }}
       uses: jpontdia/common-devops/packages/badge@main
       with:
         github-organization: ${{ inputs.github-organization }}
