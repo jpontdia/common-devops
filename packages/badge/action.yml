@@ -10,6 +10,9 @@ inputs:
   gist-id:
     required: true
     description: Id for the badge gist
+  label:
+    required: true
+    description: label for badge
   status:
     required: true
     description: Text status for the badge
@@ -37,7 +40,7 @@ runs:
       # uses: emibcn/badge-action@d6f51ff11b5c3382b3b88689ae2d6db22d9737d1
       uses: emibcn/badge-action@master
       with:
-        label: Unit test
+        label: ${{ inputs.label }}
         status: ${{ inputs.status }}
         color: ${{ inputs.color }}
         path: ${{ inputs.file }}

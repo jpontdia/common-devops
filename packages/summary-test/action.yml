@@ -77,6 +77,7 @@ runs:
         github-organization: ${{ inputs.github-organization }}
         gist-token: ${{ inputs.gist-token }}
         gist-id: ${{ inputs.gist-id }}
+        label: Unit test
         status: '${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }}'
         color: ${{ env.BADGE_COLOR }}
         file: ${{ steps.service-info.outputs.name }}-ut.svg
@@ -141,22 +142,10 @@ runs:
           # There is no summary report
           # echo "COVERAGE_PROCESS='False'" >> $GITHUB_ENV
           echo "CODE_COVERAGE_EXECUTION=false" >> $GITHUB_OUTPUT
-
         fi
-
-    - name: Summary - Add code coverage
-      shell: bash
-      run: |
-        echo " "
-        echo "*****************************************************"
-        echo "* Debug step"
-        echo "*****************************************************"
-        echo " "            
-        echo " variable COVERAGE_PROCESS = " $COVERAGE_PROCESS
 
     - name: Set the code coverage results as environment variable
       if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
-      #if: ${{ env.COVERAGE_PROCESS=='True' }}
       id: json_var
       shell: bash
       run: |
@@ -176,7 +165,6 @@ runs:
 
     - name: Set badge color
       if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
-      #if: ${{ env.COVERAGE_PROCESS=='True' }}
       shell: bash
       run: |
         echo " "
@@ -197,12 +185,12 @@ runs:
 
     - name: Create badge for code coverage
       if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
-      #if: ${{ env.COVERAGE_PROCESS=='True' }}
       uses: jpontdia/common-devops/packages/badge@main
       with:
         github-organization: ${{ inputs.github-organization }}
         gist-token: ${{ inputs.gist-token }}
         gist-id: ${{ inputs.gist-id }}
+        label: Code coverage
         status: '${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}% of ${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}%'
         color: ${{ env.BADGE_COLOR }}
         file: ${{ steps.service-info.outputs.name }}-cc.svg
