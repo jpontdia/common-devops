@@ -96,9 +96,7 @@ jobs:
           echo "github_gist_id: " $github_gist_id 
           echo "cicd_debug: " $cicd_debug 
 
-      # To investigate. When sending badge-gist-id as $cicd_gist_id IS NOT working only in this step
-      # only works with: ${{ env.cicd_gist_id }}
-      - name: Summary - Unit test cases
+      - name: Summary - Test
         if: ${{ hashFiles('target/surefire-reports/*') != '' }}
         uses: jpontdia/common-devops/packages/summary-test@main
         with:
@@ -106,7 +104,6 @@ jobs:
           gist-id: ${{ env.github_gist_id }}
           gist-token: ${{ env.github_gist_accesstoken }}
           debug: ${{ env.cicd_debug }}
-
 
       - name: Deploy to anypoint exchange
         #if: ${{ false }}    
