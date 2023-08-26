@@ -85,6 +85,7 @@ runs:
     # Code coverage
     # ***************************
     - name: Summary - Add code coverage
+      id: summary-codecoverage
       shell: bash
       run: |
         echo " "
@@ -134,10 +135,13 @@ runs:
           echo "</div>" >> $GITHUB_STEP_SUMMARY
 
           # The coverage process was executed
-          echo "COVERAGE_PROCESS='True'" >> $GITHUB_ENV
+          # echo "COVERAGE_PROCESS='True'" >> $GITHUB_ENV
+          echo "CODE_COVERAGE_EXECUTION=true" >> $GITHUB_OUTPUT
         else
           # There is no summary report
-          echo "COVERAGE_PROCESS='False'" >> $GITHUB_ENV
+          # echo "COVERAGE_PROCESS='False'" >> $GITHUB_ENV
+          echo "CODE_COVERAGE_EXECUTION=false" >> $GITHUB_OUTPUT
+
         fi
 
     - name: Summary - Add code coverage
@@ -151,7 +155,8 @@ runs:
         echo " variable COVERAGE_PROCESS = " $COVERAGE_PROCESS
 
     - name: Set the code coverage results as environment variable
-      if: ${{ env.COVERAGE_PROCESS=='True' }}
+      if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
+      #if: ${{ env.COVERAGE_PROCESS=='True' }}
       id: json_var
       shell: bash
       run: |
@@ -170,7 +175,8 @@ runs:
         echo "::set-output name=packageJson::$content"
 
     - name: Set badge color
-      if: ${{ env.COVERAGE_PROCESS=='True' }}
+      if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
+      #if: ${{ env.COVERAGE_PROCESS=='True' }}
       shell: bash
       run: |
         echo " "
@@ -190,7 +196,8 @@ runs:
         fi
 
     - name: Create badge for code coverage
-      if: ${{ env.COVERAGE_PROCESS=='True' }}
+      if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
+      #if: ${{ env.COVERAGE_PROCESS=='True' }}
       uses: jpontdia/common-devops/packages/badge@main
       with:
         github-organization: ${{ inputs.github-organization }}
