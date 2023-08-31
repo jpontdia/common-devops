@@ -153,7 +153,7 @@ runs:
         echo "******************************************************"
         echo "* Code coverage - export the summary report as env var"
         echo "******************************************************"
-        echo " "  
+        echo " "
 
         content=`cat target/site/munit/coverage/munit-coverage.json`
         # The following lines are only required for multi line json
@@ -162,7 +162,7 @@ runs:
         content="${content//$'\r'/'%0D'}"
 
         echo "debug 11"
-        echo 'CODE_COVERAGE_JSONREPORT=$content' >> $GITHUB_ENV
+        echo "CODE_COVERAGE_JSONREPORT=$content" >> $GITHUB_ENV
         echo "debug 22"
         echo ${{ env.CODE_COVERAGE_JSONREPORT }}
         echo "debug 33"
