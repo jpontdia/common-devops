@@ -161,9 +161,11 @@ runs:
         content="${content//$'\n'/'%0A'}"
         content="${content//$'\r'/'%0D'}"
 
-        echo "debug 1"
+        echo "debug 11"
         echo 'CODE_COVERAGE_JSONREPORT=$content' >> $GITHUB_ENV
-        echo "debug 2"
+        echo "debug 22"
+        echo ${{ env.CODE_COVERAGE_JSONREPORT }}
+        echo "debug 33"
 
 
     - name: Set badge color and code coverage as integer
