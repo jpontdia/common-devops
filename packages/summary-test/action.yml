@@ -153,20 +153,15 @@ runs:
         echo "******************************************************"
         echo "* Code coverage - export the summary report as env var"
         echo "******************************************************"
-        echo " "
+        echo " "  
 
         content=`cat target/site/munit/coverage/munit-coverage.json`
-        # The following lines are only required for multi line json
+        # the following lines are only required for multi line json
         content="${content//'%'/'%25'}"
         content="${content//$'\n'/'%0A'}"
         content="${content//$'\r'/'%0D'}"
-
-        echo "debug 11"
-        echo "CODE_COVERAGE_JSONREPORT=$content" >> $GITHUB_ENV
-        echo "debug 22"
-        echo ${{ env.CODE_COVERAGE_JSONREPORT }}
-        echo "debug 33"
-
+        # end of optional handling for multi line json
+        echo "::set-output name=packageJson::$content"
 
     - name: Set badge color and code coverage as integer
       if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
@@ -177,13 +172,13 @@ runs:
         echo "* Code coverage - Set badge color"
         echo "*****************************************************"
         echo " "      
-        coverage_float=${{ fromJSON(env.CODE_COVERAGE_JSONREPORT).coverage }}
+        coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
         coverage=${coverage_float%.*}
-        minimum=${{ fromJSON(env.CODE_COVERAGE_JSONREPORT).requiredApplicationCoverage }}
+        minimum=${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}
         echo "Application coverage: $coverage"
         echo "Minimum: $minimum"
         
-        echo "CODE_COVERAGE_APPLICATION=$coverage" >> $GITHUB_ENV
+        echo "CODE_COVERAGE=$coverage" >> $GITHUB_ENV
 
         if [[ "$((coverage))" -ge "$((minimum))" ]]; then
           echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
@@ -199,6 +194,6 @@ runs:
         gist-token: ${{ inputs.gist-token }}
         gist-id: ${{ inputs.gist-id }}
         label: Code coverage
-        status: '${{ env.CODE_COVERAGE_APPLICATION }}% of ${{ fromJSON(env.CODE_COVERAGE_JSONREPORT).requiredApplicationCoverage }}%'
+        status: '${{ env.CODE_COVERAGE }}% of ${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}%'
         color: ${{ env.BADGE_COLOR }}
         file: ${{ steps.service-info.outputs.name }}-cc.svg
