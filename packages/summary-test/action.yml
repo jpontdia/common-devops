@@ -156,12 +156,15 @@ runs:
         echo " "  
 
         content=`cat target/site/munit/coverage/munit-coverage.json`
-        # the following lines are only required for multi line json
+        # The following lines are only required for multi line json
         content="${content//'%'/'%25'}"
         content="${content//$'\n'/'%0A'}"
         content="${content//$'\r'/'%0D'}"
-        # end of optional handling for multi line json
-        echo "CODE_COVERAGE_JSONREPORT=$content" >> $GITHUB_ENV
+
+        echo "debug 1"
+        echo 'CODE_COVERAGE_JSONREPORT=$content' >> $GITHUB_ENV
+        echo "debug 2"
+
 
     - name: Set badge color and code coverage as integer
       if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
