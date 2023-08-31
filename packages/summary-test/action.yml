@@ -161,7 +161,7 @@ runs:
         content="${content//$'\n'/'%0A'}"
         content="${content//$'\r'/'%0D'}"
         # end of optional handling for multi line json
-        echo "::set-output name=packageJson::$content"
+        echo "CODE_COVERAGE_JSONREPORT=$content" >> $GITHUB_ENV
 
     - name: Set badge color and code coverage as integer
       if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
@@ -172,13 +172,13 @@ runs:
         echo "* Code coverage - Set badge color"
         echo "*****************************************************"
         echo " "      
-        coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
+        coverage_float=${{ fromJSON(env.CODE_COVERAGE_JSONREPORT).coverage }}
         coverage=${coverage_float%.*}
-        minimum=${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}
+        minimum=${{ fromJSON(env.CODE_COVERAGE_JSONREPORT).requiredApplicationCoverage }}
         echo "Application coverage: $coverage"
         echo "Minimum: $minimum"
         
-        echo "CODE_COVERAGE=$coverage" >> $GITHUB_ENV
+        echo "CODE_COVERAGE_APPLICATION=$coverage" >> $GITHUB_ENV
 
         if [[ "$((coverage))" -ge "$((minimum))" ]]; then
           echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
@@ -194,6 +194,6 @@ runs:
         gist-token: ${{ inputs.gist-token }}
         gist-id: ${{ inputs.gist-id }}
         label: Code coverage
-        status: '${{ env.CODE_COVERAGE }}% of ${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}%'
+        status: '${{ env.CODE_COVERAGE_APPLICATION }}% of ${{ fromJSON(env.CODE_COVERAGE_JSONREPORT).requiredApplicationCoverage }}%'
         color: ${{ env.BADGE_COLOR }}
         file: ${{ steps.service-info.outputs.name }}-cc.svg
