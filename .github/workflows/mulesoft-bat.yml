@@ -67,19 +67,20 @@ jobs:
         run: |
           echo "5. "
           echo "micorpcustomersapi_host: " $micorpcustomersapi_host
+          echo "micorpcustomersapi_dev_host: " $micorpcustomersapi_dev_host
           export test_var="My value"
           echo " "
 
           service_configuration_raw='${{ steps.configuration-service.outputs.configuration-data }}'
           service_configuration_lines=$( echo $service_configuration_raw | tr ' ' '\n' )
           echo -e "Configuration formated:\n$service_configuration_lines "
+          echo " "
 
           echo "$service_configuration_lines" | while read p; do
-            # echo -e '$p' >> $GITHUB_ENV
-            echo "export $p"
+            echo -e "- Variable: "
+            echo "$p"
           done 
           echo "micorpcustomersapi_host: " $micorpcustomersapi_host
-
 
       - name: Debug
         shell: bash
