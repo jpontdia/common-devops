@@ -66,8 +66,9 @@ jobs:
         shell: bash
         run: |
           echo "1. "
-          service_configuration="${{ steps.configuration-service.outputs.configuration-data }}"
+          service_configuration='${{ steps.configuration-service.outputs.configuration-data }}'
           echo "service_configuration: $service_configuration"
+          echo $service_configuration | tr ' ' '\n'
 
 #      - name: Execute Mulesoft BAT
 #        uses: jpontdia/common-devops/packages/bat@main
