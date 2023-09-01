@@ -66,7 +66,7 @@ jobs:
         shell: bash
         run: |
           echo "1. "
-          service_configuration="${{ steps.configuration-cloudhub.outputs.configuration-service }}"
+          service_configuration="${{ steps.configuration-service.outputs.configuration-data }}"
           echo "service_configuration: $service_configuration"
 
 #      - name: Execute Mulesoft BAT
