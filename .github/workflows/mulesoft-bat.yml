@@ -74,7 +74,7 @@ jobs:
 
           echo "$service_configuration_lines" | while read p; do
             # echo -e '$p' >> $GITHUB_ENV
-            echo '$p'
+            echo "$p"
           done 
           echo "micorpcustomersapi_host: " $micorpcustomersapi_host
 
