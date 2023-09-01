@@ -65,13 +65,13 @@ jobs:
       - name: Generate environment variables for the service
         shell: bash
         run: |
-          echo "4. "
+          echo "5. "
           service_configuration_raw='${{ steps.configuration-service.outputs.configuration-data }}'
           service_configuration_lines=$( echo $service_configuration_raw | tr ' ' '\n' )
-          echo -e "Configuration formated:\n $service_configuration_lines "
+          echo -e "Configuration formated:\n$service_configuration_lines "
 
           echo "$service_configuration_lines" | while read p; do
-            echo -e "$p" >> $GITHUB_ENV
+            echo -e '$p' >> $GITHUB_ENV
           done 
 
       - name: Debug
