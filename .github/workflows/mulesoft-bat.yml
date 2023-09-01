@@ -57,15 +57,15 @@ jobs:
         uses: jpontdia/common-devops/packages/configuration-file@main
         with:
           github-configurations-accesstoken: $github_configurations_accesstoken
-          yaml-path: ".properties"
-          suffix: "-${{ env.name }}"
+          yaml-path: ".env"
+          suffix: "-dev"
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
 
       - name: Generate environment variables for the service
         shell: bash
         run: |
-          echo " "
+          echo "1. "
           service_configuration="${{ steps.configuration-cloudhub.outputs.configuration-data }}"
           echo "service_configuration: $service_configuration"
 
