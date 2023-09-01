@@ -57,7 +57,7 @@ jobs:
         uses: jpontdia/common-devops/packages/configuration-file@main
         with:
           github-configurations-accesstoken: $github_configurations_accesstoken
-          yaml-path: ".env-test2"
+          yaml-path: ".env-test3"
           suffix: "-dev"
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
