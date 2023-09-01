@@ -66,13 +66,18 @@ jobs:
         shell: bash
         run: |
           echo "5. "
+          echo "micorpcustomersapi_host: " $micorpcustomersapi_host
+
           service_configuration_raw='${{ steps.configuration-service.outputs.configuration-data }}'
           service_configuration_lines=$( echo $service_configuration_raw | tr ' ' '\n' )
           echo -e "Configuration formated:\n$service_configuration_lines "
 
           echo "$service_configuration_lines" | while read p; do
-            echo -e '$p' >> $GITHUB_ENV
+            # echo -e '$p' >> $GITHUB_ENV
+            echo '$p'
           done 
+          echo "micorpcustomersapi_host: " $micorpcustomersapi_host
+
 
       - name: Debug
         shell: bash
