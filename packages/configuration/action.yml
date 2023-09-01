@@ -47,7 +47,7 @@ runs:
       env:
         SECRET_MAP_FILE: _secrets.env 
       run: |
-        echo
+        echo " "
         echo "*********************************************"
         echo "Get the configuration for secrets"
         echo "*********************************************"
@@ -90,7 +90,7 @@ runs:
       env:
         SECRET_MAP_FILE: _global.yml
       run: |
-        echo
+        echo " "
         echo "*********************************************"
         echo "Get global configuration"
         echo "*********************************************"

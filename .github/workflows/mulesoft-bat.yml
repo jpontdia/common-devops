@@ -18,14 +18,10 @@ on:
       azure-credentials:
         required: true
         description: Azure Credentials for login
-      gist-accesstoken:
-        required: false
-        description: Github Gist personal access token
 env:
   DEFAULT_SETTINGS_XML: settings.xml
   GITHUB_ORGANIZATION: jpontdia
   CONFIGURATIONS_REPOSITORY: common-configurations
-  GIST_ID: ef8cdef1ff940eac4d8716f6361d2363
 
 jobs:
 
@@ -36,7 +32,8 @@ jobs:
   BAT:
     name: BAT
     runs-on: ubuntu-latest
-    # Needed by the Unit Test Action
+    environment:
+      name: dev
     permissions:
       contents: read
       issues: read
@@ -55,28 +52,35 @@ jobs:
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
 
-      - name: Test - Env variables from secrets
-        shell: bash  
-        run: |
-          echo "env variable salesforce_principal: " $salesforce_principal 
+      - id: configuration-service
+        name: Get the configuration properties for the service
+        uses: jpontdia/common-devops/packages/configuration-file@main
+        with:
+          github-configurations-accesstoken: $github_configurations_accesstoken
+          yaml-path: ".properties"
+          suffix: "-${{ env.name }}"
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
 
-      - name: Test - Env variables from yaml
-        shell: bash  
+      - name: Generate environment variables for the service
+        shell: bash
         run: |
-          echo "env variable micorpcustomersapi_dev_host: " $micorpcustomersapi_dev_host 
+          echo " "
+          service_configuration="${{ steps.configuration-cloudhub.outputs.configuration-data }}"
+          echo "service_configuration: $service_configuration"
 
-      - name: Execute Mulesoft BAT
-        uses: jpontdia/common-devops/packages/bat@main
+#      - name: Execute Mulesoft BAT
+#        uses: jpontdia/common-devops/packages/bat@main
     
-      - name: Publish - Test reports
-        uses: actions/upload-artifact@master
-        with:
-            name: dev-testing-reports
-            path: bat/target/*.*
+#      - name: Publish - Test reports
+#        uses: actions/upload-artifact@master
+#        with:
+#            name: dev-testing-reports
+#            path: bat/target/*.*
 
-      - name: Job summary with test results
-        uses: EnricoMi/publish-unit-test-result-action@v2.7.0
-        with:
-          files: |
-            bat/target/JUnit.xml
-          check_name: Dev Integration Test
+#      - name: Job summary with test results
+#        uses: EnricoMi/publish-unit-test-result-action@v2.7.0
+#        with:
+#          files: |
+#            bat/target/JUnit.xml
+#          check_name: Dev Integration Test
