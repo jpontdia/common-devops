@@ -65,7 +65,7 @@ jobs:
       - name: Generate environment variables for the service
         shell: bash
         run: |
-          echo "Using eval. "
+          echo "Split variable and value. 1"
           echo "micorpcustomersapi_host: " $micorpcustomersapi_host
           echo "micorpcustomersapi_dev_host: " $micorpcustomersapi_dev_host
           export test_var="My value"
@@ -77,22 +77,29 @@ jobs:
           echo " "
 
           echo "$service_configuration_lines" | while read p; do
-            echo -e "- Line: $p"
-            IFS='='
-            read -a strarr <<< "$p"
-            echo "Variable name: ${#strarr[0]}, value: ${#strarr[1]}"
-            eval "$p"
-            mytestvar=${#strarr[1]}
+
+            # Get variable and value
+            p=$(echo 'micorpcustomersapi_host=$micorpcustomersapi_dev_host')
+            name="$(cut -d'=' -f1 <<<$p)"
+            value="$(cut -d'=' -f2 <<< $p)"
+            echo "name: " $name
+            echo "value: " $value
+
+            #Override the value with a possible environment variable
+            value_fromvariable=$(eval "echo $value")
+            echo "new value: " $value_fromvariable
+
+            #Create env variable
+            echo "$name=$value_fromvariable" >> $GITHUB_ENV
+
           done 
-          echo "micorpcustomersapi_host: " $micorpcustomersapi_host
-          echo "mytestvar: " $mytestvar
 
       - name: Debug
         shell: bash
         run: |
           echo "Show environment variables "
           echo "micorpcustomersapi_host: " $micorpcustomersapi_host
-          echo "test_var: " $test_var
+          echo "micorpcustomersapi_host: " ${{ env.micorpcustomersapi_host}}
           echo "end...."
 
 #      - name: Execute Mulesoft BAT
