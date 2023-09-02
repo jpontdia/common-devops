@@ -79,9 +79,9 @@ jobs:
           echo "$service_configuration_lines" | while read p; do
 
             # Get variable and value
-            p=$(echo 'micorpcustomersapi_host=$micorpcustomersapi_dev_host')
-            name="$(cut -d'=' -f1 <<<$p)"
-            value="$(cut -d'=' -f2 <<< $p)"
+            line=$(echo "$p")
+            name="$(cut -d'=' -f1 <<<$line)"
+            value="$(cut -d'=' -f2 <<< $line)"
             echo "name: " $name
             echo "value: " $value
 
