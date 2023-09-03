@@ -102,18 +102,18 @@ jobs:
           echo "micorpcustomersapi_host: " ${{ env.micorpcustomersapi_host}}
           echo "end...."
 
-#      - name: Execute Mulesoft BAT
-#        uses: jpontdia/common-devops/packages/bat@main
+      - name: Execute Mulesoft BAT
+        uses: jpontdia/common-devops/packages/bat@main
     
-#      - name: Publish - Test reports
-#        uses: actions/upload-artifact@master
-#        with:
-#            name: dev-testing-reports
-#            path: bat/target/*.*
+      - name: Publish - Test reports
+        uses: actions/upload-artifact@master
+        with:
+            name: dev-testing-reports
+            path: bat/target/*.*
 
-#      - name: Job summary with test results
-#        uses: EnricoMi/publish-unit-test-result-action@v2.7.0
-#        with:
-#          files: |
-#            bat/target/JUnit.xml
-#          check_name: Dev Integration Test
+      - name: Job summary with test results
+        uses: EnricoMi/publish-unit-test-result-action@v2.7.0
+        with:
+          files: |
+            bat/target/JUnit.xml
+          check_name: Dev Integration Test
