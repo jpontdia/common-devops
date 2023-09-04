@@ -44,41 +44,40 @@ jobs:
       - name: Get the source code
         uses: actions/checkout@v3
 
-      - name: test xml in bash
+      - name: Get service metadata from pom.xml
         shell: bash
         run: |
+          echo " "
+          echo "**************************************"
           echo "Getting service info from pom.xml "
+          echo "**************************************"
+
+          # Install libxml2 tools for xmllint
           sudo apt-get install -y libxml2-utils
-          echo " "
-          echo " first command "
-          # xmllint --xpath "//*[local-name()='project']//*[local-name()='name'" pom.xml
-          # xmllint --xpath "/*[local-name()='project']/*[local-name()='name'" pom.xml
-          xmllint --xpath "//*[local-name()='project']/*[local-name()='name']/text()" pom.xml
+
+          # Get info from pom.xml
+          servicename=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='name']/text()" pom.xml)
+          serviceversion=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
+          servicegroup=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='groupId']/text()" pom.xml)
+          serviceartifact=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='artifactId']/text()" pom.xml)
           
+          # Create env variables
+          echo "$service_name=$servicename" >> $GITHUB_ENV
+          echo "$service_version=$serviceversion" >> $GITHUB_ENV
+          echo "$service_group=$servicegroup" >> $GITHUB_ENV
+          echo "$service_artifact=$serviceartifact" >> $GITHUB_ENV
+
           echo " "
-          echo " second command "
-          xmllint --xpath "//*[local-name()='project']/version" pom.xml
-          echo "end...."
-
-
-      - name: Get service name
-        id: service-name
-        uses: mavrosxristoforos/get-xml-info@1.2.0
-        with:
-          xml-file: 'pom.xml'
-          xpath: '//project/name'
-
-      - name: Get service name
-        id: service-version
-        uses: mavrosxristoforos/get-xml-info@1.2.0
-        with:
-          xml-file: 'pom.xml'
-          xpath: '//project/version'
+          echo "Service info:"
+          echo " service_name= " $service_name
+          echo " service_version= " $service_version          
+          echo " service_group= " $service_group
+          echo " service_artifact= " $service_artifact
 
       - name: Debug service xml
         shell: bash
         run: |
           echo "Show environment variables "
-          echo "service_name: " ${{ steps.service-name.outputs.info }}
-          echo "service_version: " ${{ steps.service-version.outputs.info }}
+          echo "service_name: " ${{ env.service_name }}
+          echo "service_version: " $service_version
           echo "end...."
