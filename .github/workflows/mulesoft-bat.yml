@@ -49,8 +49,13 @@ jobs:
         run: |
           echo "Getting service info from pom.xml "
           sudo apt-get install -y libxml2-utils
-          xmllint --xpath "//project/name" pom.xml
-          xmllint --xpath "//project/version" pom.xml
+          echo " "
+          echo " first command "
+          xmllint --xpath "//*[local-name()='project']//*[local-name()='name'" pom.xml
+          
+          echo " "
+          echo " first command "
+          xmllint --xpath "//*[local-name()='project']/version" pom.xml
           echo "end...."
 
 
