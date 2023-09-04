@@ -49,14 +49,14 @@ jobs:
         uses: mavrosxristoforos/get-xml-info@1.2.0
         with:
           xml-file: 'pom.xml'
-          xpath: '/project/name'
+          xpath: '//project//name'
 
       - name: Get service name
         id: service-version
         uses: mavrosxristoforos/get-xml-info@1.2.0
         with:
           xml-file: 'pom.xml'
-          xpath: '/project/version'
+          xpath: '//project//version'
 
       - name: Debug service xml
         shell: bash
