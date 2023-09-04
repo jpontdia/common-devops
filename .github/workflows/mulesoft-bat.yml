@@ -62,17 +62,17 @@ jobs:
           serviceartifact=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='artifactId']/text()" pom.xml)
           
           # Create env variables
-          echo "$service_name=$servicename" >> $GITHUB_ENV
-          echo "$service_version=$serviceversion" >> $GITHUB_ENV
-          echo "$service_group=$servicegroup" >> $GITHUB_ENV
-          echo "$service_artifact=$serviceartifact" >> $GITHUB_ENV
+          echo "service_name=$servicename" >> $GITHUB_ENV
+          echo "service_version=$serviceversion" >> $GITHUB_ENV
+          echo "service_group=$servicegroup" >> $GITHUB_ENV
+          echo "service_artifact=$serviceartifact" >> $GITHUB_ENV
 
           echo " "
           echo "Service info:"
-          echo " service_name= " $service_name
-          echo " service_version= " $service_version          
-          echo " service_group= " $service_group
-          echo " service_artifact= " $service_artifact
+          echo " servicename= " $servicename
+          echo " serviceversion= " $serviceversion          
+          echo " servicegroup= " $servicegroup
+          echo " serviceartifact= " $serviceartifact
 
       - name: Debug service xml
         shell: bash
