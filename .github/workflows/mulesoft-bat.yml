@@ -65,21 +65,17 @@ jobs:
       - name: Generate environment variables for the service
         shell: bash
         run: |
-          echo " "
-          echo "################################################"
-          echo "Generate environment variables for the service
-          echo "################################################"
+          echo "Split variable and value. 1"
+          echo "micorpcustomersapi_host: " $micorpcustomersapi_host
+          echo "micorpcustomersapi_dev_host: " $micorpcustomersapi_dev_host
+          export test_var="My value"
           echo " "
 
-          # Get the configuration for the service
           service_configuration_raw='${{ steps.configuration-service.outputs.configuration-data }}'
-          
-          # Get the configuration organized by lines
           service_configuration_lines=$( echo $service_configuration_raw | tr ' ' '\n' )
           echo -e "Configuration formated:\n$service_configuration_lines "
           echo " "
 
-          # Iterate though the list of environment variables
           echo "$service_configuration_lines" | while read p; do
 
             # Get variable and value
@@ -97,6 +93,14 @@ jobs:
             echo "$name=$value_fromvariable" >> $GITHUB_ENV
 
           done 
+
+      - name: Debug
+        shell: bash
+        run: |
+          echo "Show environment variables "
+          echo "micorpcustomersapi_host: " $micorpcustomersapi_host
+          echo "micorpcustomersapi_host: " ${{ env.micorpcustomersapi_host}}
+          echo "end...."
 
       - name: Execute Mulesoft BAT
         uses: jpontdia/common-devops/packages/bat@main
