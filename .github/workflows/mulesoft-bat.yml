@@ -44,6 +44,28 @@ jobs:
       - name: Get the source code
         uses: actions/checkout@v3
 
+      - name: Get service name
+        id: service-name
+        uses: mavrosxristoforos/get-xml-info@1.2.0
+        with:
+          xml-file: 'pom.xml'
+          xpath: '//name'
+
+      - name: Get service name
+        id: service-version
+        uses: mavrosxristoforos/get-xml-info@1.2.0
+        with:
+          xml-file: 'pom.xml'
+          xpath: '//version'
+
+      - name: Debug service xml
+        shell: bash
+        run: |
+          echo "Show environment variables "
+          echo "service_name: " ${{ steps.service-name.outputs.info }}
+          echo "service_version: " ${{ steps.service-version.outputs.info }}
+          echo "end...."
+
       - name: Get global configuration for the pipeline
         uses: jpontdia/common-devops/packages/configuration@main
         with:
@@ -65,17 +87,21 @@ jobs:
       - name: Generate environment variables for the service
         shell: bash
         run: |
-          echo "Split variable and value. 1"
-          echo "micorpcustomersapi_host: " $micorpcustomersapi_host
-          echo "micorpcustomersapi_dev_host: " $micorpcustomersapi_dev_host
-          export test_var="My value"
+          echo " "
+          echo "################################################"
+          echo "Generate environment variables for the service
+          echo "################################################"
           echo " "
 
+          # Get the configuration for the service
           service_configuration_raw='${{ steps.configuration-service.outputs.configuration-data }}'
+          
+          # Get the configuration organized by lines
           service_configuration_lines=$( echo $service_configuration_raw | tr ' ' '\n' )
           echo -e "Configuration formated:\n$service_configuration_lines "
           echo " "
 
+          # Iterate though the list of environment variables
           echo "$service_configuration_lines" | while read p; do
 
             # Get variable and value
@@ -102,18 +128,19 @@ jobs:
           echo "micorpcustomersapi_host: " ${{ env.micorpcustomersapi_host}}
           echo "end...."
 
-      - name: Execute Mulesoft BAT
-        uses: jpontdia/common-devops/packages/bat@main
-    
-      - name: Publish - Test reports
-        uses: actions/upload-artifact@master
-        with:
-            name: dev-testing-reports
-            path: bat/target/*.*
 
-      - name: Job summary with test results
-        uses: EnricoMi/publish-unit-test-result-action@v2.7.0
-        with:
-          files: |
-            bat/target/JUnit.xml
-          check_name: Dev Integration Test
+#      - name: Execute Mulesoft BAT
+#        uses: jpontdia/common-devops/packages/bat@main
+    
+#      - name: Publish - Test reports
+#        uses: actions/upload-artifact@master
+#        with:
+#            name: dev-testing-reports
+#            path: bat/target/*.*
+
+#      - name: Job summary with test results
+#        uses: EnricoMi/publish-unit-test-result-action@v2.7.0
+#        with:
+#          files: |
+#            bat/target/JUnit.xml
+#          check_name: Dev Integration Test
