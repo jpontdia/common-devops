@@ -44,40 +44,72 @@ jobs:
       - name: Get the source code
         uses: actions/checkout@v3
 
-      - name: Get service metadata from pom.xml
+      - name: Get global configuration for the pipeline
+        uses: jpontdia/common-devops/packages/configuration@main
+        with:
+          keyvault-key: ${{ inputs.keyvault-key }}
+          azure-credentials: ${{ secrets.azure-credentials }}
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
+
+      - id: configuration-service
+        name: Get the configuration properties for the service
+        uses: jpontdia/common-devops/packages/configuration-file@main
+        with:
+          github-configurations-accesstoken: $github_configurations_accesstoken
+          yaml-path: ".env"
+          suffix: "-dev"
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
+
+      - name: Generate environment variables for the service
         shell: bash
         run: |
           echo " "
-          echo "**************************************"
-          echo "Getting service info from pom.xml "
-          echo "**************************************"
+          echo "################################################"
+          echo "Generate environment variables for the service
+          echo "################################################"
+          echo " "
 
-          # Install libxml2 tools for xmllint
-          sudo apt-get install -y libxml2-utils
-
-          # Get info from pom.xml
-          servicename=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='name']/text()" pom.xml)
-          serviceversion=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
-          servicegroup=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='groupId']/text()" pom.xml)
-          serviceartifact=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='artifactId']/text()" pom.xml)
+          # Get the configuration for the service
+          service_configuration_raw='${{ steps.configuration-service.outputs.configuration-data }}'
           
-          # Create env variables
-          echo "service_name=$servicename" >> $GITHUB_ENV
-          echo "service_version=$serviceversion" >> $GITHUB_ENV
-          echo "service_group=$servicegroup" >> $GITHUB_ENV
-          echo "service_artifact=$serviceartifact" >> $GITHUB_ENV
-
+          # Get the configuration organized by lines
+          service_configuration_lines=$( echo $service_configuration_raw | tr ' ' '\n' )
+          echo -e "Configuration formated:\n$service_configuration_lines "
           echo " "
-          echo "Service info:"
-          echo " servicename= " $servicename
-          echo " serviceversion= " $serviceversion          
-          echo " servicegroup= " $servicegroup
-          echo " serviceartifact= " $serviceartifact
 
-      - name: Debug service xml
-        shell: bash
-        run: |
-          echo "Show environment variables "
-          echo "service_name: " ${{ env.service_name }}
-          echo "service_version: " $service_version
-          echo "end...."
+          # Iterate though the list of environment variables
+          echo "$service_configuration_lines" | while read p; do
+
+            # Get variable and value
+            line=$(echo "$p")
+            name="$(cut -d'=' -f1 <<<$line)"
+            value="$(cut -d'=' -f2 <<< $line)"
+            echo "name: " $name
+            echo "value: " $value
+
+            #Override the value with a possible environment variable
+            value_fromvariable=$(eval "echo $value")
+            echo "new value: " $value_fromvariable
+
+            #Create env variable
+            echo "$name=$value_fromvariable" >> $GITHUB_ENV
+
+          done 
+
+      - name: Execute Mulesoft BAT
+        uses: jpontdia/common-devops/packages/bat@main
+    
+      - name: Publish - Test reports
+        uses: actions/upload-artifact@master
+        with:
+            name: dev-testing-reports
+            path: bat/target/*.*
+
+      - name: Job summary with test results
+        uses: EnricoMi/publish-unit-test-result-action@v2.7.0
+        with:
+          files: |
+            bat/target/JUnit.xml
+          check_name: Dev Integration Test
