@@ -51,7 +51,9 @@ jobs:
           sudo apt-get install -y libxml2-utils
           echo " "
           echo " first command "
-          xmllint --xpath "//*[local-name()='project']//*[local-name()='name'" pom.xml
+          # xmllint --xpath "//*[local-name()='project']//*[local-name()='name'" pom.xml
+
+          xmllint --xpath "/*[local-name()='project']/*[local-name()='name'" pom.xml
           
           echo " "
           echo " first command "
@@ -80,82 +82,3 @@ jobs:
           echo "service_name: " ${{ steps.service-name.outputs.info }}
           echo "service_version: " ${{ steps.service-version.outputs.info }}
           echo "end...."
-
-      - name: Get global configuration for the pipeline
-        uses: jpontdia/common-devops/packages/configuration@main
-        with:
-          keyvault-key: ${{ inputs.keyvault-key }}
-          azure-credentials: ${{ secrets.azure-credentials }}
-          github-organization: $GITHUB_ORGANIZATION
-          configurations-repository: $CONFIGURATIONS_REPOSITORY
-
-      - id: configuration-service
-        name: Get the configuration properties for the service
-        uses: jpontdia/common-devops/packages/configuration-file@main
-        with:
-          github-configurations-accesstoken: $github_configurations_accesstoken
-          yaml-path: ".env"
-          suffix: "-dev"
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
-          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
-
-      - name: Generate environment variables for the service
-        shell: bash
-        run: |
-          echo " "
-          echo "################################################"
-          echo "Generate environment variables for the service
-          echo "################################################"
-          echo " "
-
-          # Get the configuration for the service
-          service_configuration_raw='${{ steps.configuration-service.outputs.configuration-data }}'
-          
-          # Get the configuration organized by lines
-          service_configuration_lines=$( echo $service_configuration_raw | tr ' ' '\n' )
-          echo -e "Configuration formated:\n$service_configuration_lines "
-          echo " "
-
-          # Iterate though the list of environment variables
-          echo "$service_configuration_lines" | while read p; do
-
-            # Get variable and value
-            line=$(echo "$p")
-            name="$(cut -d'=' -f1 <<<$line)"
-            value="$(cut -d'=' -f2 <<< $line)"
-            echo "name: " $name
-            echo "value: " $value
-
-            #Override the value with a possible environment variable
-            value_fromvariable=$(eval "echo $value")
-            echo "new value: " $value_fromvariable
-
-            #Create env variable
-            echo "$name=$value_fromvariable" >> $GITHUB_ENV
-
-          done 
-
-      - name: Debug
-        shell: bash
-        run: |
-          echo "Show environment variables "
-          echo "micorpcustomersapi_host: " $micorpcustomersapi_host
-          echo "micorpcustomersapi_host: " ${{ env.micorpcustomersapi_host}}
-          echo "end...."
-
-
-#      - name: Execute Mulesoft BAT
-#        uses: jpontdia/common-devops/packages/bat@main
-    
-#      - name: Publish - Test reports
-#        uses: actions/upload-artifact@master
-#        with:
-#            name: dev-testing-reports
-#            path: bat/target/*.*
-
-#      - name: Job summary with test results
-#        uses: EnricoMi/publish-unit-test-result-action@v2.7.0
-#        with:
-#          files: |
-#            bat/target/JUnit.xml
-#          check_name: Dev Integration Test
