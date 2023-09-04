@@ -52,11 +52,11 @@ jobs:
           echo " "
           echo " first command "
           # xmllint --xpath "//*[local-name()='project']//*[local-name()='name'" pom.xml
-
-          xmllint --xpath "/*[local-name()='project']/*[local-name()='name'" pom.xml
+          # xmllint --xpath "/*[local-name()='project']/*[local-name()='name'" pom.xml
+          xmllint --xpath "//*[local-name()='project']/*[local-name()='name']/text()" pom.xml
           
           echo " "
-          echo " first command "
+          echo " second command "
           xmllint --xpath "//*[local-name()='project']/version" pom.xml
           echo "end...."
 
