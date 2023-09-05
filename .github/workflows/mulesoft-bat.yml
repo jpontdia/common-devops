@@ -65,42 +65,41 @@ jobs:
       - name: Generate environment variables for the service
         shell: bash
         run: |
-          echo "Split variable and value. 1"
-          echo "micorpcustomersapi_host: " $micorpcustomersapi_host
-          echo "micorpcustomersapi_dev_host: " $micorpcustomersapi_dev_host
-          export test_var="My value"
+          echo " "
+          echo "***********************************************"
+          echo "Generate environment variables for the service "
+          echo "***********************************************"
           echo " "
 
           service_configuration_raw='${{ steps.configuration-service.outputs.configuration-data }}'
-          service_configuration_lines=$( echo $service_configuration_raw | tr ' ' '\n' )
-          echo -e "Configuration formated:\n$service_configuration_lines "
-          echo " "
 
-          echo "$service_configuration_lines" | while read p; do
+          if [ "$pathdata" = "null" ] ; then
+            echo "** The yaml path was not found with the environment variables section, returning empty response"
+            pathdata=""
+          else
+            service_configuration_lines=$( echo $service_configuration_raw | tr ' ' '\n' )
+            echo -e "Configuration formated:\n$service_configuration_lines "
+            echo " "
 
-            # Get variable and value
-            line=$(echo "$p")
-            name="$(cut -d'=' -f1 <<<$line)"
-            value="$(cut -d'=' -f2 <<< $line)"
-            echo "name: " $name
-            echo "value: " $value
+            echo "Variables found: "
+            echo "$service_configuration_lines" | while read p; do
 
-            #Override the value with a possible environment variable
-            value_fromvariable=$(eval "echo $value")
-            echo "new value: " $value_fromvariable
+              # Get variable and value
+              line=$(echo "$p")
+              name="$(cut -d'=' -f1 <<<$line)"
+              value="$(cut -d'=' -f2 <<< $line)"
+              echo "- name: " $name
+              echo "  value: " $value
 
-            #Create env variable
-            echo "$name=$value_fromvariable" >> $GITHUB_ENV
+              # Override the value with a possible environment variable
+              value_fromvariable=$(eval "echo $value")
+              echo "  new value: " $value_fromvariable
 
-          done 
+              echo "  Create environment variable"
+              echo "$name=$value_fromvariable" >> $GITHUB_ENV
 
-      - name: Debug
-        shell: bash
-        run: |
-          echo "Show environment variables "
-          echo "micorpcustomersapi_host: " $micorpcustomersapi_host
-          echo "micorpcustomersapi_host: " ${{ env.micorpcustomersapi_host}}
-          echo "end...."
+            done          
+          fi
 
       - name: Execute Mulesoft BAT
         uses: jpontdia/common-devops/packages/bat@main
