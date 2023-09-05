@@ -21,7 +21,7 @@ inputs:
     - dev
     - tst
     - prd
-    - package
+    - unit-test
 runs:
   using: "composite"
   steps:

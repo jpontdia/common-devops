@@ -1,0 +1,66 @@
+name: 'Get configuration file'
+description: 'Get the configuration file for the service defined in pom.xml'
+inputs:
+  github-organization:
+    required: true
+    description: Name of the github organization that is used to locate the secrets mapping file
+  configurations-repository:
+    required: true
+    description: Name of the repository for mulesoft configurations
+  github-configurations-accesstoken:
+    required: true
+    description: Token to access the configuration repository
+  service-name:
+    required: true
+    description: Name of the service
+  yaml-path: 
+    required: true
+    description: Path to get the node in the yaml file
+  prefix:
+    required: false
+    default: ""
+    description: Prefix for the configuration file
+  suffix:
+    required: false
+    default: ""
+    description: Suffix for the configuration file
+outputs:
+  configuration-data:
+    description: "The contents of the configuration file"
+    value: ${{ steps.configuration.outputs.configuration-data }}
+runs:
+  using: "composite"
+  steps:
+    
+    - id: configuration
+      name: Get configuration for the service 
+      shell: bash
+      run: |
+        echo " "
+        echo "*************************************************"
+        echo "* Get the configuration file for the service"
+        echo "*************************************************"
+
+        # Get the configuration file for the service
+        configurationfile=$(echo "${{ inputs.prefix }}${{ inputs.service-name }}${{ inputs.suffix }}.yml")
+        urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$configurationfile"
+        echo "Getting file: $urlconfigurationfile"
+        configurationdata=$(curl -sH "Authorization: token ${{ inputs.github-configurations-accesstoken}}" $urlconfigurationfile)
+        pathdata=""
+
+        # Verify if configuration file was found
+        if [[ $configurationdata != *"Not Found"* ]]; then
+          echo "A configuration file for the service was found, getting the yaml path: ${{ inputs.yaml-path}}"
+          pathdata=$(echo "$configurationdata" | yq -r "${{ inputs.yaml-path}}")
+          if [ "$pathdata" = "null" ] ; then
+            echo "The yaml path was not found, returning empty response"
+            pathdata=""
+          fi
+        else
+          echo "No configuration file found, returning empty response"
+        fi
+
+        # Replace environment variables
+        echo "Configuration data: $pathdata"
+        echo "configuration-data=$(echo $pathdata)" >> $GITHUB_OUTPUT
+        echo " "
