@@ -13,6 +13,15 @@ inputs:
   configurations-repository:
     required: true
     description: Name of the repository for mulesoft configurations
+  environmenta:
+    required: false
+    description: Get the configuration the the specified environment
+    type: choice
+    options:
+    - dev
+    - tst
+    - prd
+    - package
 runs:
   using: "composite"
   steps:
