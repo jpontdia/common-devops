@@ -139,6 +139,7 @@ runs:
         echo "**************************************"
         echo "Getting service metadata from pom.xml "
         echo "**************************************"
+        echo " "
 
         # Install libxml2 tools for xmllint
         sudo apt-get install -y libxml2-utils
@@ -149,15 +150,15 @@ runs:
         servicegroup=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='groupId']/text()" pom.xml)
         serviceartifact=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='artifactId']/text()" pom.xml)
         
-        # Create env variables
+        echo "Create environment variables"
         echo "service_name=$servicename" >> $GITHUB_ENV
         echo "service_version=$serviceversion" >> $GITHUB_ENV
         echo "service_group=$servicegroup" >> $GITHUB_ENV
         echo "service_artifact=$serviceartifact" >> $GITHUB_ENV
 
         echo " "
-        echo "Service info:"
-        echo " servicename= " $servicename
-        echo " serviceversion= " $serviceversion          
-        echo " servicegroup= " $servicegroup
-        echo " serviceartifact= " $serviceartifact
+        echo "Service information:"
+        echo "  servicename= " $servicename
+        echo "  serviceversion= " $serviceversion          
+        echo "  servicegroup= " $servicegroup
+        echo "  serviceartifact= " $serviceartifact

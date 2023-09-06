@@ -42,7 +42,7 @@ runs:
     run: |
       echo " "
       echo "***********************************************"
-      echo "Run test cases and package
+      echo "Run test cases and package"
       echo "***********************************************"
       echo " "
       echo "skiptest flag: ${{steps.configuration-skiptest.outputs.configuration-data}} "
@@ -54,4 +54,5 @@ runs:
         echo "  Asset will be tested"
       fi
 
-      mvn --batch-mode $skiptest package
+      echo " Using maven to run test cases and package Mulesoft application"
+      mvn --batch-mode $skiptest package ${{ steps.configuration-tests.outputs.configuration-data }}
