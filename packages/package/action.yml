@@ -44,7 +44,7 @@ runs:
       echo "* Run test cases and package
       echo "***********************************************"
       echo " "
-      echo "skiptest output: >${{steps.configuration-skiptest.outputs.configuration-data}}<"
+      echo "skiptest flag: ${{steps.configuration-skiptest.outputs.configuration-data}} "
       skiptest=" "
       if [[ "${{ steps.configuration-skiptest.outputs.configuration-data }}" == "true" ]]; then
         skiptest="-DskipTests"
