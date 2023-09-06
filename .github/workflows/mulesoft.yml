@@ -51,12 +51,13 @@ jobs:
         uses: jpontdia/common-devops/packages/install-mulesoft-java@main
 
       - name: Get global configuration for the pipeline
-        uses: jpontdia/common-devops/packages/configuration@main
+        uses: jpontdia/common-devops/packages/configuration-service@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
+          environment: unit-test
 
       - name: Settings file for maven
         uses: jpontdia/common-devops/packages/settings-maven@main

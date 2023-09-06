@@ -13,8 +13,8 @@ inputs:
   configurations-repository:
     required: true
     description: Name of the repository for mulesoft configurations
-  environmenta:
-    required: false
+  environment:
+    required: true
     description: Get the configuration the the specified environment
     type: choice
     options:
@@ -162,3 +162,61 @@ runs:
         echo "  serviceversion= " $serviceversion          
         echo "  servicegroup= " $servicegroup
         echo "  serviceartifact= " $serviceartifact
+
+    - name: Environment information
+      shell: bash
+      run: |
+        echo " "
+        echo "**************************************"
+        echo "Configuration for environment: {{ inputs.environment }} "
+        echo "**************************************"
+        echo " "
+
+    - name: Get the properties for settings
+      id: configuration-settings
+      if: ${{ inputs.environment == 'unit-test' }}
+      uses: jpontdia/common-devops/packages/configuration-file@main
+      with:
+        github-configurations-accesstoken: $github_configurations_accesstoken
+        yaml-path: ".settings"
+        github-organization: $GITHUB_ORGANIZATION
+        configurations-repository: $CONFIGURATIONS_REPOSITORY
+
+    - name: Get the skiptest property for the service
+      id: configuration-skiptest
+      if: ${{ inputs.environment == 'unit-test' }}
+      uses: jpontdia/common-devops/packages/configuration-file@main
+      with:
+        github-configurations-accesstoken: $github_configurations_accesstoken
+        yaml-path: ".skiptests"
+        github-organization: ${{ inputs.github-organization }}
+        configurations-repository: ${{ inputs.configurations-repository }} 
+
+    - name: Get the properties for unit test
+      id: configuration-unittest
+      if: ${{ inputs.environment == 'unit-test' }}
+      uses: jpontdia/common-devops/packages/configuration-file@main
+      with:
+        github-configurations-accesstoken: $github_configurations_accesstoken
+        yaml-path: ".test-properties"
+        github-organization: $GITHUB_ORGANIZATION
+        configurations-repository: $CONFIGURATIONS_REPOSITORY
+
+    - name: Environment information
+      shell: bash
+      run: |
+        echo " "
+        echo "**************************************************"
+        echo "Create environment variables for the configuration"
+        echo "**************************************************"
+        echo " "
+        echo "configuration_settings=${{steps.configuration-settings.outputs.configuration-data}}" >> $GITHUB_ENV
+        echo "configuration_skiptest=${{steps.configuration-skiptest.outputs.configuration-data}}" >> $GITHUB_ENV
+        echo "configuration_unittest=${{ steps.configuration-unittest.outputs.configuration-data }}" >> $GITHUB_ENV
+
+        echo " "
+        echo "Configuration variables:"
+        echo "  configuration_settings= " $configuration_settings
+        echo "  configuration_skiptest= " $configuration_skiptest          
+        echo "  configuration_unittest= " $configuration_unittest
+        
