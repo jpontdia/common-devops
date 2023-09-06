@@ -89,13 +89,6 @@ jobs:
           configurations-repository: $CONFIGURATIONS_REPOSITORY
           github-configurations-accesstoken: $github_configurations_accesstoken
 
-      - name: Debug - global variables
-        #if: ${{ false }}    
-        run: |
-          ## Global variables
-          echo "github_gist_id: " $github_gist_id 
-          echo "cicd_debug: " $cicd_debug 
-
       - name: Summary - Test
         if: ${{ hashFiles('target/surefire-reports/*') != '' }}
         uses: jpontdia/common-devops/packages/summary-test@main

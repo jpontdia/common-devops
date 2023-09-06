@@ -13,6 +13,15 @@ inputs:
   configurations-repository:
     required: true
     description: Name of the repository for mulesoft configurations
+  environmenta:
+    required: false
+    description: Get the configuration the the specified environment
+    type: choice
+    options:
+    - dev
+    - tst
+    - prd
+    - unit-test
 runs:
   using: "composite"
   steps:
@@ -117,3 +126,33 @@ runs:
       uses: zlatko-ms/varfiletoenv@v3
       with:
         paths: global.yml
+
+    - name: Get service metadata from pom.xml
+      shell: bash
+      run: |
+        echo " "
+        echo "**************************************"
+        echo "Getting service metadata from pom.xml "
+        echo "**************************************"
+
+        # Install libxml2 tools for xmllint
+        sudo apt-get install -y libxml2-utils
+
+        # Get info from pom.xml
+        servicename=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='name']/text()" pom.xml)
+        serviceversion=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
+        servicegroup=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='groupId']/text()" pom.xml)
+        serviceartifact=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='artifactId']/text()" pom.xml)
+        
+        # Create env variables
+        echo "service_name=$servicename" >> $GITHUB_ENV
+        echo "service_version=$serviceversion" >> $GITHUB_ENV
+        echo "service_group=$servicegroup" >> $GITHUB_ENV
+        echo "service_artifact=$serviceartifact" >> $GITHUB_ENV
+
+        echo " "
+        echo "Service info:"
+        echo " servicename= " $servicename
+        echo " serviceversion= " $serviceversion          
+        echo " servicegroup= " $servicegroup
+        echo " serviceartifact= " $serviceartifact
