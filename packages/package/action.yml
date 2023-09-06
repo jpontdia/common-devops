@@ -37,6 +37,7 @@ runs:
       configurations-repository: $CONFIGURATIONS_REPOSITORY
 
   - name: Run test cases and package
+    id: run-test-cases
     shell: bash
     run: |
       echo " "
@@ -53,5 +54,4 @@ runs:
         echo "  Asset will be tested"
       fi
 
-      #mvn --batch-mode $skiptest package ${{ steps.configuration-tests.outputs.configuration-data }}
       mvn --batch-mode $skiptest package

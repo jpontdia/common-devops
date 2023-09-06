@@ -30,7 +30,12 @@ runs:
       if: ${{ false }}
       shell: bash
       run: |
+        echo " "
+        echo "*********************************************"      
         echo "DEBUG variables"
+        echo "*********************************************"
+        echo " "
+
         tempvar=$( echo "${{ inputs.azure-credentials }}" | sed 's/./& /g' )
         echo "Value for inputs.azure-credentials: $tempvar" 
 
