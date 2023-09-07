@@ -210,45 +210,6 @@ jobs:
           configurations-repository: $CONFIGURATIONS_REPOSITORY
           environment: dev
 
-      - name: Generate environment variables for the service
-        shell: bash
-        run: |
-          echo " "
-          echo "***********************************************"
-          echo "Generate environment variables for the service "
-          echo "***********************************************"
-          echo " "
-
-          service_configuration_raw='${{ env.configuration_env }}'
-
-          if [ "$pathdata" = "null" ] ; then
-            echo "** The yaml path was not found with the environment variables section, returning empty response"
-            pathdata=""
-          else
-            service_configuration_lines=$( echo $service_configuration_raw | tr ' ' '\n' )
-            echo -e "Configuration formated:\n$service_configuration_lines "
-            echo " "
-
-            echo "Variables found: "
-            echo "$service_configuration_lines" | while read p; do
-
-              # Get variable and value
-              line=$(echo "$p")
-              name="$(cut -d'=' -f1 <<<$line)"
-              value="$(cut -d'=' -f2 <<< $line)"
-              echo "- name: " $name
-              echo "  value: " $value
-
-              # Override the value with a possible environment variable
-              value_fromvariable=$(eval "echo $value")
-              echo "  new value: " $value_fromvariable
-
-              echo "  Create environment variable"
-              echo "$name=$value_fromvariable" >> $GITHUB_ENV
-
-            done          
-          fi
-
       - name: Execute Mulesoft BAT
         uses: jpontdia/common-devops/packages/bat@main
     

@@ -31,9 +31,9 @@ runs:
       shell: bash
       run: |
         echo " "
-        echo "*****************************************************"
-        echo "Verify if asset must be deployed to an environment "
-        echo "*****************************************************"
+        echo "*************************************"
+        echo "Debug - Verify deployment to ${{ inputs.environment }} "
+        echo "*************************************"
         echo " "
         echo "Input variables: "
         echo "  github-configurations-accesstoken: $(echo ${{inputs.github-configurations-accesstoken}} | sed 's/./& /g')"  
@@ -41,8 +41,8 @@ runs:
         echo "  github-organization: ${{ inputs.github-organization }}"
         echo " "
 
-    - id: dev-configuration-cloudhub
-      name: Deployment dev - Get configuration
+    - id: configuration-cloudhub
+      name: Get configuration for CloudHub
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
         github-configurations-accesstoken: ${{ inputs.github-configurations-accesstoken }}
@@ -55,10 +55,15 @@ runs:
       name: Deployment dev - Verify if asset has the configuration
       shell: bash
       run: |
-        echo "dev cloudhub: ${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}"
-        if [ "${{ steps.dev-configuration-cloudhub.outputs.configuration-data }}" != "" ] ; then
+        echo " "
+        echo "*****************************************************"
+        echo "Verify deployment to ${{ inputs.environment }} "
+        echo "*****************************************************"
+        echo " "      
+        echo "dev cloudhub: ${{ steps.configuration-cloudhub.outputs.configuration-data }}"
+        if [ "${{ steps.configuration-cloudhub.outputs.configuration-data }}" != "" ] ; then
           echo "deployment=true" >> $GITHUB_OUTPUT
-          echo "The service has the configuration to deploy in development environment"
+          echo "The service has the configuration to deploy in ${{ inputs.environment }} environment"
         else
           echo "deployment=false" >> $GITHUB_OUTPUT
           echo "The mulesoft asset doesn't have any deployment configuration"
