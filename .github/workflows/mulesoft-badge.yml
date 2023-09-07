@@ -50,13 +50,14 @@ jobs:
       - name: Install Java JDK for Mulesoft Applications
         uses: jpontdia/common-devops/packages/install-mulesoft-java@main
 
-      - name: Get default secrets for the pipeline
-        uses: jpontdia/common-devops/packages/configuration@main
+      - name: Get global configuration for the pipeline
+        uses: jpontdia/common-devops/packages/configuration-service@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
+          environment: dev
 
       - name: Settings file for maven
         uses: jpontdia/common-devops/packages/settings-maven@main
