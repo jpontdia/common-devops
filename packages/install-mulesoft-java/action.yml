@@ -48,7 +48,7 @@ runs:
           echo "The settings.xml file was not configured for the service, assigning the default one"
         else
           echo "Assigning the settings file specified in the configuration for the service"
-          settings_xml= "$configuration_settings"
+          settings_xml="$configuration_settings"
         fi
 
         echo "Getting next settings file from configuration repository: $settings_xml"
