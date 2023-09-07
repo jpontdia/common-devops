@@ -1,18 +1,65 @@
 name: 'Execute Mulesoft BAT'
 description: 'Execute Mulesoft BAT'
+inputs:
+  keyvault-key:
+    required: true
+    description: The name of the KeyVault
+  azure-credentials:
+    required: true
+    description: Azure Credentials for login
+  github-organization:
+    required: true
+    description: Name of the github organization that is used to locate the secrets mapping file
+  configurations-repository:
+    required: true
+    description: Name of the repository for mulesoft configurations
+  deployment-env:
+    required: true
+    description: Deployment environment for the service
 
 runs:
   using: "composite"
   steps:
+
+    - name: Get the source code
+      uses: actions/checkout@v3
+
+    - name: Get global configuration for the pipeline
+      uses: jpontdia/common-devops/packages/configuration-service@main
+      if: ${{ hashFiles('bat') != '' }}
+      with:
+        keyvault-key: ${{ inputs.keyvault-key }}
+        azure-credentials: ${{ inputs.azure-credentials }}
+        github-organization:  ${{ inputs.github-organization }}
+        configurations-repository: ${{ inputs.configurations-repository}}
+        environment: ${{ inputs.deployment-env }}
+
     - name: Install Mulesoft BAT
       shell: bash
+      if: ${{ hashFiles('bat') != '' }}
       run: |
           curl -o- 'https://s3.amazonaws.com/bat-wrapper/install.sh' | bash
           echo "bat -version: $(bat -version)"
 
     - name: Run tests
+      if: ${{ hashFiles('bat') != '' }}
       shell: bash  
       run: |
         cd bat
         mkdir target
         bat
+
+    - name: Publish - Test reports
+      uses: actions/upload-artifact@master
+      if: ${{ hashFiles('bat') != '' }}
+      with:
+          name: dev-testing-reports
+          path: bat/target/*.*
+
+    - name: Job summary with test results
+      uses: EnricoMi/publish-unit-test-result-action@v2.7.0
+      if: ${{ hashFiles('bat') != '' }}
+      with:
+        files: |
+          bat/target/JUnit.xml
+        check_name: Dev Integration Test        
