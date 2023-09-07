@@ -31,7 +31,8 @@ runs:
   using: "composite"
   steps:
     - id: deployment
-      name: Deploy the service to the cloud 
+      name: Deploy the service to the cloud
+      shell: bash
       run: |
           echo " "
           echo "***************************************"
@@ -168,4 +169,3 @@ runs:
             fi
           fi
           echo " "
-      shell: bash
