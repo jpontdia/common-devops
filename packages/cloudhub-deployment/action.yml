@@ -43,9 +43,27 @@ runs:
       configurations-repository: ${{ inputs.configurations-repository }}
       environment: ${{ inputs.deployment-env }}
 
-  - id: install-anypoint-cli
-    name: Install Mulesoft Anypoint CLI
-    uses: jpontdia/common-devops/packages/install-anypoint-cli@main
+  - name: Install NodeJs
+    uses: actions/setup-node@v3
+    with:
+      node-version: 18
+
+  - name: Install Anypoint CLI
+    shell: bash
+    run: |
+      echo " "
+      echo "***************************************"
+      echo "Install Anypoint CLI"
+      echo "***************************************"
+      echo " "
+      echo "Install anypoint-cli-v4..."
+      npm install -g anypoint-cli-v4
+      echo "anypoint-cli-v4 --version: "
+      anypoint-cli-v4 --version
+      echo " "
+      echo "Installing cloudhub-plugin"
+      anypoint-cli-v4 plugins:install anypoint-cli-cloudhub-plugin
+      echo " "
 
   - id: deployment
     name: Deploy the service to the cloud

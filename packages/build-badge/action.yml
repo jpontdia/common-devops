@@ -32,7 +32,7 @@ runs:
       run: |
         echo " "
         echo "*****************************************************"
-        echo "* Create badge"
+        echo "Create badge"
         echo "*****************************************************"
         echo " "            
 
@@ -50,19 +50,9 @@ runs:
       run: |
         echo " "
         echo "*****************************************************"
-        echo "* Upload badge"
+        echo "Upload badge"
         echo "*****************************************************"
-        echo " "            
-
-    # Just testing this other action
-    - name: Upload badge to Gist
-      if: ${{ false }}
-      uses: exuanbo/actions-deploy-gist@v1
-      with:
-        token: ${{ inputs.gist-token }}
-        gist_id: ${{ inputs.github-organization }}/${{ inputs.gist-id }}
-        file_path: ${{ steps.service-info.outputs.name }}-ut.svg
-        file_type: binary
+        echo " "
 
     - name: Upload badge to Gist
       uses: jpontdia/append-gist-action@master

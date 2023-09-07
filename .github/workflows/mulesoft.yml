@@ -67,7 +67,7 @@ jobs:
       - name: Documentation - Anypoint Exchange
         run: |
           echo " "
-          if [ -d "exchange-docs" ] then
+          if [ -d "exchange-docs" ]; then
               echo "Directory exchange-docs exists and will not be overriden with README.md" 
           else
             echo "Creating exchange-doc directory with home.md from README.md"
@@ -103,7 +103,7 @@ jobs:
 
       - name: Summary - Test
         if: ${{ hashFiles('target/surefire-reports/*') != '' }}
-        uses: jpontdia/common-devops/packages/summary-test@main
+        uses: jpontdia/common-devops/packages/build-testsummary@main
         with:
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}

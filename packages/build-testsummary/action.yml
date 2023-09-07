@@ -26,7 +26,7 @@ runs:
       run: |
         echo " "
         echo "*****************************************************"
-        echo "* Summary - Publish test results"
+        echo "Summary - Publish test results"
         echo "*****************************************************"
         echo "Input variables: "
         echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
@@ -56,7 +56,7 @@ runs:
       run: |
         echo " "
         echo "*****************************************************"
-        echo "* Unit test - Set badge color"
+        echo "Unit test - Set badge color"
         echo "*****************************************************"
         echo " "            
         case ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }} in
@@ -72,7 +72,7 @@ runs:
         esac
 
     - name: Create badge for unit test
-      uses: jpontdia/common-devops/packages/badge@main
+      uses: jpontdia/common-devops/packages/build-badge@main
       with:
         github-organization: ${{ inputs.github-organization }}
         gist-token: ${{ inputs.gist-token }}
@@ -91,7 +91,7 @@ runs:
       run: |
         echo " "
         echo "*****************************************************"
-        echo "* Code coverage - Get the summary report if exists"
+        echo "Code coverage - Get the summary report if exists"
         echo "*****************************************************"
         echo " "            
 
@@ -151,7 +151,7 @@ runs:
       run: |
         echo " "
         echo "******************************************************"
-        echo "* Code coverage - export the summary report as env var"
+        echo "Code coverage - export the summary report as env var"
         echo "******************************************************"
         echo " "  
 
@@ -169,7 +169,7 @@ runs:
       run: |
         echo " "
         echo "*****************************************************"
-        echo "* Code coverage - Set badge color"
+        echo "Code coverage - Set badge color"
         echo "*****************************************************"
         echo " "      
         coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
@@ -188,7 +188,7 @@ runs:
 
     - name: Create badge for code coverage
       if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
-      uses: jpontdia/common-devops/packages/badge@main
+      uses: jpontdia/common-devops/packages/build-badge@main
       with:
         github-organization: ${{ inputs.github-organization }}
         gist-token: ${{ inputs.gist-token }}
