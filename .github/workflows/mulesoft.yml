@@ -66,15 +66,17 @@ jobs:
 
       - name: Documentation - Anypoint Exchange
         run: |
-          if [ -d "exchange-docs" ] 
-            then
+          echo " "
+          if [ -d "exchange-docs" ] then
               echo "Directory exchange-docs exists and will not be overriden with README.md" 
-            else
-              mkdir -p exchange-docs
-              mkdir -p exchange-docs/docs
-              cp -Rfpv README.md exchange-docs/home.md
-              cp -Rfpv docs/*.* exchange-docs/docs 
-            fi
+          else
+            echo "Creating exchange-doc directory with home.md from README.md"
+            mkdir -p exchange-docs
+            mkdir -p exchange-docs/docs
+            cp -Rfpv README.md exchange-docs/home.md
+            cp -Rfpv docs/*.* exchange-docs/docs 
+          fi
+          echo " "
         
       - name: Compile code    
         run: mvn --batch-mode compile
