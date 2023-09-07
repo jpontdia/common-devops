@@ -83,6 +83,26 @@ jobs:
         #if: ${{ false }}    
         run: mvn --batch-mode compile
   
+      - name: Run test cases and package
+        id: run-test-cases
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Run test cases and package"
+          echo "***********************************************"
+          echo " "
+          skiptest=" "
+          if [[ "${{env.configuration_skiptest}}" == "true" ]]; then
+            skiptest="-DskipTests"
+            echo "  Test will be skipped"
+          else
+            echo "  Asset will be tested"
+          fi
+    
+          echo " Using maven to run test cases and package Mulesoft application"
+          mvn --batch-mode $skiptest package $configuration_unittest
+
       - name: Run test cases and package asset
         uses: jpontdia/common-devops/packages/package@main
         with:
