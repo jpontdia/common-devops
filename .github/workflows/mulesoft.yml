@@ -219,8 +219,8 @@ jobs:
     steps:
 
       - name: Deploy the service in the cloud
-        uses: jpontdia/common-devops/packages/cloudhub-deployment@main
-        with:
+      uses: jpontdia/common-devops/packages/process-cloudhub@main
+      with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
           github-organization: $GITHUB_ORGANIZATION
