@@ -284,17 +284,18 @@ runs:
         # if [ "${{inputs.environment}}" != "unit-test" ] ; then
         if [[ ${{inputs.environment}} != "unit-test" ]]; then
           echo "  creating variables for dev,tst,prd"
-          echo "configuration_cloudhub=${{steps.configuration-settings.outputs.configuration-cloudhub}}" >> $GITHUB_ENV
-          echo "configuration_properties=${{steps.configuration-settings.outputs.configuration-properties}}" >> $GITHUB_ENV
-          echo "configuration_deployment_name=${{steps.configuration-settings.outputs.configuration-deployment-name}}" >> $GITHUB_ENV
-          echo "configuration_deployment_organization=${{steps.configuration-settings.outputs.configuration-deployment-organization}}" >> $GITHUB_ENV
-          echo "configuration_env=${{steps.configuration-settings.outputs.configuration-env}}" >> $GITHUB_ENV
+          echo "configuration_cloudhub=${{steps.configuration-cloudhub.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_properties=${{steps.configuration-properties.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_deployment_name=${{steps.configuration-deployment-name.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_deployment_organization=${{steps.configuration-deployment-organization.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_env=${{steps.configuration-envs.outputs.configuration-data}}" >> $GITHUB_ENV
         else
           echo "  creating variables for unit-test"
           echo "configuration_settings=${{steps.configuration-settings.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_skiptest=${{steps.configuration-skiptest.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_unittest=${{steps.configuration-unittest.outputs.configuration-data}}" >> $GITHUB_ENV
         fi
+        echo "service_name=$servicename" >> $GITHUB_ENV
 
     - name: Environment information
       shell: bash
