@@ -177,7 +177,7 @@ jobs:
     steps:
 
       - name: Deploy the service in the cloud
-        uses: jpontdia/common-devops/packages/cloudhub-deployment@main
+        uses: jpontdia/common-devops/packages/process-cloudhub@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
@@ -197,7 +197,7 @@ jobs:
     steps:
 
       - name: Execute Mulesoft BAT
-        uses: jpontdia/common-devops/packages/bat@main
+        uses: jpontdia/common-devops/packages/process-bat@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
