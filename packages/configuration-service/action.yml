@@ -172,6 +172,10 @@ runs:
         echo "**************************************"
         echo " "
 
+    ##########################################################################
+    # Configuration for unit-test
+    ##########################################################################
+
     - name: Get the properties for settings
       id: configuration-settings
       if: ${{ inputs.environment == 'unit-test' }}
@@ -202,6 +206,69 @@ runs:
         github-organization: $GITHUB_ORGANIZATION
         configurations-repository: $CONFIGURATIONS_REPOSITORY
 
+    ##########################################################################
+    # Configuration for all environments: dev, tst, prd
+    ##########################################################################
+
+    - name: Get the configuration for cloud deployment
+      id: configuration-cloudhub
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: jpontdia/common-devops/packages/configuration-file@main
+      with:
+        github-configurations-accesstoken: $github_configurations_accesstoken
+        yaml-path: ".cloudhub"
+        suffix: "-${{ inputs.environment }}"
+        github-organization: ${{ inputs.github-organization }}
+        configurations-repository: ${{ inputs.configurations-repository }}          
+
+    - name: Get the configuration properties for the service
+      id: configuration-properties
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: jpontdia/common-devops/packages/configuration-file@main
+      with:
+        github-configurations-accesstoken: $github_configurations_accesstoken
+        yaml-path: ".properties"
+        suffix: "-${{ inputs.environment }}"
+        github-organization: ${{ inputs.github-organization }}
+        configurations-repository: ${{ inputs.configurations-repository }} 
+
+    - name: Get the deployment name for the service
+      id: configuration-deployment-name
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: jpontdia/common-devops/packages/configuration-file@main
+      with:
+        github-configurations-accesstoken: $github_configurations_accesstoken
+        yaml-path: ".deployment-name"
+        suffix: "-${{ inputs.environment }}"
+        github-organization: ${{ inputs.github-organization }}
+        configurations-repository: ${{ inputs.configurations-repository }} 
+
+    - name: Get the deployment organization
+      id: configuration-deployment-organization
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: jpontdia/common-devops/packages/configuration-file@main
+      with:
+        github-configurations-accesstoken: $github_configurations_accesstoken
+        yaml-path: ".deployment-organization"
+        suffix: "-${{ inputs.environment }}"
+        github-organization: ${{ inputs.github-organization }}
+        configurations-repository: ${{ inputs.configurations-repository }} 
+
+    - name: Get the configuration properties for the service
+      id: configuration-env
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: jpontdia/common-devops/packages/configuration-file@main
+      with:
+        github-configurations-accesstoken: $github_configurations_accesstoken
+        yaml-path: ".env"
+        suffix: "-${{ inputs.environment }}"
+        github-organization: ${{ inputs.github-organization }}
+        configurations-repository: ${{ inputs.configurations-repository }}
+
+    ##########################################################################
+    # Exporting variables
+    ##########################################################################
+
     - name: Environment information
       shell: bash
       run: |
@@ -210,10 +277,19 @@ runs:
         echo "Create environment variables for the configuration"
         echo "**************************************************"
         echo " "
+        echo "Environment: Unit test"
         echo "configuration_settings=${{steps.configuration-settings.outputs.configuration-data}}" >> $GITHUB_ENV
         echo "configuration_skiptest=${{steps.configuration-skiptest.outputs.configuration-data}}" >> $GITHUB_ENV
-        echo "configuration_unittest=${{steps.configuration-unittest.outputs.configuration-data }}" >> $GITHUB_ENV
-        
+        echo "configuration_unittest=${{steps.configuration-unittest.outputs.configuration-data}}" >> $GITHUB_ENV
+        echo " "
+        echo "Envrionment ${{ inputs.environment }}"
+        echo "configuration_cloudhub=${{steps.configuration-settings.outputs.configuration-cloudhub}}" >> $GITHUB_ENV
+        echo "configuration_properties=${{steps.configuration-settings.outputs.configuration-properties}}" >> $GITHUB_ENV
+        echo "configuration_deployment_name=${{steps.configuration-settings.outputs.configuration-deployment-name}}" >> $GITHUB_ENV
+        echo "configuration_deployment_organization=${{steps.configuration-settings.outputs.configuration-deployment-organization}}" >> $GITHUB_ENV
+        echo "configuration_env=${{steps.configuration-settings.outputs.configuration-env}}" >> $GITHUB_ENV
+
+        configuration-cloudhub
     - name: Environment information
       shell: bash
       run: |
@@ -226,3 +302,8 @@ runs:
         echo "  configuration_settings= " $configuration_settings
         echo "  configuration_skiptest= " $configuration_skiptest          
         echo "  configuration_unittest= " $configuration_unittest
+        echo "  configuration_cloudhub= " $configuration_cloudhub
+        echo "  configuration_properties= " $configuration_properties
+        echo "  configuration_deployment_name= " $configuration_deployment_name
+        echo "  configuration_deployment_organization= " $configuration_deployment_organization
+        echo "  configuration_env= " $configuration_env

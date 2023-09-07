@@ -209,22 +209,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Get global configuration for the pipeline
-        uses: jpontdia/common-devops/packages/configuration@main
+        uses: jpontdia/common-devops/packages/configuration-service@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
-
-      - id: configuration-service
-        name: Get the configuration properties for the service
-        uses: jpontdia/common-devops/packages/configuration-file@main
-        with:
-          github-configurations-accesstoken: $github_configurations_accesstoken
-          yaml-path: ".env"
-          suffix: "-dev"
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
-          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
+          environment: dev
 
       - name: Generate environment variables for the service
         shell: bash
@@ -235,7 +226,7 @@ jobs:
           echo "***********************************************"
           echo " "
 
-          service_configuration_raw='${{ steps.configuration-service.outputs.configuration-data }}'
+          service_configuration_raw='${{ env.configuration_env }}'
 
           if [ "$pathdata" = "null" ] ; then
             echo "** The yaml path was not found with the environment variables section, returning empty response"

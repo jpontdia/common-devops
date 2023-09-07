@@ -33,68 +33,29 @@ runs:
     uses: actions/download-artifact@v3
     with:
       name: pom
-
+  
   - name: Get global configuration for the pipeline
-    uses: jpontdia/common-devops/packages/configuration@main
+    uses: jpontdia/common-devops/packages/configuration-service@main
     with:
       keyvault-key: ${{ inputs.keyvault-key }}
       azure-credentials: ${{ inputs.azure-credentials }}
       github-organization: ${{ inputs.github-organization }}
       configurations-repository: ${{ inputs.configurations-repository }}
+      environment: ${{ inputs.deployment-env }}
 
   - id: install-anypoint-cli
     name: Install Mulesoft Anypoint CLI
     uses: jpontdia/common-devops/packages/install-anypoint-cli@main
 
-  - id: configuration-cloudhub
-    name: Get the configuration for cloud deployment
-    uses: jpontdia/common-devops/packages/configuration-file@main
-    with:
-      github-configurations-accesstoken: $github_configurations_accesstoken
-      yaml-path: ".cloudhub"
-      suffix: "-${{ inputs.deployment-env }}"
-      github-organization: ${{ inputs.github-organization }}
-      configurations-repository: ${{ inputs.configurations-repository }}          
-
-  - id: configuration-service
-    name: Get the configuration properties for the service
-    uses: jpontdia/common-devops/packages/configuration-file@main
-    with:
-      github-configurations-accesstoken: $github_configurations_accesstoken
-      yaml-path: ".properties"
-      suffix: "-${{ inputs.deployment-env }}"
-      github-organization: ${{ inputs.github-organization }}
-      configurations-repository: ${{ inputs.configurations-repository }} 
-
-  - id: configuration-deployment-name
-    name: Get the deployment name for the service
-    uses: jpontdia/common-devops/packages/configuration-file@main
-    with:
-      github-configurations-accesstoken: $github_configurations_accesstoken
-      yaml-path: ".deployment-name"
-      suffix: "-${{ inputs.deployment-env }}"
-      github-organization: ${{ inputs.github-organization }}
-      configurations-repository: ${{ inputs.configurations-repository }} 
-
-  - id: configuration-deployment-organization
-    name: Get the deployment organization
-    uses: jpontdia/common-devops/packages/configuration-file@main
-    with:
-      github-configurations-accesstoken: $github_configurations_accesstoken
-      yaml-path: ".deployment-organization"
-      suffix: "-${{ inputs.deployment-env }}"
-      github-organization: ${{ inputs.github-organization }}
-      configurations-repository: ${{ inputs.configurations-repository }} 
-
   - id: deployment
     name: Deploy the service to dev environment
     uses: jpontdia/common-devops/packages/cloudhub-anypoint-cli@main
     with:
-      deployment-name: "${{ steps.configuration-deployment-name.outputs.configuration-data }}"
+      deployment-name: "${{ env.configuration_deployment_name }}"
       connectedapp-clientid: "$cicd_connectedapp_clientid"
       connectedapp-secret: "$cicd_connectedapp_secret" 
-      configuration-cloud: "${{ steps.configuration-cloudhub.outputs.configuration-data }}"
-      configuration-service: "${{ steps.configuration-service.outputs.configuration-data }}"
+      configuration-cloud: "${{ env.configuration_cloudhub }}"
+      configuration-service: "${{ env.configuration_properties }}"
       host: ${{ inputs.host }}
       environment: ${{ inputs.deployment-env }}
-      organization: "${{ steps.configuration-deployment-organization.outputs.configuration-data }}"
+      organization: "${{ env.configuration_deployment_organization }}"
