@@ -158,10 +158,10 @@ runs:
 
         echo " "
         echo "Service information:"
-        echo "  servicename= " $servicename
-        echo "  serviceversion= " $serviceversion          
-        echo "  servicegroup= " $servicegroup
-        echo "  serviceartifact= " $serviceartifact
+        echo "  service_name= " $servicename
+        echo "  service_version= " $serviceversion          
+        echo "  service_group= " $servicegroup
+        echo "  service_artifact= " $serviceartifact
 
     - name: Environment information
       shell: bash

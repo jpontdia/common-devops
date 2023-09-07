@@ -28,10 +28,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-
-    - id: service-info
-      name: Get the pom service information
-      uses: jpontdia/common-devops/packages/service-info@main
     
     - id: configuration
       name: Get configuration for the service 
@@ -42,7 +38,7 @@ runs:
         echo "*************************************************"
 
         # Get the configuration file for the service
-        configurationfile=$(echo "${{ inputs.prefix }}${{ steps.service-info.outputs.name }}${{ inputs.suffix }}.yml")
+        configurationfile=$(echo "${{ inputs.prefix }}${{ env.service_name }}${{ inputs.suffix }}.yml")
         urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$configurationfile"
         echo "Getting file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token ${{ inputs.github-configurations-accesstoken}}" $urlconfigurationfile)
