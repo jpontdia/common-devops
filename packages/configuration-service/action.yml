@@ -210,7 +210,7 @@ runs:
     # Configuration for all environments: dev, tst, prd
     ##########################################################################
 
-    - name: Get the configuration for cloud deployment
+    - name: Get configuration for CloudHub 1 deployment
       id: configuration-cloudhub
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
@@ -221,7 +221,7 @@ runs:
         github-organization: ${{ inputs.github-organization }}
         configurations-repository: ${{ inputs.configurations-repository }}          
 
-    - name: Get the configuration properties for the service
+    - name: Get configuration for deployment properties
       id: configuration-properties
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
@@ -232,7 +232,7 @@ runs:
         github-organization: ${{ inputs.github-organization }}
         configurations-repository: ${{ inputs.configurations-repository }} 
 
-    - name: Get the deployment name for the service
+    - name: Get configuration for deployment name
       id: configuration-deployment-name
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
@@ -243,7 +243,7 @@ runs:
         github-organization: ${{ inputs.github-organization }}
         configurations-repository: ${{ inputs.configurations-repository }} 
 
-    - name: Get the deployment organization
+    - name: Get configuration for deployment organization
       id: configuration-deployment-organization
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
@@ -254,7 +254,7 @@ runs:
         github-organization: ${{ inputs.github-organization }}
         configurations-repository: ${{ inputs.configurations-repository }} 
 
-    - name: Get the configuration properties for the service
+    - name: Get configuration for service environment variables
       id: configuration-env
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
