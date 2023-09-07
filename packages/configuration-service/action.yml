@@ -295,7 +295,6 @@ runs:
           echo "configuration_skiptest=${{steps.configuration-skiptest.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_unittest=${{steps.configuration-unittest.outputs.configuration-data}}" >> $GITHUB_ENV
         fi
-        echo "service_name=$servicename" >> $GITHUB_ENV
 
     - name: Environment information
       shell: bash

@@ -30,9 +30,11 @@ runs:
       if: ${{ inputs.debug }}
       shell: bash
       run: |
+        echo " "
         echo "*****************************************************"
-        echo "* Verify if asset must be deployed to an environment "
+        echo "Verify if asset must be deployed to an environment "
         echo "*****************************************************"
+        echo " "
         echo "Input variables: "
         echo "  github-configurations-accesstoken: $(echo ${{inputs.github-configurations-accesstoken}} | sed 's/./& /g')"  
         echo "  environment: ${{ inputs.environment }}"
