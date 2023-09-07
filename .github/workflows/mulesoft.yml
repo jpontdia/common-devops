@@ -196,35 +196,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Get the source code
-        uses: actions/checkout@v3
-
-      - name: Get global configuration for the pipeline
-        uses: jpontdia/common-devops/packages/configuration-service@main
+      - name: Execute Mulesoft BAT
+        uses: jpontdia/common-devops/packages/bat@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
-          environment: dev
-
-      - name: Execute Mulesoft BAT
-        uses: jpontdia/common-devops/packages/bat@main
+          deployment-env: dev
     
-      - name: Publish - Test reports
-        uses: actions/upload-artifact@master
-        with:
-            name: dev-testing-reports
-            path: bat/target/*.*
-
-      - name: Job summary with test results
-        uses: EnricoMi/publish-unit-test-result-action@v2.7.0
-        with:
-          files: |
-            bat/target/JUnit.xml
-          check_name: Dev Integration Test
-
-
   ##########################################################################
   # TST DEPLOYMENT
   ##########################################################################
