@@ -176,7 +176,7 @@ runs:
     # Configuration for unit-test
     ##########################################################################
 
-    - name: Get the properties for settings
+    - name: Get maven settings configuration
       id: configuration-settings
       if: ${{ inputs.environment == 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main

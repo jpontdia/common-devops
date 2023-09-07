@@ -32,13 +32,16 @@ runs:
     - id: configuration
       name: Get configuration for the service 
       run: |
+        configurationfile=$(echo "${{ inputs.prefix }}${{ env.service_name }}${{ inputs.suffix }}.yml")
+
         echo " "
         echo "*************************************************"
-        echo "* Get the configuration file for the service"
+        echo "Get configuration from file: $configurationfile"
+        echo "yml path: ${{ inputs.yaml-path}}" 
         echo "*************************************************"
+        echo " "
 
         # Get the configuration file for the service
-        configurationfile=$(echo "${{ inputs.prefix }}${{ env.service_name }}${{ inputs.suffix }}.yml")
         urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$configurationfile"
         echo "Getting file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token ${{ inputs.github-configurations-accesstoken}}" $urlconfigurationfile)

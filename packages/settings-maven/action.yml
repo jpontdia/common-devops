@@ -13,73 +13,39 @@ inputs:
   configurations-repository:
     required: true
     description: Name of the repository for mulesoft configurations
-  debug:
-    required: false
-    default: "false"
-    description: Flag to debug this action, default is false
+
 runs:
   using: "composite"
   steps:
 
-    - name: Get the pom service information
-      id: service-info
-      uses: jpontdia/common-devops/packages/service-info@main
-
     - id: configuration
       name: Get configuration for the service 
+      shell: bash
       run: |
-        echo
+        echo " "
         echo "*********************************************"
-        echo "Get the configuration file for the asset"
+        echo "Get the settings configuration file for maven"
         echo "*********************************************"
-
+        echo " "
         settings_xml=${{ inputs.default-settings-xml}}
 
-        # Get the configuration file for the service
-        configurationfile=$(echo "${{ steps.service-info.outputs.name }}.yml")
-        urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$configurationfile"
-        echo "Getting file: $urlconfigurationfile"
-        configurationdata=$(curl -sH "Authorization: token ${{inputs.github-configurations-accesstoken}}" $urlconfigurationfile)
-        echo "The content of the file is: $configurationdata"
-
-        # Verify if configuration file was found
-        if [[ $configurationdata != *"Not Found"* ]]; then
-          echo "A configuration file for the service was found, getting the settings paramater"
-          settings_xml_temp=$(echo "$configurationdata" | yq -r ".settings")
-          if [ "$settings_xml_temp" = "null" ] || [ "$settings_xml_temp" = "" ] ; then
-            echo "The settings.xml file was not configured for the service, assigning the default one"
-          else
-            settings_xml=$settings_xml_temp
-          fi
+        if [ "$configuration_settings" = "null" ] || [ "$configuration_settings" = "" ] ; then
+          echo "The settings.xml file was not configured for the service, assigning the default one"
         else
-          echo "There wasn't a specific settings.xml file for the service, assigning the default file"
+          settings_xml=$settings_xml_temp
         fi
 
         echo "The maven settings file is: $settings_xml"
-
+        echo "Reading the settings file from the configuration repository"
         urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$settings_xml"
-        echo "Getting file: $urlconfigurationfile"
+        echo "URL file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token ${{inputs.github-configurations-accesstoken}}" $urlconfigurationfile)
         echo "The content of the file is: $configurationdata"
-        
-        # Next command is not needed because a previous action configured java and maven wiht .m2 directory
-        # mkdir $HOME/.m2
         output=$(echo "$configurationdata" | envsubst)
         echo "$output" > $HOME/.m2/settings.xml
-        echo
 
-      shell: bash
-
-    - name: DEBUG - Show maven settings file
-      if: ${{ inputs.debug == 'debug' }}
-      run: |
-        echo "$HOME: $HOME"
-        echo "HOME Directory:" 
+        echo "Verifying configuration"
+        echo "HOME Directory: $HOME"" 
         ls -la $HOME
         temporal=$(cat $HOME/.m2/settings.xml)
         echo "settings.xml file: $temporal"
-        echo "Github run number: ${{ github.run_number }}"
-        ## Get the git commit hash 
-        commitHash=$(git rev-parse --short "$GITHUB_SHA")
-        echo "Github commit hash: $commitHash"
-      shell: bash

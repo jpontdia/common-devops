@@ -47,9 +47,6 @@ jobs:
       - name: Get the source code
         uses: actions/checkout@v3
 
-      - name: Install Java JDK for Mulesoft Applications
-        uses: jpontdia/common-devops/packages/install-mulesoft-java@main
-
       - name: Get global configuration for the pipeline
         uses: jpontdia/common-devops/packages/configuration-service@main
         with:
@@ -58,15 +55,15 @@ jobs:
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
           environment: unit-test
-
-      - name: Settings file for maven
-        uses: jpontdia/common-devops/packages/settings-maven@main
+      
+      - name: Install Java JDK for Mulesoft Applications
+        uses: jpontdia/common-devops/packages/install-mulesoft-java@main
         with:
           github-configurations-accesstoken: $github_configurations_accesstoken
           default-settings-xml: $DEFAULT_SETTINGS_XML
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
-          
+
       - name: Documentation - Anypoint Exchange
         run: |
           if [ -d "exchange-docs" ] 
@@ -79,8 +76,7 @@ jobs:
               cp -Rfpv docs/*.* exchange-docs/docs 
             fi
         
-      - name: Compile code
-        #if: ${{ false }}    
+      - name: Compile code    
         run: mvn --batch-mode compile
   
       - name: Run test cases and package
