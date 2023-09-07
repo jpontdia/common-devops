@@ -103,13 +103,6 @@ jobs:
           echo " Using maven to run test cases and package Mulesoft application"
           mvn --batch-mode $skiptest package $configuration_unittest
 
-      - name: Run test cases and package asset
-        uses: jpontdia/common-devops/packages/package@main
-        with:
-          github-organization: $GITHUB_ORGANIZATION
-          configurations-repository: $CONFIGURATIONS_REPOSITORY
-          github-configurations-accesstoken: $github_configurations_accesstoken
-
       - name: Summary - Test
         if: ${{ hashFiles('target/surefire-reports/*') != '' }}
         uses: jpontdia/common-devops/packages/summary-test@main
