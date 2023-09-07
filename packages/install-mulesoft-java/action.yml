@@ -42,17 +42,16 @@ runs:
         echo "Get the settings configuration file for maven"
         echo "*********************************************"
         echo " "
-        settings_xml=${{ inputs.default-settings-xml}}
+        settings_xml="${{ inputs.default-settings-xml}}"
 
         if [ "$configuration_settings" = "null" ] || [ "$configuration_settings" = "" ] ; then
           echo "The settings.xml file was not configured for the service, assigning the default one"
-          settings_xml=${{ inputs.default-settings-xml }}
         else
+          echo "Assigning the settings file specified in the configuration for the service"
           settings_xml= "$configuration_settings"
         fi
 
-        echo "The maven settings file is: $settings_xml"
-        echo "Reading the settings file from the configuration repository"
+        echo "Getting next settings file from configuration repository: $settings_xml"
         urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$settings_xml"
         echo "URL file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token ${{inputs.github-configurations-accesstoken}}" $urlconfigurationfile)
