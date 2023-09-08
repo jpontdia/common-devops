@@ -50,10 +50,15 @@ jobs:
           echo "Verify if github tag exists "
           echo "***********************************************"
           echo " "
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions@users.noreply.github.com"
+
           tag_exist=$(git tag $service_version)
           if [ "$tag_exist" != "" ] ; then
             echo "The tag already exists in Github; update the POM version for the service."
             exit 1
+          else
+            echo "Create tag $service_version for the respository"
           fi
 
       - name: Tag repository with service version
@@ -64,8 +69,4 @@ jobs:
           echo "Tag repository with service version "
           echo "***********************************************"
           echo " "
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "github-actions@users.noreply.github.com"
-                    
-          git tag $service_version
           git push origin $service_version
