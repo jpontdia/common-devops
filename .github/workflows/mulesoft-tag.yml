@@ -42,20 +42,30 @@ jobs:
           configurations-repository: $CONFIGURATIONS_REPOSITORY
           environment: unit-test
 
-      - name: Tag repository - Anypoint Exchange
+      - name: Verify if github tag exists
         shell: bash
         run: |
           echo " "
+          echo "***********************************************"
+          echo "Verify if github tag exists "
+          echo "***********************************************"
+          echo " "
+          tag_exist=$(git tag $service_version)
+          if [ "$tag_exist" != "" ] ; then
+            echo "The tag already exists in Github; update the POM version for the service."
+            exit 1
+          fi
+
+      - name: Tag repository with service version
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Tag repository with service version "
+          echo "***********************************************"
+          echo " "
           git config --global user.name "GitHub Actions"
           git config --global user.email "github-actions@users.noreply.github.com"
-          # git tag -a v$service_version -m "Development Release"
-          git tag v$service_version
-          # git push --tags
-          git push origin v$service_version
-
-#      - name: Bump version and push tag
-#        id: tag_version
-#        uses: mathieudutour/github-tag-action@v6.0
-#        with:
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          custom_tag: ${{ env.service_version }}
+                    
+          git tag $service_version
+          git push origin $service_version
