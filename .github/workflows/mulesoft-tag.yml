@@ -53,10 +53,12 @@ jobs:
         shell: bash
         run: |
           echo " "
-          git config --global user.name "BuildService"
-          git config --global user.email "buildservice@pipeline.com"
-          git tag -a v$service_version -m "Development Release"
-          git push --tags
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions@users.noreply.github.com"
+          # git tag -a v$service_version -m "Development Release"
+          git tag v$service_version
+          # git push --tags
+          git push origin v$service_version
 
 #      - name: Bump version and push tag
 #        id: tag_version
