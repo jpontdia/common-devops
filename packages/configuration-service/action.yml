@@ -127,7 +127,7 @@ runs:
           touch global.yml
         fi
 
-    - name: Import vars example
+    - name: Import variables from global.yml
       uses: zlatko-ms/varfiletoenv@v3
       with:
         paths: global.yml
@@ -278,9 +278,8 @@ runs:
 
         service_configuration_raw='${{steps.configuration-env.outputs.configuration-data}}'
 
-        if [ "$pathdata" = "null" ] ; then
-          echo "** The yaml path was not found with the environment variables section, returning empty response"
-          pathdata=""
+        if [ "${{steps.configuration-env.outputs.configuration-data}}" = "null" ] ; then
+          echo "There are no environment variables for the service!"
         else
           service_configuration_lines=$( echo $service_configuration_raw | tr ' ' '\n' )
           echo -e "Configuration formated:\n$service_configuration_lines "
@@ -310,7 +309,7 @@ runs:
     # Exporting variables
     ##########################################################################
 
-    - name: Environment information
+    - name: Exporting configuration variables
       shell: bash
       run: |
         echo " "
@@ -337,12 +336,12 @@ runs:
           echo "configuration_unittest=${{steps.configuration-unittest.outputs.configuration-data}}" >> $GITHUB_ENV
         fi
 
-    - name: Environment information
+    - name: Debug review configuration environment variables
       shell: bash
       run: |
         echo " "
         echo "**************************************************"
-        echo "Review configuration environment variables"
+        echo "Debug - Review configuration environment variables"
         echo "**************************************************"
         echo " "
         echo "Configuration variables:"
