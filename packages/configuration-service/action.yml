@@ -278,7 +278,7 @@ runs:
 
         service_configuration_raw='${{steps.configuration-env.outputs.configuration-data}}'
 
-        if [ "${{steps.configuration-env.outputs.configuration-data}}" = "null" ] ; then
+        if [ "$service_configuration_raw" = "null" ] || [ "$service_configuration_raw" = "" ] ; then
           echo "There are no environment variables for the service!"
         else
           service_configuration_lines=$( echo $service_configuration_raw | tr ' ' '\n' )
@@ -320,8 +320,6 @@ runs:
         
         echo "Environment ${{ inputs.environment }}"
 
-        # not working
-        # if [ "${{inputs.environment}}" != "unit-test" ] ; then
         if [[ ${{inputs.environment}} != "unit-test" ]]; then
           echo "  creating variables for dev,tst,prd"
           echo "configuration_cloudhub=${{steps.configuration-cloudhub.outputs.configuration-data}}" >> $GITHUB_ENV
