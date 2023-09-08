@@ -25,16 +25,9 @@ env:
 
 jobs:
 
-  BAT:
-    name: TAG
+  tag:
+    name: tag
     runs-on: ubuntu-latest
-    environment:
-      name: dev
-    permissions:
-      contents: read
-      issues: read
-      checks: write
-      pull-requests: write    
     steps:
 
       - name: Get the source code
