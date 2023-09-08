@@ -53,6 +53,8 @@ jobs:
         shell: bash
         run: |
           echo " "
+          git config --global user.name "BuildService"
+          git config --global user.email "buildservice@pipeline.com"
           git tag -a v$service_version -m "Development Release"
           git push --tags
 
