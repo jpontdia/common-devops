@@ -26,7 +26,7 @@ env:
 jobs:
 
   BAT:
-    name: BAT
+    name: TAG
     runs-on: ubuntu-latest
     environment:
       name: dev
@@ -49,9 +49,16 @@ jobs:
           configurations-repository: $CONFIGURATIONS_REPOSITORY
           environment: unit-test
 
-      - name: Bump version and push tag
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          custom_tag: ${{ env.service_version }}
+      - name: Tag repository - Anypoint Exchange
+        shell: bash
+        run: |
+          echo " "
+          git tag -a v$service_version -m "Development Release"
+          git push --tags
+
+#      - name: Bump version and push tag
+#        id: tag_version
+#        uses: mathieudutour/github-tag-action@v6.0
+#        with:
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          custom_tag: ${{ env.service_version }}
