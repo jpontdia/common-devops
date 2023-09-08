@@ -33,11 +33,11 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     # Needed by the Unit Test Action
-    permissions:
-      contents: read
-      issues: read
-      checks: write
-      pull-requests: write    
+#    permissions:
+#      contents: read
+#      issues: read
+#      checks: write
+#      pull-requests: write    
     outputs:
       # Indicates if the service is deployable
       deployment-dev: ${{ steps.verify-deployment-dev.outputs.deployment }}
