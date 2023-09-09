@@ -193,7 +193,7 @@ jobs:
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
           gist-token: ${{ env.github_gist_accesstoken }}
-          label: Workflow number
-          status: '${{ env.github.run_number }}'
+          label: Workflow
+          status: '${{ github.run_number }}'
           color: '535597'
           file: ${{ env.service_name }}-wf.svg
