@@ -197,3 +197,21 @@ jobs:
           status: '${{ github.run_number }}'
           color: '535597'
           file: ${{ env.service_name }}-wf.svg
+
+  build-test:
+    name: build-test
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Get the source code
+        uses: actions/checkout@v3
+
+      - name: Debug
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Debug "
+          echo "***********************************************"
+          echo " "       
