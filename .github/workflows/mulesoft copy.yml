@@ -175,25 +175,85 @@ jobs:
           artifactErrorsFailBuild: true
           tag: ${{ env.service_version }}
           name: ${{ env.service_version }}
-
-      - name: Create badge for release
-        uses: jpontdia/common-devops/packages/build-badge@main
+          
+      - id: verify-deployment-dev
+        name: Verify if asset is deployable in dev
+        uses: jpontdia/common-devops/packages/verify-deployment@main
         with:
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
-          gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_gist_accesstoken }}
-          label: Release
-          status: '${{ env.service_version }}'
-          color: '535597'
-          file: ${{ env.service_name }}-re.svg
-
-      - name: Create badge for workflow number
-        uses: jpontdia/common-devops/packages/build-badge@main
+          github-configurations-accesstoken: $github_configurations_accesstoken
+          environment: dev
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
+  
+      - id: verify-deployment-tst
+        name: Verify if asset is deployable in tst
+        uses: jpontdia/common-devops/packages/verify-deployment@main
         with:
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
-          gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_gist_accesstoken }}
-          label: Workflow number
-          status: '${{ env.github.run_number }}'
-          color: '535597'
-          file: ${{ env.service_name }}-wn.svg
+          github-configurations-accesstoken: $github_configurations_accesstoken
+          environment: tst
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
+
+  ##########################################################################
+  # DEV DEPLOYMENT
+  ##########################################################################
+  
+  dev:
+    if: needs.build.outputs.deployment-dev == 'true'
+    name: dev
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+
+      - name: Deploy the service in the cloud
+        uses: jpontdia/common-devops/packages/process-cloudhub@main
+        with:
+          keyvault-key: ${{ inputs.keyvault-key }}
+          azure-credentials: ${{ secrets.azure-credentials }}
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
+          deployment-env: dev
+
+
+  ##########################################################################
+  # DEV TEST
+  ##########################################################################
+
+  dev-test:
+    name: dev-test
+    needs: [dev]
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Execute Mulesoft BAT
+        uses: jpontdia/common-devops/packages/process-bat@main
+        with:
+          keyvault-key: ${{ inputs.keyvault-key }}
+          azure-credentials: ${{ secrets.azure-credentials }}
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
+          deployment-env: dev
+    
+  ##########################################################################
+  # TST DEPLOYMENT
+  ##########################################################################
+  
+  tst:
+    if: needs.build.outputs.deployment-tst == 'true'
+    name: tst
+    needs: [dev-test]
+    runs-on: ubuntu-latest
+    environment:
+      name: tst
+    steps:
+
+      - name: Deploy the service in the cloud
+        uses: jpontdia/common-devops/packages/process-cloudhub@main
+        with:
+          keyvault-key: ${{ inputs.keyvault-key }}
+          azure-credentials: ${{ secrets.azure-credentials }}
+          github-organization: $GITHUB_ORGANIZATION
+          configurations-repository: $CONFIGURATIONS_REPOSITORY
+          deployment-env: tst
