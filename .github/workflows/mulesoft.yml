@@ -196,4 +196,4 @@ jobs:
           label: Workflow number
           status: '${{ env.github.run_number }}'
           color: '535597'
-          file: ${{ env.service_name }}-wn.svg
+          file: ${{ env.service_name }}-wf.svg
