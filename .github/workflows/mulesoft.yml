@@ -157,12 +157,6 @@ jobs:
         with:
           name: jar
           path: target/*.jar
-
-      - name: Publish - POM 
-        uses: actions/upload-artifact@master
-        with:
-          name: pom
-          path: pom.xml
           
       - name: Tag repository with service version
         shell: bash

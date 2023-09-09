@@ -56,10 +56,14 @@ runs:
           name: dev-testing-reports
           path: bat/target/*.*
 
+    # ***********************************************************
+    # https://github.com/EnricoMi/publish-unit-test-result-action
+    # Note: permissions on job, check documentation
+    # ***********************************************************
     - name: Job summary with test results
-      uses: EnricoMi/publish-unit-test-result-action@v2.7.0
+      uses: EnricoMi/publish-unit-test-result-action@v2
       if: ${{ hashFiles('bat') != '' }}
       with:
         files: |
           bat/target/JUnit.xml
-        check_name: Dev Integration Test        
+        check_name: BAT Test in ${{ inputs.deployment-env}} environment

@@ -19,14 +19,18 @@ inputs:
 runs:
   using: "composite"
   steps:
- 
+
+    # ***************************
+    # Unit test section
+    # *************************** 
+
     - name: DEBUG
       if: ${{ inputs.debug }}
       shell: bash
       run: |
         echo " "
         echo "*****************************************************"
-        echo "Summary - Publish test results"
+        echo "DEBUG Summary - Publish test results"
         echo "*****************************************************"
         echo "Input variables: "
         echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
@@ -35,12 +39,13 @@ runs:
         echo "  gist-id: ${{ inputs.gist-id }}"
         echo ".."
 
-    # ***************************
-    # Unit test 
-    # ***************************
+    # ***********************************************************
+    # https://github.com/EnricoMi/publish-unit-test-result-action
+    # Note: permissions on job, check documentation
+    # ***********************************************************
     - name: Summary - Publish test results
       id: unit-test-results
-      uses: EnricoMi/publish-unit-test-result-action@v2.7.0
+      uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:
         files: |
@@ -79,7 +84,7 @@ runs:
         file: ${{ env.service_name }}-ut.svg
 
     # ***************************
-    # Code coverage
+    # Code coverage section
     # ***************************
     - name: Summary - Add code coverage
       id: summary-codecoverage
