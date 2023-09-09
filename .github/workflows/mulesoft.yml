@@ -157,7 +157,7 @@ jobs:
         with:
           name: jar
           path: target/*.jar
-          
+
       - name: Tag repository with service version
         shell: bash
         run: |
@@ -167,7 +167,14 @@ jobs:
           echo "***********************************************"
           echo " "
           git push origin $service_version
-
+          
+      - name: Tag repository with service version
+        uses: ncipollo/release-action@v1
+        with: 
+          artifacts: "target/*.jar"
+          artifactErrorsFailBuild: true
+          name: ${{ env.service_version }}
+          
       - id: verify-deployment-dev
         name: Verify if asset is deployable in dev
         uses: jpontdia/common-devops/packages/verify-deployment@main
