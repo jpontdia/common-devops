@@ -6,7 +6,7 @@
 # 1.- Replace the predefined repository jpontdia/common-devops with your own.
 # 2.- Update the global environment variables for the script 
 
-name: Mulesoft
+name: deployment
 on:
   workflow_call:
     inputs:
@@ -25,14 +25,11 @@ env:
 jobs:
 
   release:
-    name: Deployment
+    name: deployment
     runs-on: ubuntu-latest
     steps:
 
-      - name: Get the source code
-        uses: actions/checkout@v3
-
-      - name: Debug
+      - name: Get the release metadata
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}      
         shell: bash
@@ -53,7 +50,16 @@ jobs:
           echo " "
           echo "$GITHUB_CONTEXT"
 
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
+      - name: Get the source code
+        uses: actions/checkout@v4
+        #with:
+        #  ref: ''
+
+#      - uses: dsaltares/fetch-gh-release-asset@master
+#        with:
+#          repo: 'dsaltares/godot-wild-jam-18'
+#          version: 'tags/v0.1.18'
+#          regex: true
+#          file: "plague-.*\\.zip"
+#          target: 'subdir/'
+#          token: ${{ secrets.GITHUB_TOKEN }}
