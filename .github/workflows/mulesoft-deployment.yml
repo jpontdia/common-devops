@@ -46,9 +46,7 @@ jobs:
           echo "Labels: ${{ toJson(github.event.issue.labels) }}"
           echo " "
           echo " "
-          echo " "
-          echo " "
-          echo "$GITHUB_CONTEXT"
+
 
       - name: Get the source code
         uses: actions/checkout@v4
