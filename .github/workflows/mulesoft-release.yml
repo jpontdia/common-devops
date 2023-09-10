@@ -25,7 +25,7 @@ env:
 jobs:
 
   release:
-    name: Build
+    name: Deployment
     runs-on: ubuntu-latest
     steps:
 
@@ -40,3 +40,11 @@ jobs:
           echo "Debug "
           echo "***********************************************"
           echo " "
+          echo "issue.number: ${{ github.event.issue.number}}"
+          echo " "
+          echo "Context: ${{ github.event}}"
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"

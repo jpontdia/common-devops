@@ -168,7 +168,7 @@ jobs:
           echo " "
           git push origin $service_version
           
-      - name: Tag repository with service version
+      - name: Create a release
         uses: ncipollo/release-action@v1
         with: 
           artifacts: "target/*.jar"
