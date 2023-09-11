@@ -76,5 +76,5 @@ jobs:
           repo: '${{ github.repository }}'
           version: 'tags/${{ env.deployment_version }}'
           regex: false
-          file: "*.jar"
+          file: "micorp-customer-sapi-asset-1.3.12-mule-application-example.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
