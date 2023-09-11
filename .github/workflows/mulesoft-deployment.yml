@@ -75,6 +75,6 @@ jobs:
         with:
           repo: '${{ github.repository }}'
           version: 'tags/${{ env.deployment_version }}'
-          regex: true
+          regex: false
           file: "*.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
