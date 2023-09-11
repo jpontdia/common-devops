@@ -74,7 +74,7 @@ jobs:
       - uses: dsaltares/fetch-gh-release-asset@master
         with:
           repo: '${{ github.repository }}'
-          version: '${{env.deployment_version }}'
+          version: 'tags/${{ env.deployment_version }}'
           regex: true
           file: "*.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
