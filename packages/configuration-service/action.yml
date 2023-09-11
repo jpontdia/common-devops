@@ -34,7 +34,7 @@ runs:
   steps:
 
     - name: DEBUG - Show action variables
-      if: ${{ inputs.debug }}
+      if: inputs.debug == 'true'
       shell: bash
       run: |
         echo " "
@@ -54,14 +54,14 @@ runs:
     # dmitriybobrovskiy/get-azure-keyvault-secrets, will show more details when authenticating 
 
     - name: DEBUG - Authentication with Azure
-      if: ${{ inputs.debug }}
+      if: inputs.debug == 'true'
       uses: azure/login@v1
       with:
         creds: ${{ inputs.azure-credentials }}
  
     - name: DEBUG - Run Azure CLI
       shell: bash
-      if: ${{ inputs.debug }}
+      if: inputs.debug == 'true'
       run: |
         az version
 
