@@ -21,6 +21,7 @@ on:
 env:
   GITHUB_ORGANIZATION: jpontdia
   CONFIGURATIONS_REPOSITORY: common-configurations
+  DEPLOYMENT_FORWARD_LABEL: deployment-forward
   
 jobs:
 

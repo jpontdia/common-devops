@@ -22,12 +22,19 @@ inputs:
     - tst
     - prd
     - unit-test
+  debug:
+    required: false
+    type: boolean
+    default: false
+    description: Flag to debug this action, default is false
+env:
+  SECRET_MAP_FILE: _secrets.env 
 runs:
   using: "composite"
   steps:
 
     - name: DEBUG - Show action variables
-      if: ${{ false }}
+      if: ${{ inputs.debug }}
       shell: bash
       run: |
         echo " "
@@ -37,17 +44,26 @@ runs:
         echo " "
 
         tempvar=$( echo "${{ inputs.azure-credentials }}" | sed 's/./& /g' )
-        echo "Value for inputs.azure-credentials: $tempvar" 
+        echo "Value for inputs.azure-credentials: $tempvar"
+        echo "  keyvault-key: ${{ inputs.keyvault-key }}"
+        echo "  github-organization: ${{ inputs.github-organization }}"
+        echo "  configurations-repository: ${{ inputs.configurations-repository }}"
+        echo "  environment: ${{ inputs.environment }}"
 
     # Note: if not sure if azure-credentials variable is not well configured, then try github action:
     # dmitriybobrovskiy/get-azure-keyvault-secrets, will show more details when authenticating 
 
     - name: DEBUG - Authentication with Azure
-      if: ${{ false }}
+      if: ${{ inputs.debug }}
       uses: azure/login@v1
       with:
         creds: ${{ inputs.azure-credentials }}
  
+    - name: DEBUG - Run Azure CLI
+      if: ${{ inputs.debug }}
+      run: |
+        az version
+
     - name: Get the access token to read files on configuration repository
       uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
       with:
@@ -58,15 +74,13 @@ runs:
 
     - name: Get secrets configuration
       shell: bash
-      env:
-        SECRET_MAP_FILE: _secrets.env 
       run: |
         echo " "
         echo "*********************************************"
         echo "Get the configuration for secrets"
         echo "*********************************************"
 
-        echo "github_configurations_accesstoken: $github_configurations_accesstoken"
+        echo "Variable. github_configurations_accesstoken: $github_configurations_accesstoken"
 
         # Get the secrets mapping
         urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$SECRET_MAP_FILE"
