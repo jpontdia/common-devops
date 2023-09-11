@@ -82,7 +82,7 @@ jobs:
           azure-credentials: ${{ secrets.azure-credentials }}
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
-          environment: "${{ env.deployment_environment }}"
+          environment: "${{ env.deployment_environment }}z"
 
       - id: verify-deployment
         name: Deployment dev - Verify if asset has the configuration
