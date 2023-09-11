@@ -79,7 +79,7 @@ jobs:
         uses: jpontdia/common-devops/packages/configuration-service@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
-          azure-credentials: ${{ inputs.azure-credentials }}
+          azure-credentials: ${{ secrets.azure-credentials }}
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
           environment: ${{ env.deployment_environment }}
