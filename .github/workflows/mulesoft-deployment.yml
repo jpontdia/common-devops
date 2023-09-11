@@ -46,12 +46,23 @@ jobs:
           echo "Labels: ${{ toJson(github.event.issue.labels) }}"
           echo " "
           echo " "
+          line=$(echo "${{ github.event.issue.title}}")
+          action="$(cut -d' ' -f1 <<<$line)"
+          service="$(cut -d' ' -f2 <<< $line)"
+          version="$(cut -d' ' -f3 <<< $line)"
+          test="$(cut -d' ' -f4 <<< $line)"
+          echo " "
+          echo "Action: $action"
+          echo "Service: $service"
+          echo "Version: $version"
+          echo "Test: $test"
+          echo "deployment_version=$version" >> $GITHUB_ENV
 
 
       - name: Get the source code
         uses: actions/checkout@v4
-        #with:
-        #  ref: ''
+        with:
+          ref: '${{env.deployment_version}}'
 
 #      - uses: dsaltares/fetch-gh-release-asset@master
 #        with:
