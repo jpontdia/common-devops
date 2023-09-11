@@ -25,6 +25,7 @@ env:
 jobs:
 
   release:
+    if: github.actor == 'jpontdia' || github.actor == 'GitHubActions'
     name: deployment
     runs-on: ubuntu-latest
     steps:
@@ -46,17 +47,17 @@ jobs:
           echo " "
           line=$(echo "${{ github.event.issue.title}}")
           action="$(cut -d' ' -f1 <<<$line)"
-          service="$(cut -d' ' -f2 <<< $line)"
-          version="$(cut -d' ' -f3 <<< $line)"
-          test="$(cut -d' ' -f4 <<< $line)"
+          deployment_environment="$(cut -d' ' -f2 <<< $line)"
+          service="$(cut -d' ' -f3 <<< $line)"
+          version="$(cut -d' ' -f4 <<< $line)"
           echo "Values from issue title:"
           echo "  Action: $action"
+          echo "  Environment: $deployment_environment"
           echo "  Service: $service"
           echo "  Version: $version"
-          echo "  Test: $test"
+          echo "deployment_environment=$deployment_environment" >> $GITHUB_ENV
           echo "deployment_version=$version" >> $GITHUB_ENV
           echo "deployment_service=$service" >> $GITHUB_ENV
-
 
       - name: Get the source code
         uses: actions/checkout@v4
@@ -73,7 +74,36 @@ jobs:
           echo " "
           cat pom.xml
 
-      - uses: dsaltares/fetch-gh-release-asset@master
+      - name: Get global configuration for the pipeline
+        uses: jpontdia/common-devops/packages/configuration-service@main
+        with:
+          keyvault-key: ${{ inputs.keyvault-key }}
+          azure-credentials: ${{ inputs.azure-credentials }}
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
+          environment: ${{ env.deployment_environment }}
+
+      - id: verify-deployment
+        name: Deployment dev - Verify if asset has the configuration
+        shell: bash
+        run: |
+          echo " "
+          echo "*****************************************************"
+          echo "Verify deployment to ${{ env.deployment_environment }} "
+          echo "*****************************************************"
+          echo " "      
+          echo "dev cloudhub: ${{ env.configuration_cloudhub }}"
+          if [ "${{ env.configuration_cloudhub }}" != "" ] ; then
+            echo "deployment=true" >> $GITHUB_OUTPUT
+            echo "The service has the configuration to deploy in ${{ env.deployment_environment }} environment"
+          else
+            echo "deployment=false" >> $GITHUB_OUTPUT
+            echo "The mulesoft asset doesn't have any deployment configuration"
+          fi
+                    
+      - name: Get jar file
+        uses: dsaltares/fetch-gh-release-asset@master
+        if: steps.verify-deployment.outputs.deployment == 'true'
         with:
           repo: '${{ github.repository }}'
           version: 'tags/${{ env.deployment_version }}'
