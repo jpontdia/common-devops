@@ -36,7 +36,7 @@ jobs:
         run: |
           echo " "
           echo "***********************************************"
-          echo "Debug "
+          echo "Get the release metadata "
           echo "***********************************************"
           echo " "
           echo "issue.number: ${{ github.event.issue.number}}"
@@ -64,7 +64,19 @@ jobs:
         with:
           ref: '${{env.deployment_version}}'
 
-#      - uses: dsaltares/fetch-gh-release-asset@master
+      - name: Get the release metadata
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Get the release metadata "
+          echo "***********************************************"
+          echo " "
+          echa cat pom.xml
+
+
+
+          #      - uses: dsaltares/fetch-gh-release-asset@master
 #        with:
 #          repo: 'dsaltares/godot-wild-jam-18'
 #          version: 'tags/v0.1.18'
