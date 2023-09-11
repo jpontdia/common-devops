@@ -72,7 +72,7 @@ jobs:
           echo "Review the source code "
           echo "***********************************************"
           echo " "
-          echo cat pom.xml
+          cat pom.xml
 
 
 
