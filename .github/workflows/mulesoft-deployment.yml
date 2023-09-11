@@ -64,15 +64,15 @@ jobs:
         with:
           ref: '${{env.deployment_version}}'
 
-      - name: Get the release metadata
+      - name: Review the source code
         shell: bash
         run: |
           echo " "
           echo "***********************************************"
-          echo "Get the release metadata "
+          echo "Review the source code "
           echo "***********************************************"
           echo " "
-          echa cat pom.xml
+          echo cat pom.xml
 
 
 
