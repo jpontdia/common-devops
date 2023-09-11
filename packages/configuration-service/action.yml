@@ -27,8 +27,7 @@ inputs:
     type: boolean
     default: false
     description: Flag to debug this action, default is false
-env:
-  SECRET_MAP_FILE: _secrets.env 
+
 runs:
   using: "composite"
   steps:
@@ -74,6 +73,8 @@ runs:
         login_credentials: ${{ inputs.azure-credentials }}
 
     - name: Get secrets configuration
+      env:
+        SECRET_MAP_FILE: _secrets.env 
       shell: bash
       run: |
         echo " "
@@ -115,9 +116,9 @@ runs:
         secrets_file_path: configurationmap.txt
 
     - name: Get global configuration
-      shell: bash
       env:
         SECRET_MAP_FILE: _global.yml
+      shell: bash
       run: |
         echo " "
         echo "*********************************************"
