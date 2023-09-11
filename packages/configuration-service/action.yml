@@ -60,6 +60,7 @@ runs:
         creds: ${{ inputs.azure-credentials }}
  
     - name: DEBUG - Run Azure CLI
+      shell: bash
       if: ${{ inputs.debug }}
       run: |
         az version
