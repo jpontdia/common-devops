@@ -42,7 +42,7 @@ jobs:
           echo "  Issue number: ${{ github.event.issue.number}}"
           echo "  Title: ${{ github.event.issue.title}}"
           echo "  Labels: ${{ toJson(github.event.issue.labels) }}"
-          echo "  Repository: ${{ github.repository}}"
+          echo "  Repository: ${{ github.repository }}"
           echo " "
           line=$(echo "${{ github.event.issue.title}}")
           action="$(cut -d' ' -f1 <<<$line)"
@@ -55,7 +55,6 @@ jobs:
           echo "  Version: $version"
           echo "  Test: $test"
           echo "deployment_version=$version" >> $GITHUB_ENV
-
 
       - name: Get the source code
         uses: actions/checkout@v4
@@ -74,8 +73,8 @@ jobs:
 
       - uses: dsaltares/fetch-gh-release-asset@master
         with:
-          repo: ' ${{ github.event.repository}}'
-          version: '${{env.deployment_version}}'
+          repo: '${{ github.repository }}'
+          version: '${{env.deployment_version }}'
           regex: true
           file: "*.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
