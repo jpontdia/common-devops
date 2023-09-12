@@ -28,14 +28,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-
-  - name: Get the source code
-    uses: actions/checkout@v3
-    
-  - name: Get JAR file
-    uses: actions/download-artifact@v3
-    with:
-      name: jar
   
   - name: Get global configuration for the pipeline
     uses: jpontdia/common-devops/packages/configuration-service@main

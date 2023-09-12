@@ -23,7 +23,9 @@ env:
   CONFIGURATIONS_REPOSITORY: common-configurations
   DEPLOYMENT_FORWARD_LABEL: deployment-forward
   MESSAGE_ASSET_NOT_CONFIGURED: "The mulesoft asset doesn't have any deployment configuration"
-  
+  MESSAGE_SERVICE_NOT_DEPLOYED: "The service couldn't be deployed"
+  MESSAGE_SERVICE_SUCCESS_DEPLOYED: "The service was successfully deployed"
+
 jobs:
 
   release:
@@ -83,7 +85,7 @@ jobs:
           azure-credentials: ${{ secrets.azure-credentials }}
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
-          environment: "${{ env.deployment_environment }}z"
+          environment: "${{ env.deployment_environment }}"
 
       - id: verify-deployment
         name: Verify if asset has the deployment configuration
@@ -132,3 +134,47 @@ jobs:
           regex: true
           file: "${{ env.deployment_service }}-.*\\.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: deployment-ch1
+        name: Deploy the service in the cloud
+        uses: jpontdia/common-devops/packages/process-deployment-ch1@main
+        with:
+          keyvault-key: ${{ inputs.keyvault-key }}
+          azure-credentials: ${{ secrets.azure-credentials }}
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
+          deployment-env: ${{ env.deployment_environment }}
+
+      - id: issue-close-deployment
+        name: Close issue error on deployment
+        if: steps.deployment-ch1.outputs.outcome == 'failure'
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Update Issue: ${{ github.event.issue.number }} "
+          echo "***********************************************"
+          echo " "
+          gh issue close ${{ github.event.issue.number }} \
+            -c "${{ env.MESSAGE_SERVICE_NOT_DEPLOYED }}" \
+            -r "not planned"
+
+      - id: issue-close-success
+        name: Close issue success
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Update Issue: ${{ github.event.issue.number }} "
+          echo "***********************************************"
+          echo " "
+          gh issue close ${{ github.event.issue.number }} \
+            -c "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}" \
+            -r "completed"
