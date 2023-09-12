@@ -107,7 +107,7 @@ jobs:
           fi
 
       - id: issue-close
-        name: Verify if asset has the deployment configuration
+        name: Close issue
         if: steps.verify-deployment.outputs.deployment == 'false'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -117,7 +117,7 @@ jobs:
           echo " "
           echo "***********************************************"
           echo "Update Issue: ${{ github.event.issue.number }} "
-          echo "************************************************
+          echo "***********************************************"
           echo " "
           gh issue close ${{ github.event.issue.number }} \
             -c "$issue_message" \
