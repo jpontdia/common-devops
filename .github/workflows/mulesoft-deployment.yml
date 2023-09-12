@@ -23,6 +23,7 @@ env:
   CONFIGURATIONS_REPOSITORY: common-configurations
   DEPLOYMENT_FORWARD_LABEL: deployment-forward
   MESSAGE_ASSET_NOT_CONFIGURED: "The mulesoft asset doesn't have any deployment configuration"
+  MESSAGE_SERVICE_INTERNAL_ERROR: "There was an internal error in the deployment process"
   MESSAGE_SERVICE_NOT_DEPLOYED: "The service couldn't be deployed"
   MESSAGE_SERVICE_SUCCESS_DEPLOYED: "The service was successfully deployed"
 
@@ -127,12 +128,27 @@ jobs:
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
           deployment-env: ${{ env.deployment_environment }}
 
+      - id: issue-close-deployment-error
+        name: Close issue error on deployment
+        if: steps.deployment-ch1.outputs.outcome == null
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Update Issue: ${{ github.event.issue.number }} "
+          echo "***********************************************"
+          echo " "
+          gh issue close ${{ github.event.issue.number }} \
+            -c "${{ env.MESSAGE_SERVICE_INTERNAL_ERROR }}" \
+            -r "not planned"
+          
       - id: issue-close-deployment
         name: Close issue error on deployment
-        if: |
-          steps.deployment-ch1.outputs.outcome == 'failure' || 
-          steps.deployment-ch1.outputs.outcome == ''
-
+        if: steps.deployment-ch1.outputs.outcome == 'failure'
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
