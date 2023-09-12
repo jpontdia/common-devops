@@ -138,9 +138,6 @@ jobs:
           echo "Debug.  steps.deployment-ch1.outputs.outcome: ${{ steps.deployment-ch1.outputs.outcome }} "
           echo "***********************************************"
           echo " "
-          gh issue close ${{ github.event.issue.number }} \
-            -c "${{ env.MESSAGE_SERVICE_INTERNAL_ERROR }}" \
-            -r "not planned"
                       
       - id: issue-close-deployment-error
         name: Close issue error on deployment
