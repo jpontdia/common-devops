@@ -163,6 +163,15 @@ jobs:
             -c "${{ env.MESSAGE_SERVICE_NOT_DEPLOYED }}" \
             -r "not planned"
 
+      - name: Execute Mulesoft BAT
+        uses: jpontdia/common-devops/packages/process-bat@main
+        with:
+          keyvault-key: ${{ inputs.keyvault-key }}
+          azure-credentials: ${{ secrets.azure-credentials }}
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
+          deployment-env: ${{ env.deployment_environment }}
+
       - id: issue-close-success
         name: Close issue success
         env:
@@ -178,3 +187,14 @@ jobs:
           gh issue close ${{ github.event.issue.number }} \
             -c "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}" \
             -r "completed"
+
+      - name: Create badge for deployment
+        uses: jpontdia/common-devops/packages/build-badge@main
+        with:
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          gist-id: ${{ env.github_gist_id }}
+          gist-token: ${{ env.github_gist_accesstoken }}
+          label: 'Deployment ${{ env.deployment_environment }}'
+          status: '${{ env.deployment_version }}'
+          color: '535597'
+          file: ${{ env.service_name }}-${{ env.deployment_environment }}.svg
