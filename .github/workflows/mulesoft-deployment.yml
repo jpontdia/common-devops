@@ -106,6 +106,7 @@ jobs:
           azure-credentials: '${{ secrets.azure-credentials }}'
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
+      
       - name: Get jar file
         uses: dsaltares/fetch-gh-release-asset@master
         if: steps.verify-deployment.outputs.deployment == 'true'
@@ -128,7 +129,10 @@ jobs:
 
       - id: issue-close-deployment
         name: Close issue error on deployment
-        if: steps.deployment-ch1.outputs.outcome == 'failure'
+        if: |
+          steps.deployment-ch1.outputs.outcome == 'failure' || 
+          steps.deployment-ch1.outputs.outcome == ''
+
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -204,7 +208,7 @@ jobs:
           azure-credentials: '${{ secrets.azure-credentials }}'
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
-          
+
       - name: Create badge for deployment
         uses: jpontdia/common-devops/packages/build-badge@main
         with:
