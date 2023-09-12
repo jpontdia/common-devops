@@ -22,6 +22,7 @@ env:
   GITHUB_ORGANIZATION: jpontdia
   CONFIGURATIONS_REPOSITORY: common-configurations
   DEPLOYMENT_FORWARD_LABEL: deployment-forward
+  MESSAGE_ASSET_NOT_CONFIGURED: "The mulesoft asset doesn't have any deployment configuration"
   
 jobs:
 
@@ -85,7 +86,7 @@ jobs:
           environment: "${{ env.deployment_environment }}z"
 
       - id: verify-deployment
-        name: Deployment dev - Verify if asset has the configuration
+        name: Verify if asset has the deployment configuration
         shell: bash
         run: |
           echo " "
@@ -96,12 +97,32 @@ jobs:
           echo "dev cloudhub: ${{ env.configuration_cloudhub }}"
           if [ "${{ env.configuration_cloudhub }}" != "" ] ; then
             echo "deployment=true" >> $GITHUB_OUTPUT
-            echo "The service has the configuration to deploy in ${{ env.deployment_environment }} environment"
+            echo "The service has the configuration to be deployed in ${{ env.deployment_environment }} environment"
+            echo
           else
             echo "deployment=false" >> $GITHUB_OUTPUT
-            echo "The mulesoft asset doesn't have any deployment configuration"
+            issue_message="${{env.MESSAGE_ASSET_NOT_CONFIGURED}}"
+            echo "$issue_message"
+            echo "issue_message=$issue_message" >> $GITHUB_ENV
           fi
-                    
+
+      - id: issue-close
+        name: Verify if asset has the deployment configuration
+        if: steps.verify-deployment.outputs.deployment == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Update Issue: ${{ github.event.issue.number }} "
+          echo "************************************************
+          echo " "
+          gh issue close ${{ github.event.issue.number }} \
+            -c "$issue_message" \
+            -r "not planned"
+          
       - name: Get jar file
         uses: dsaltares/fetch-gh-release-asset@master
         if: steps.verify-deployment.outputs.deployment == 'true'
