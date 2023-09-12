@@ -113,7 +113,9 @@ runs:
       operation="deploy"
       if [ "$STATUS" = "DEPLOYING" ]; then
         echo "The service was already in DEPLOYING state, wait until deployment finish or delete it"
+        echo "outcome=failure" >> $GITHUB_OUTPUT
         exit 1 # terminate and indicate error 
+        
       else
         if [ "$STATUS" != "" ]; then
           operation="modify"
@@ -182,8 +184,8 @@ runs:
           echo "  example: anypoint-cli-v4 runtime-mgr cloudhub-application download-logs {APP-NAME}"
           echo "The expected iterations were 44 but the proccess reached the limit: $limit"
           echo "outcome=failure" >> $GITHUB_OUTPUT
-          
           exit 1 # terminate and indicate error 
+          
         else 
           echo "Deployment successful.."
           echo "outcome=success" >> $GITHUB_OUTPUT
@@ -192,14 +194,16 @@ runs:
         # Update service
         if [ "$UPDATE_STATUS" = "DEPLOY_FAILED" ]; then
           echo "Error: There were errors while deploying the service"
+          echo "outcome=failure" >> $GITHUB_OUTPUT
           exit 1 # terminate and indicate error
+
         elif [ $iteration -eq $limit ]; then
           echo "Error: The service was not deployed in the expected time, review logs"
           echo "  example: anypoint-cli-v4 runtime-mgr cloudhub-application download-logs {APP-NAME}"
           echo "The expected iterations were 44 but the proccess reached the limit: $limit"
           echo "outcome=failure" >> $GITHUB_OUTPUT
-
           exit 1 # terminate and indicate error
+
         else
           echo "Deployment successful.."
           echo "outcome=success" >> $GITHUB_OUTPUT
