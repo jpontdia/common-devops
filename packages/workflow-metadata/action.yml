@@ -13,9 +13,6 @@ inputs:
   configurations-repository:
     required: true
     description: Name of the repository for mulesoft configurations
-  environment:
-    required: true
-    description: Get the configuration the the specified environment
 
 runs:
   using: "composite"

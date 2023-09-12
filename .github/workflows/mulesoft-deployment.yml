@@ -41,7 +41,12 @@ jobs:
 
     steps:
       - name: Get workflow metadata
-        uses: jpontdia/workflow-metadata@main
+        uses: jpontdia/common-devops/packages/workflow-metadata@main
+        with:
+          keyvault-key: '${{ inputs.keyvault-key }}'
+          azure-credentials: '${{ secrets.azure-credentials }}'
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
 
       - id: verify-deployment
         name: Verify if asset has the deployment configuration
@@ -95,8 +100,12 @@ jobs:
 
     steps:
       - name: Get workflow metadata
-        uses: jpontdia/workflow-metadata@main
-
+        uses: jpontdia/common-devops/packages/workflow-metadata@main
+        with:
+          keyvault-key: '${{ inputs.keyvault-key }}'
+          azure-credentials: '${{ secrets.azure-credentials }}'
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
       - name: Get jar file
         uses: dsaltares/fetch-gh-release-asset@master
         if: steps.verify-deployment.outputs.deployment == 'true'
@@ -146,7 +155,12 @@ jobs:
 
     steps:
       - name: Get workflow metadata
-        uses: jpontdia/workflow-metadata@main
+        uses: jpontdia/common-devops/packages/workflow-metadata@main
+        with:
+          keyvault-key: '${{ inputs.keyvault-key }}'
+          azure-credentials: '${{ secrets.azure-credentials }}'
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
 
       - name: Execute Mulesoft BAT
         uses: jpontdia/common-devops/packages/process-bat@main
@@ -184,8 +198,13 @@ jobs:
 
     steps:
       - name: Get workflow metadata
-        uses: jpontdia/workflow-metadata@main
-
+        uses: jpontdia/common-devops/packages/workflow-metadata@main
+        with:
+          keyvault-key: '${{ inputs.keyvault-key }}'
+          azure-credentials: '${{ secrets.azure-credentials }}'
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
+          
       - name: Create badge for deployment
         uses: jpontdia/common-devops/packages/build-badge@main
         with:
