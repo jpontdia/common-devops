@@ -43,15 +43,6 @@ jobs:
       - name: Get workflow metadata
         uses: jpontdia/workflow-metadata
 
-      - name: Get global configuration for the pipeline
-        uses: jpontdia/common-devops/packages/configuration-service@main
-        with:
-          keyvault-key: ${{ inputs.keyvault-key }}
-          azure-credentials: ${{ secrets.azure-credentials }}
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
-          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
-          environment: "${{ env.deployment_environment }}"
-
       - id: verify-deployment
         name: Verify if asset has the deployment configuration
         shell: bash
@@ -154,6 +145,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Get workflow metadata
+        uses: jpontdia/workflow-metadata
+
       - name: Execute Mulesoft BAT
         uses: jpontdia/common-devops/packages/process-bat@main
         with:
@@ -189,13 +183,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Get workflow metadata
+        uses: jpontdia/workflow-metadata
+        
       - name: Create badge for deployment
         uses: jpontdia/common-devops/packages/build-badge@main
         with:
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
           gist-token: ${{ env.github_gist_accesstoken }}
-          label: 'Deployment ${{ env.deployment_environment }}'
+          label: '${{ env.deployment_environment }} version'
           status: '${{ env.deployment_version }}'
           color: '535597'
           file: ${{ env.service_name }}-${{ env.deployment_environment }}.svg
