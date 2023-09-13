@@ -259,7 +259,7 @@ jobs:
       - id: issue-create
         name: Create deployment issue
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ env.github_issues_accesstoken }}
         shell: bash
         run: |
           echo " "
