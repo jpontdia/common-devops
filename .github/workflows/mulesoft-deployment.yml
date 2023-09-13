@@ -26,6 +26,9 @@ env:
   MESSAGE_SERVICE_INTERNAL_ERROR: "There was an internal error in the deployment process"
   MESSAGE_SERVICE_NOT_DEPLOYED: "The service couldn't be deployed"
   MESSAGE_SERVICE_SUCCESS_DEPLOYED: "The service was successfully deployed"
+  MESSAGE_SERVICE_BAT_SUCCESS: "The BAT tests run successfully"
+  MESSAGE_SERVICE_NO_BAT: "The service hadn't BAT tests"
+  MESSAGE_SERVICE_BAT_FAILURE: "BAT testig with failures"
 
 jobs:
 
@@ -39,6 +42,7 @@ jobs:
     outputs:
       # Indicates if the service is deployable
       deployment: ${{ steps.verify-deployment.outputs.deployment }}
+      deployment-env: ${{ steps.verify-deployment.outputs.deployment-env }}
 
     steps:
       - name: Get workflow metadata
@@ -61,6 +65,7 @@ jobs:
           echo "dev cloudhub: ${{ env.configuration_cloudhub }}"
           if [ "${{ env.configuration_cloudhub }}" != "" ] ; then
             echo "deployment=true" >> $GITHUB_OUTPUT
+            echo "deployment-env=${{ env.deployment_environment }}" >> $GITHUB_OUTPUT
             echo "The service has the configuration to be deployed in ${{ env.deployment_environment }} environment"
             echo
           else
@@ -95,6 +100,7 @@ jobs:
     if: needs.verify.outputs.deployment == 'true'
     name: CloudHub1
     runs-on: ubuntu-latest
+    environment: ${{ needs.verify.outputs.deployment-env }}
     outputs:
       # Indicates if the service was deployed
       outcome: ${{ steps.verify-issue-close-deployment.outputs.outcome }}
@@ -156,6 +162,17 @@ jobs:
             echo "outcome=success" >> $GITHUB_OUTPUT
           fi
 
+      - name: Create badge for deployment
+        uses: jpontdia/common-devops/packages/build-badge@main
+        with:
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          gist-id: ${{ env.github_gist_id }}
+          gist-token: ${{ env.github_gist_accesstoken }}
+          label: '${{ env.deployment_environment }} version'
+          status: '${{ env.deployment_version }}'
+          color: '535597'
+          file: ${{ env.service_name }}-${{ env.deployment_environment }}.svg
+
   ##################################################################
   # Testing
   ##################################################################
@@ -175,6 +192,7 @@ jobs:
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
 
       - name: Execute Mulesoft BAT
+        id: bat-testing
         uses: jpontdia/common-devops/packages/process-bat@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
@@ -183,8 +201,9 @@ jobs:
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
           deployment-env: ${{ env.deployment_environment }}
 
-      - id: issue-close-success
-        name: Close issue success
+      - id: issue-close-test
+        name: Close issue
+        if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE: ${{ github.event.issue.html_url }}
@@ -195,16 +214,29 @@ jobs:
           echo "Update Issue: ${{ github.event.issue.number }} "
           echo "***********************************************"
           echo " "
-          gh issue close ${{ github.event.issue.number }} \
-            -c "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}" \
-            -r "completed"
+          if [ "${{ steps.bat-testing.outputs.outcome }}" == "skipped" ] ; then
+            echo "  Closing issue with tests skipped"
+            gh issue close ${{ github.event.issue.number }} \
+              -c "${{ env.MESSAGE_SERVICE_NO_BAT }}" \
+              -r "completed"
+          elif [ "${{ steps.bat-testing.outputs.outcome }}" == "success" ] ; then
+            echo "  Closing issue with success tests"
+            gh issue close ${{ github.event.issue.number }} \
+              -c "${{ env.MESSAGE_SERVICE_BAT_SUCCESS }}" \
+              -r "completed"
+          else
+            echo "  Closing issue with testing error"
+            gh issue close ${{ github.event.issue.number }} \
+              -c "${{ env.MESSAGE_SERVICE_BAT_FAILURE }}" \
+              -r "not planned"
+          fi
 
   ##################################################################
   # Forward to next environnment
   ##################################################################
   forward:
     needs: [testing]
-    if: needs.deployment.outputs.outcome != 'failure'
+    if: contains(toJson(github.event.issue.labels), 'deployment-forward'
     name: forward
     runs-on: ubuntu-latest
 
@@ -216,14 +248,3 @@ jobs:
           azure-credentials: '${{ secrets.azure-credentials }}'
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
-
-      - name: Create badge for deployment
-        uses: jpontdia/common-devops/packages/build-badge@main
-        with:
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
-          gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_gist_accesstoken }}
-          label: '${{ env.deployment_environment }} version'
-          status: '${{ env.deployment_version }}'
-          color: '535597'
-          file: ${{ env.service_name }}-${{ env.deployment_environment }}.svg

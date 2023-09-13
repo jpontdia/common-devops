@@ -16,10 +16,20 @@ inputs:
   deployment-env:
     required: true
     description: Deployment environment for the service
+outputs:
+  outcome:
+    description: "The result of the test: success, failure, skipped"
+    value: ${{ steps.deployment.outputs.outcome }}
 
 runs:
   using: "composite"
   steps:
+
+    - name: Install Mulesoft BAT
+      shell: bash
+      if: ${{ hashFiles('bat') == '' }}
+      run: |
+        echo "test_outcome=skipped" >> $GITHUB_ENV
 
     - name: Get global configuration for the pipeline
       uses: jpontdia/common-devops/packages/configuration-service@main
@@ -44,7 +54,10 @@ runs:
       run: |
         cd bat
         mkdir target
+        echo "test_outcome=failure" >> $GITHUB_ENV
         bat
+        echo "test_outcome=success" >> $GITHUB_ENV
+
 
     - name: Publish - Test reports
       uses: actions/upload-artifact@master
@@ -64,3 +77,21 @@ runs:
         files: |
           bat/target/JUnit.xml
         check_name: BAT Test in ${{ inputs.deployment-env}} environment
+
+    - name: Create badge for testing
+      uses: jpontdia/common-devops/packages/build-badge@main
+      if: always()
+      with:
+        github-organization: ${{ inputs.github-organization }}
+        gist-id: ${{ env.github_gist_id }}
+        gist-token: ${{ env.github_gist_accesstoken }}
+        label: '${{ env.deployment_environment }} test'
+        status: '${{ env.test_outcome }}'
+        color: '535597'
+        file: ${{ env.service_name }}-${{ env.deployment_environment }}-test.svg
+
+    - name: Summary
+      if: always()
+      shell: bash  
+      run: |
+        echo "outcome=$test_outcome" >> $GITHUB_OUTPUT      
