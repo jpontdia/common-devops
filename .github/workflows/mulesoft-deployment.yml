@@ -193,7 +193,7 @@ jobs:
 
       - name: Execute Mulesoft BAT
         id: bat-testing
-        uses: jpontdia/common-devops/packages/process-bat@main
+        uses: jpontdia/common-dvscode-file://vscode-app/Applications/Visual%20Studio%20Code.app/Contents/Resources/app/out/vs/code/electron-sandbox/workbench/workbench.htmlevops/packages/process-bat@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
