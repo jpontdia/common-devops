@@ -265,7 +265,7 @@ jobs:
           echo "Create Issue "
           echo "***********************************************"
           echo " "
-          if [ "${{ env.deployment_environment }}}" == "dev" ] ; then
+          if [ "${{ env.deployment_environment }}" == "dev" ] ; then
             echo "  Create issue for deployment in tst"
             gh issue create \
               -t "Deployment tst ${{ env.service_name }} ${{ env.deployment_version }}" \
