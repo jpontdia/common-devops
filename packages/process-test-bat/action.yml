@@ -58,7 +58,6 @@ runs:
         bat
         echo "test_outcome=success" >> $GITHUB_ENV
 
-
     - name: Publish - Test reports
       uses: actions/upload-artifact@master
       if: ${{ hashFiles('bat') != '' }}

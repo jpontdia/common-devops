@@ -158,6 +158,9 @@ jobs:
               -c "${{ env.MESSAGE_SERVICE_NOT_DEPLOYED }}" \
               -r "not planned"
           else
+            echo "Add comment to issue"
+            gh issue comment ${{ github.event.issue.number }} \
+              -b "The deployment was successfull"
             echo "  No error on deployment, execute next job"
             echo "outcome=success" >> $GITHUB_OUTPUT
           fi
@@ -193,7 +196,7 @@ jobs:
 
       - name: Execute Mulesoft BAT
         id: bat-testing
-        uses: jpontdia/common-devops/packages/process-bat@main
+        uses: jpontdia/common-devops/packages/process-test-bat@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
@@ -236,7 +239,8 @@ jobs:
   ##################################################################
   forward:
     needs: [testing]
-    if: contains(toJson(github.event.issue.labels), 'deployment-forward')
+    # if: contains(toJson(github.event.issue.labels), 'deployment-forward')
+    if: false
     name: forward
     runs-on: ubuntu-latest
 
@@ -248,3 +252,30 @@ jobs:
           azure-credentials: '${{ secrets.azure-credentials }}'
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
+
+      - id: issue-create
+        name: Create deployment issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Create Issue "
+          echo "***********************************************"
+          echo " "
+          if [ "${{ env.deployment_environment }}}" == "dev" ] ; then
+            echo "  Create issue for deployment in tst"
+            gh issue create \
+              -t "Deployment tst ${{ env.service_name }} ${{ env.deployment_version }}" \
+              -a "@me" -b "" -l "deployment-forward,deployment-tst"
+          elif [ "${{ env.deployment_environment }}" == "tst" ] ; then
+            echo "  Create issue for deployment in prd"
+            gh issue create \
+              -t "Deployment prd ${{ env.service_name }} ${{ env.deployment_version }}" \
+              -a "@me" -b "" -l "deployment-prd"
+          else
+            echo "  There is an error on the logic for deployment: dev -> tst -> prd"
+            exit 1
+          fi
