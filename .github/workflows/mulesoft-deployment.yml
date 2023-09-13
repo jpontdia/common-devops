@@ -36,7 +36,10 @@ jobs:
   # Analyse deployment of service
   ##################################################################
   verify:
-    if: github.actor == 'jpontdia' || github.actor == 'GitHubActions'
+    if: |
+      github.actor == 'jpontdia' ||
+      github.actor == 'GitHubActions' ||
+      github.actor == 'github-actions'
     name: verify
     runs-on: ubuntu-latest
     outputs:
