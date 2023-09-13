@@ -236,7 +236,7 @@ jobs:
   ##################################################################
   forward:
     needs: [testing]
-    if: contains(toJson(github.event.issue.labels), 'deployment-forward'
+    if: contains(toJson(github.event.issue.labels), 'deployment-forward')
     name: forward
     runs-on: ubuntu-latest
 
