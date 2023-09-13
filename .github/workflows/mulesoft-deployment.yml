@@ -260,7 +260,6 @@ jobs:
         name: Create deployment issue
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE: ${{ github.event.issue.html_url }}
         shell: bash
         run: |
           echo " "
@@ -270,14 +269,18 @@ jobs:
           echo " "
           if [ "${{ env.deployment_environment }}" == "dev" ] ; then
             echo "  Create issue for deployment in tst"
-            gh issue create \
+            gh -R "${{ github.repository }}" issue create \
               -t "Deployment tst ${{ env.service_name }} ${{ env.deployment_version }}" \
-              -b "" -l "deployment-tst"
+              -a "jpontdia" \
+              -b "This action was triggered from the forward job in the deployment workflow" \
+              -l "deployment-tst"
           elif [ "${{ env.deployment_environment }}" == "tst" ] ; then
             echo "  Create issue for deployment in prd"
-            gh issue create \
+            gh -R "${{ github.repository }}" issue create \
               -t "Deployment prd ${{ env.service_name }} ${{ env.deployment_version }}" \
-              -b "" -l "deployment-prd"
+              -a "jpontdia" \
+              -b "This action was triggered from the forward job in the deployment workflow" \
+              -l "deployment-prd"
           else
             echo "  There is an error on the logic for deployment: dev -> tst -> prd"
             exit 1
