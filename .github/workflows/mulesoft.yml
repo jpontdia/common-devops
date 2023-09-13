@@ -45,7 +45,9 @@ jobs:
     steps:
 
       - name: Get the source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Get global configuration for the pipeline
         uses: jpontdia/common-devops/packages/configuration-service@main
