@@ -93,7 +93,7 @@ jobs:
   deployment:
     needs: [verify]
     if: needs.verify.outputs.deployment == 'true'
-    name: deployment
+    name: CloudHub1
     runs-on: ubuntu-latest
     outputs:
       # Indicates if the service was deployed
@@ -139,15 +139,18 @@ jobs:
           echo "***********************************************"
           echo " "
           echo "Output steps.deployment-ch1.outputs.outcome=${{ steps.deployment-ch1.outputs.outcome }}"
-          if [ "${{ steps.deployment-ch1.outputs.outcome }}" != "" ] ; then
+          if [ "${{ steps.deployment-ch1.outputs.outcome }}" == "" ] ; then
+            echo "  Closing issue with internal error "
             gh issue close ${{ github.event.issue.number }} \
               -c "${{ env.MESSAGE_SERVICE_INTERNAL_ERROR }}" \
               -r "not planned"
           elif [ "${{ steps.deployment-ch1.outputs.outcome }}" == "failure" ] ; then
+            echo "  Closing issue with deployment error "
             gh issue close ${{ github.event.issue.number }} \
               -c "${{ env.MESSAGE_SERVICE_NOT_DEPLOYED }}" \
               -r "not planned"
           else
+            echo "  No error on deployment, execute next job"
             echo "outcome=success" >> $GITHUB_OUTPUT
           fi
 
