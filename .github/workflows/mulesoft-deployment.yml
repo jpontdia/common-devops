@@ -217,6 +217,7 @@ jobs:
           echo "Update Issue: ${{ github.event.issue.number }} "
           echo "***********************************************"
           echo " "
+          echo "variable steps.bat-testing.outputs.outcome=${{ steps.bat-testing.outputs.outcome }}"
           if [ "${{ steps.bat-testing.outputs.outcome }}" == "skipped" ] ; then
             echo "  Closing issue with tests skipped"
             gh issue close ${{ github.event.issue.number }} \

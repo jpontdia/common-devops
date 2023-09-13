@@ -19,7 +19,7 @@ inputs:
 outputs:
   outcome:
     description: "The result of the test: success, failure, skipped"
-    value: ${{ steps.deployment.outputs.outcome }}
+    value: ${{ steps.summary.outputs.outcome }}
 
 runs:
   using: "composite"
@@ -90,6 +90,7 @@ runs:
         file: ${{ env.service_name }}-${{ env.deployment_environment }}-test.svg
 
     - name: Summary
+      id: summary
       if: always()
       shell: bash  
       run: |
