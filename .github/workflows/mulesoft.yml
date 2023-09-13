@@ -64,6 +64,9 @@ jobs:
           echo "Verify if github tag exists "
           echo "***********************************************"
           echo " "
+          echo "tags available..."
+          git tag --list
+          echo " "
           git config --global user.name "GitHubActions"
           git config --global user.email "github-actions@users.noreply.github.com"
 
