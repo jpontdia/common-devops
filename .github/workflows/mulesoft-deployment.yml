@@ -269,12 +269,12 @@ jobs:
             echo "  Create issue for deployment in tst"
             gh issue create \
               -t "Deployment tst ${{ env.service_name }} ${{ env.deployment_version }}" \
-              -a "@me" -b "" -l "deployment-tst"
+              -b "" -l "deployment-tst"
           elif [ "${{ env.deployment_environment }}" == "tst" ] ; then
             echo "  Create issue for deployment in prd"
             gh issue create \
               -t "Deployment prd ${{ env.service_name }} ${{ env.deployment_version }}" \
-              -a "@me" -b "" -l "deployment-prd"
+              -b "" -l "deployment-prd"
           else
             echo "  There is an error on the logic for deployment: dev -> tst -> prd"
             exit 1

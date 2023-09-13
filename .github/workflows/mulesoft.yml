@@ -199,3 +199,20 @@ jobs:
           status: '${{ github.run_number }}'
           color: '535597'
           file: ${{ env.service_name }}-wf.svg
+
+      - id: issue-create
+        name: Create deployment issue
+        if: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Create Issue "
+          echo "***********************************************"
+          echo " "
+          echo "  Create issue for deployment in dev"
+          gh issue create \
+            -t "Deployment dev ${{ env.service_name }} ${{ env.service_version }}" \
+            -b "" -l "deployment-forward,deployment-dev"
