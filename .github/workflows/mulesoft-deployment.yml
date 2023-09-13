@@ -115,7 +115,7 @@ jobs:
           version: 'tags/${{ env.deployment_version }}'
           regex: true
           file: "${{ env.deployment_service }}-.*\\.jar"
-          token: ${{ secrets.GITHUB_TOKEN }}+
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - id: deployment-ch1
         name: Deploy the service in the cloud
