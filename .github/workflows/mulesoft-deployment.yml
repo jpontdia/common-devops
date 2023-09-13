@@ -240,8 +240,7 @@ jobs:
   ##################################################################
   forward:
     needs: [testing]
-    # if: contains(toJson(github.event.issue.labels), 'deployment-forward')
-    if: false
+    if: contains(toJson(github.event.issue.labels), 'deployment-forward')
     name: forward
     runs-on: ubuntu-latest
 
@@ -270,7 +269,7 @@ jobs:
             echo "  Create issue for deployment in tst"
             gh issue create \
               -t "Deployment tst ${{ env.service_name }} ${{ env.deployment_version }}" \
-              -a "@me" -b "" -l "deployment-forward,deployment-tst"
+              -a "@me" -b "" -l "deployment-tst"
           elif [ "${{ env.deployment_environment }}" == "tst" ] ; then
             echo "  Create issue for deployment in prd"
             gh issue create \
