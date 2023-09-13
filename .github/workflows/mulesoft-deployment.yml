@@ -110,13 +110,12 @@ jobs:
       
       - name: Get jar file
         uses: dsaltares/fetch-gh-release-asset@master
-        if: steps.verify-deployment.outputs.deployment == 'true'
         with:
           repo: '${{ github.repository }}'
           version: 'tags/${{ env.deployment_version }}'
           regex: true
           file: "${{ env.deployment_service }}-.*\\.jar"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}+
 
       - id: deployment-ch1
         name: Deploy the service in the cloud
