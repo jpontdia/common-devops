@@ -21,7 +21,6 @@ on:
 env:
   GITHUB_ORGANIZATION: jpontdia
   CONFIGURATIONS_REPOSITORY: common-configurations
-  DEPLOYMENT_FORWARD_LABEL: deployment-forward
   MESSAGE_ASSET_NOT_CONFIGURED: "The mulesoft asset doesn't have any deployment configuration"
   MESSAGE_SERVICE_INTERNAL_ERROR: "There was an internal error in the deployment process"
   MESSAGE_SERVICE_NOT_DEPLOYED: "The service couldn't be deployed"
@@ -29,6 +28,10 @@ env:
   MESSAGE_SERVICE_BAT_SUCCESS: "The BAT tests run successfully"
   MESSAGE_SERVICE_NO_BAT: "The service hadn't BAT tests"
   MESSAGE_SERVICE_BAT_FAILURE: "BAT testig with failures"
+  LABEL_FORWARD: "forward"
+  LABEL_DEV: "dev"
+  LABEL_TST: "tst"
+  LABEL_PRD: "prd"
 
 jobs:
 
@@ -243,7 +246,7 @@ jobs:
   ##################################################################
   forward:
     needs: [testing]
-    if: contains(toJson(github.event.issue.labels), 'deployment-forward')
+    if: contains(toJson(github.event.issue.labels), 'env.LABEL_FORWARD')
     name: forward
     runs-on: ubuntu-latest
 
@@ -273,14 +276,14 @@ jobs:
               -t "Deployment tst ${{ env.service_name }} ${{ env.deployment_version }}" \
               -a "${{ env.github_deployeruser }}" \
               -b "This action was triggered from the forward job in the deployment workflow" \
-              -l "deployment-tst"
+              -l "${{ env.LABEL_TST}}"
           elif [ "${{ env.deployment_environment }}" == "tst" ] ; then
             echo "  Create issue for deployment in prd"
             gh -R "${{ github.repository }}" issue create \
               -t "Deployment prd ${{ env.service_name }} ${{ env.deployment_version }}" \
               -a "${{ env.github_deployeruser }}" \
               -b "This action was triggered from the forward job in the deployment workflow" \
-              -l "deployment-prd"
+              -l "${{ env.LABEL_PRD}}"
           else
             echo "  There is an error on the logic for deployment: dev -> tst -> prd"
             exit 1

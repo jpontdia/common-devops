@@ -212,4 +212,4 @@ jobs:
               -t "Deployment dev ${{ env.service_name }} ${{ env.service_version }}" \
               -a "${{ env.github_deployeruser }}" \
               -b "The build job triggered this action. An analysis task will be responsible for checking if the service is deployable." \
-              -l "deployment-forward,deployment-dev"
+              -l "forward,dev"
