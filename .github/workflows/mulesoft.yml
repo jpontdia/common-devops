@@ -32,16 +32,12 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    # Needed by the Unit Test Action
+# Needed by the Unit Test Action
 #    permissions:
 #      contents: read
 #      issues: read
 #      checks: write
 #      pull-requests: write    
-    outputs:
-      # Indicates if the service is deployable
-      deployment-dev: ${{ steps.verify-deployment-dev.outputs.deployment }}
-      deployment-tst: ${{ steps.verify-deployment-tst.outputs.deployment }}
     steps:
 
       - name: Get the source code
@@ -202,17 +198,18 @@ jobs:
 
       - id: issue-create
         name: Create deployment issue
-        if: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ env.github_issues_accesstoken }}
         shell: bash
         run: |
           echo " "
           echo "***********************************************"
-          echo "Create Issue "
+          echo "Create Deployment Issue "
           echo "***********************************************"
           echo " "
           echo "  Create issue for deployment in dev"
-          gh issue create \
-            -t "Deployment dev ${{ env.service_name }} ${{ env.service_version }}" \
-            -b "" -l "deployment-forward,deployment-dev"
+          gh -R "${{ github.repository }}" issue create \
+              -t "Deployment dev ${{ env.service_name }} ${{ env.deployment_version }}" \
+              -a "${{ github_deployeruser }}" \
+              -b "The build job triggered this action. An analysis task will be responsible for checking if the service is deployable." \
+              -l "deployment-forward,deployment-dev"

@@ -271,14 +271,14 @@ jobs:
             echo "  Create issue for deployment in tst"
             gh -R "${{ github.repository }}" issue create \
               -t "Deployment tst ${{ env.service_name }} ${{ env.deployment_version }}" \
-              -a "jpontdia" \
+              -a "${{ github_deployeruser }}" \
               -b "This action was triggered from the forward job in the deployment workflow" \
               -l "deployment-tst"
           elif [ "${{ env.deployment_environment }}" == "tst" ] ; then
             echo "  Create issue for deployment in prd"
             gh -R "${{ github.repository }}" issue create \
               -t "Deployment prd ${{ env.service_name }} ${{ env.deployment_version }}" \
-              -a "jpontdia" \
+              -a "${{ github_deployeruser }}" \
               -b "This action was triggered from the forward job in the deployment workflow" \
               -l "deployment-prd"
           else
