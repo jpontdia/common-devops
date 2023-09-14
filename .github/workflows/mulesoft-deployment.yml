@@ -26,7 +26,7 @@ env:
   MESSAGE_SERVICE_NOT_DEPLOYED: "The service couldn't be deployed"
   MESSAGE_SERVICE_SUCCESS_DEPLOYED: "The service was successfully deployed"
   MESSAGE_SERVICE_BAT_SUCCESS: "The BAT tests run successfully"
-  MESSAGE_SERVICE_NO_BAT: "The service hadn't BAT tests"
+  MESSAGE_SERVICE_NO_BAT: "There aren't any BAT tests"
   MESSAGE_SERVICE_BAT_FAILURE: "BAT testig with failures"
   LABEL_FORWARD: "forward"
   LABEL_DEV: "dev"
@@ -246,7 +246,7 @@ jobs:
   ##################################################################
   forward:
     needs: [testing]
-    if: contains(toJson(github.event.issue.labels), 'env.LABEL_FORWARD')
+    if: contains(toJson(github.event.issue.labels), 'forward')
     name: forward
     runs-on: ubuntu-latest
 
