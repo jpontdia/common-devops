@@ -101,9 +101,7 @@ jobs:
       # Runs only when deploying to dev
       - id: create-milestone
         name: Create milestone and assign to issue
-        if: |
-          steps.verify-deployment.outputs.deployment == 'true' &&
-          '${{ env.deployment_environment }}' == 'dev'
+        if: steps.verify-deployment.outputs.deployment == 'true' 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE: ${{ github.event.issue.html_url }}
@@ -114,21 +112,24 @@ jobs:
           echo "Create milestone: ${{ env.deployment_version }}"
           echo "***********************************************"
           echo " "
-          gh api \
-            --method POST \
-            -H "Accept: application/vnd.github.v3+json" \
-            /repos/${{ github.repository }}/milestones \
-            -f title='${{ env.deployment_version }}' \
-            -f state='open' \
-            -f description='${{ env.deployment_version }}'          
-          echo " "
-          echo "***********************************************"
-          echo "Update Issue: ${{ github.event.issue.number }} "
-          echo "***********************************************"
-          echo " "
-          gh issue edit ${{ github.event.issue.number }} \
-            -m "${{ env.deployment_version }}"          
-
+          if [ "${{ env.deployment_environment }}" == "dev" ] ; then
+            gh api \
+              --method POST \
+              -H "Accept: application/vnd.github.v3+json" \
+              /repos/${{ github.repository }}/milestones \
+              -f title='${{ env.deployment_version }}' \
+              -f state='open' \
+              -f description='${{ env.deployment_version }}'          
+            echo " "
+            echo "***********************************************"
+            echo "Update Issue: ${{ github.event.issue.number }} "
+            echo "***********************************************"
+            echo " "
+            gh issue edit ${{ github.event.issue.number }} \
+              -m "${{ env.deployment_version }}"  
+          else
+            echo "No Milestone created, only in dev environment in the first deployment issue"
+          fi
 
   ##################################################################
   # Deployment
@@ -152,6 +153,22 @@ jobs:
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
       
+      - id: issue-comment
+        name: Add issue comment
+        if: steps.verify-deployment.outputs.deployment == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Add issue comment: ${{ github.event.issue.number }} "
+          echo "***********************************************"
+          echo " "
+          gh issue comment ${{ github.event.issue.number }} \
+            -b "The deployment process is starting" 
+
       - name: Get jar file
         uses: dsaltares/fetch-gh-release-asset@master
         with:
@@ -231,6 +248,22 @@ jobs:
           azure-credentials: '${{ secrets.azure-credentials }}'
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
+
+      - id: issue-comment
+        name: Add issue comment
+        if: steps.verify-deployment.outputs.deployment == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Add issue comment: ${{ github.event.issue.number }} "
+          echo "***********************************************"
+          echo " "
+          gh issue comment ${{ github.event.issue.number }} \
+            -b "The testing process is starting" 
 
       - name: Execute Mulesoft BAT
         id: bat-testing
