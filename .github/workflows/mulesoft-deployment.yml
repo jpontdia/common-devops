@@ -97,6 +97,38 @@ jobs:
           gh issue close ${{ github.event.issue.number }} \
             -c "$issue_message" \
             -r "not planned"
+      
+      # Runs only when deploying to dev
+      - id: create-milestone
+        name: Create milestone and assign to issue
+        if: |
+          steps.verify-deployment.outputs.deployment == 'true' &&
+          '${{ env.deployment_environment }}' == 'dev'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Create milestone: ${{ env.deployment_version }}"
+          echo "***********************************************"
+          echo " "
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            /repos/${{ github.repository }}/milestones \
+            -f title='${{ env.deployment_version }}' \
+            -f state='open' \
+            -f description='${{ env.deployment_version }}'          
+          echo " "
+          echo "***********************************************"
+          echo "Update Issue: ${{ github.event.issue.number }} "
+          echo "***********************************************"
+          echo " "
+          gh issue edit ${{ github.event.issue.number }} \
+            -m "${{ env.deployment_version }}"          
+
 
   ##################################################################
   # Deployment
@@ -276,14 +308,16 @@ jobs:
               -t "Deployment tst ${{ env.service_name }} ${{ env.deployment_version }}" \
               -a "${{ env.github_deployeruser }}" \
               -b "This action was triggered from the forward job in the deployment workflow" \
-              -l "${{ env.LABEL_TST}}"
+              -l "${{ env.LABEL_TST}}" \
+              -m "${{ env.deployment_version }}" 
           elif [ "${{ env.deployment_environment }}" == "tst" ] ; then
             echo "  Create issue for deployment in prd"
             gh -R "${{ github.repository }}" issue create \
               -t "Deployment prd ${{ env.service_name }} ${{ env.deployment_version }}" \
               -a "${{ env.github_deployeruser }}" \
               -b "This action was triggered from the forward job in the deployment workflow" \
-              -l "${{ env.LABEL_PRD}}"
+              -l "${{ env.LABEL_PRD}}" \
+              -m "${{ env.deployment_version }}" 
           else
             echo "  There is an error on the logic for deployment: dev -> tst -> prd"
             exit 1
