@@ -155,7 +155,6 @@ jobs:
       
       - id: issue-comment
         name: Add issue comment
-        if: steps.verify-deployment.outputs.deployment == 'false'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE: ${{ github.event.issue.html_url }}
@@ -251,7 +250,6 @@ jobs:
 
       - id: issue-comment
         name: Add issue comment
-        if: steps.verify-deployment.outputs.deployment == 'false'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE: ${{ github.event.issue.html_url }}
