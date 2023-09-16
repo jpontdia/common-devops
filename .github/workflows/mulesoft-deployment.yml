@@ -126,7 +126,8 @@ jobs:
             echo "***********************************************"
             echo " "
             gh issue edit ${{ github.event.issue.number }} \
-              -m "${{ env.deployment_version }}"  
+              -m "${{ env.deployment_version }}" \
+              -p "${{ env.github_deploymentproject }}" 
           else
             echo "No Milestone created, only in dev environment in the first deployment issue"
           fi
@@ -340,7 +341,8 @@ jobs:
               -a "${{ env.github_deployeruser }}" \
               -b "This action was triggered from the forward job in the deployment workflow" \
               -l "${{ env.LABEL_TST}}" \
-              -m "${{ env.deployment_version }}" 
+              -m "${{ env.deployment_version }}" \
+              -p "${{ env.github_deploymentproject }}"
           elif [ "${{ env.deployment_environment }}" == "tst" ] ; then
             echo "  Create issue for deployment in prd"
             gh -R "${{ github.repository }}" issue create \
@@ -348,7 +350,8 @@ jobs:
               -a "${{ env.github_deployeruser }}" \
               -b "This action was triggered from the forward job in the deployment workflow" \
               -l "${{ env.LABEL_PRD}}" \
-              -m "${{ env.deployment_version }}" 
+              -m "${{ env.deployment_version }}" \
+              -p "${{ env.github_deploymentproject }}"
           else
             echo "  There is an error on the logic for deployment: dev -> tst -> prd"
             exit 1
