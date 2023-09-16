@@ -127,7 +127,7 @@ jobs:
             echo " "
             gh issue edit ${{ github.event.issue.number }} \
               -m "${{ env.deployment_version }}" \
-              -p "${{ env.github_deploymentproject }}" 
+              --add-project "${{ env.github_deploymentproject }}" 
           else
             echo "No Milestone created, only in dev environment in the first deployment issue"
           fi
