@@ -103,7 +103,7 @@ jobs:
         name: Create milestone and assign to issue
         if: steps.verify-deployment.outputs.deployment == 'true' 
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ env.github-admintasks-accesstoken }}
           ISSUE: ${{ github.event.issue.html_url }}
         shell: bash
         run: |
@@ -125,7 +125,6 @@ jobs:
             echo "Update Issue: ${{ github.event.issue.number }} "
             echo "***********************************************"
             echo " "
-            gh auth refresh -s project
             gh issue edit ${{ github.event.issue.number }} \
               -m "${{ env.deployment_version }}" \
               --add-project "${{ env.github_deploymentproject }}" 
@@ -327,7 +326,7 @@ jobs:
       - id: issue-create
         name: Create deployment issue
         env:
-          GITHUB_TOKEN: ${{ env.github_issues_accesstoken }}
+          GITHUB_TOKEN: ${{ env.github-admintasks-accesstoken }}
         shell: bash
         run: |
           echo " "
