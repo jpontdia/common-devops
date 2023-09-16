@@ -125,6 +125,7 @@ jobs:
             echo "Update Issue: ${{ github.event.issue.number }} "
             echo "***********************************************"
             echo " "
+            gh auth refresh -s project
             gh issue edit ${{ github.event.issue.number }} \
               -m "${{ env.deployment_version }}" \
               --add-project "${{ env.github_deploymentproject }}" 
