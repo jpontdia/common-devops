@@ -103,8 +103,7 @@ jobs:
         name: Create milestone and assign to issue
         if: steps.verify-deployment.outputs.deployment == 'true' 
         env:
-          # GITHUB_TOKEN: ${{ env.github-admintasks-accesstoken }}
-          GH_TOKEN: ${{ env.github-admintasks-accesstoken }}
+          GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}
           ISSUE: ${{ github.event.issue.html_url }}
         shell: bash
         run: |
@@ -327,8 +326,7 @@ jobs:
       - id: issue-create
         name: Create deployment issue
         env:
-          # GITHUB_TOKEN: ${{ env.github-admintasks-accesstoken }}
-          GH_TOKEN: ${{ env.github-admintasks-accesstoken }}
+          GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}
         shell: bash
         run: |
           echo " "
