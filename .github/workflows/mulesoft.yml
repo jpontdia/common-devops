@@ -33,12 +33,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
 
-    # Needed by the Unit Test Action
-    permissions:
-      contents: write
-      issues: write
-      checks: write
-
     steps:
 
       - name: Get the source code
