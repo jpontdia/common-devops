@@ -161,23 +161,13 @@ jobs:
           git push origin $service_version
           
       - name: Create a release
+        if: ${{ hashFiles('target/*.jar') != '' }}
         uses: ncipollo/release-action@v1
         with: 
           artifacts: "target/*.jar"
           artifactErrorsFailBuild: true
           tag: ${{ env.service_version }}
           name: ${{ env.service_version }}
-
-      - name: Create badge for release
-        uses: jpontdia/common-devops/packages/badge@main
-        with:
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
-          gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_gist_accesstoken }}
-          label: Release
-          status: '${{ env.service_version }}'
-          color: '535597'
-          file: ${{ env.service_name }}-re.svg
 
       - name: Create badge for workflow number
         uses: jpontdia/common-devops/packages/badge@main
@@ -189,8 +179,24 @@ jobs:
           status: '${{ github.run_number }}'
           color: '535597'
           file: ${{ env.service_name }}-wf.svg
+      
+      ##################################################
+      # Create a relelase only for jar files
+      ##################################################
+      - name: Create badge for release
+        if: ${{ hashFiles('target/*.jar') != '' }}
+        uses: jpontdia/common-devops/packages/badge@main
+        with:
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          gist-id: ${{ env.github_gist_id }}
+          gist-token: ${{ env.github_gist_accesstoken }}
+          label: Release
+          status: '${{ env.service_version }}'
+          color: '535597'
+          file: ${{ env.service_name }}-re.svg
 
       - id: issue-create
+        if: ${{ hashFiles('target/*.jar') != '' }}
         name: Create deployment issue
         env:
           GITHUB_TOKEN: ${{ env.github_issues_accesstoken }}
