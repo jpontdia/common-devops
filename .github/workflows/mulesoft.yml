@@ -32,12 +32,13 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-# Needed by the Unit Test Action
-#    permissions:
-#      contents: read
-#      issues: read
-#      checks: write
-#      pull-requests: write    
+
+    # Needed by the Unit Test Action
+    permissions:
+      contents: write
+      issues: write
+      checks: write
+
     steps:
 
       - name: Get the source code
@@ -74,7 +75,7 @@ jobs:
           fi
 
       - name: Install Java JDK for Mulesoft Applications
-        uses: jpontdia/common-devops/packages/install-mulesoft-java@main
+        uses: jpontdia/common-devops/packages/install-java@main
         with:
           github-configurations-accesstoken: $github_configurations_accesstoken
           default-settings-xml: $DEFAULT_SETTINGS_XML
@@ -125,7 +126,6 @@ jobs:
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
           gist-token: ${{ env.github_gist_accesstoken }}
-          debug: ${{ env.cicd_debug }}
 
       - name: Deploy to anypoint exchange
         #if: ${{ false }}    
@@ -175,7 +175,7 @@ jobs:
           name: ${{ env.service_version }}
 
       - name: Create badge for release
-        uses: jpontdia/common-devops/packages/build-badge@main
+        uses: jpontdia/common-devops/packages/badge@main
         with:
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
@@ -186,7 +186,7 @@ jobs:
           file: ${{ env.service_name }}-re.svg
 
       - name: Create badge for workflow number
-        uses: jpontdia/common-devops/packages/build-badge@main
+        uses: jpontdia/common-devops/packages/badge@main
         with:
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}

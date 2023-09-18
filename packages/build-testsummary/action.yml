@@ -10,11 +10,6 @@ inputs:
   gist-id:
     required: true
     description: Id for the badge gist
-  debug:
-    required: false
-    type: boolean
-    default: false
-    description: Flag to debug this action, default is false
 
 runs:
   using: "composite"
@@ -25,7 +20,7 @@ runs:
     # *************************** 
 
     - name: DEBUG
-      if: ${{ inputs.debug }}
+      if: ${{ env.cicd_debug }}
       shell: bash
       run: |
         echo " "
@@ -34,7 +29,6 @@ runs:
         echo "*****************************************************"
         echo "Input variables: "
         echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
-        echo "  gist-token-keyvault: $(echo ${{inputs.gist-token-keyvault}} | sed 's/./& /g')"  
         echo "  github-organization: ${{ inputs.github-organization }}"
         echo "  gist-id: ${{ inputs.gist-id }}"
         echo ".."
@@ -73,7 +67,7 @@ runs:
         esac
 
     - name: Create badge for unit test
-      uses: jpontdia/common-devops/packages/build-badge@main
+      uses: jpontdia/common-devops/packages/badge@main
       with:
         github-organization: ${{ inputs.github-organization }}
         gist-token: ${{ inputs.gist-token }}
@@ -189,7 +183,7 @@ runs:
 
     - name: Create badge for code coverage
       if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
-      uses: jpontdia/common-devops/packages/build-badge@main
+      uses: jpontdia/common-devops/packages/badge@main
       with:
         github-organization: ${{ inputs.github-organization }}
         gist-token: ${{ inputs.gist-token }}

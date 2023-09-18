@@ -180,7 +180,7 @@ jobs:
 
       - id: deployment-ch1
         name: Deploy the service in the cloud
-        uses: jpontdia/common-devops/packages/process-deployment-ch1@main
+        uses: jpontdia/common-devops/packages/process-cloudhub1@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
@@ -221,7 +221,7 @@ jobs:
           fi
 
       - name: Create badge for deployment
-        uses: jpontdia/common-devops/packages/build-badge@main
+        uses: jpontdia/common-devops/packages/badge@main
         with:
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
@@ -266,7 +266,7 @@ jobs:
 
       - name: Execute Mulesoft BAT
         id: bat-testing
-        uses: jpontdia/common-devops/packages/process-test-bat@main
+        uses: jpontdia/common-devops/packages/process-bat@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}

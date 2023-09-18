@@ -78,7 +78,7 @@ runs:
         check_name: BAT Test in ${{ inputs.deployment-env}} environment
 
     - name: Create badge for testing
-      uses: jpontdia/common-devops/packages/build-badge@main
+      uses: jpontdia/common-devops/packages/badge@main
       if: always()
       with:
         github-organization: ${{ inputs.github-organization }}
