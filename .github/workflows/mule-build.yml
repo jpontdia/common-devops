@@ -6,7 +6,7 @@
 # 1.- Replace the predefined repository jpontdia/common-devops with your own.
 # 2.- Update the global environment variables for the script 
 
-name: Mulesoft
+name: Build
 on:
   workflow_call:
     inputs:
