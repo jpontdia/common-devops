@@ -143,12 +143,12 @@ jobs:
           name: munit-test-report
           path: target/surefire-reports/*
 
-      - name: Publish - JAR 
-        uses: actions/upload-artifact@master
-        if: ${{ hashFiles('target/*.jar') != '' }}
-        with:
-          name: jar
-          path: target/*.jar
+      #- name: Publish - JAR 
+      #  uses: actions/upload-artifact@master
+      #  if: ${{ hashFiles('target/*.jar') != '' }}
+      #  with:
+      #    name: jar
+      #    path: target/*.jar
 
       - name: Tag repository with service version
         shell: bash
