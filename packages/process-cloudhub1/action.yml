@@ -89,6 +89,7 @@ runs:
       echo "Jar file: $jar"
 
       start=$(date +%s)
+      echo " "
       echo "Deployment process start. anypoint-cli-v4: $(anypoint-cli-v4 --version)"
 
       QUERY_STATUS="anypoint-cli-v4 runtime-mgr cloudhub-application describe \
@@ -100,14 +101,23 @@ runs:
                   --output json $deploymentname"
 
       # Get the current status of the service
-      echo "Getting the status for the service,   query command: $QUERY_STATUS"
+      echo " "
+      echo "Getting the current status for the service, query command: $QUERY_STATUS"
 
       # Get the current status of the service 
       DEPLOYMENT_INFO=$($QUERY_STATUS || true)
-      echo "Quering status: $DEPLOYMENT_INFO"
+      echo " "
+      echo "Current status: $DEPLOYMENT_INFO"
+
+      echo " "
+      echo "Querying variables from deployment result"
       STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
       UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
-      echo "Service: $deploymentname status: $STATUS, updateStatus: $UPDATE_STATUS"
+
+      echo " "
+      echo "Result"
+      echo "  Service: $deploymentname status: $STATUS, updateStatus: $UPDATE_STATUS"
+      echo " "
 
       # Verify if deployment is for update or new application
       operation="deploy"
@@ -115,19 +125,19 @@ runs:
         echo "The service was already in DEPLOYING state, wait until deployment finish or delete it"
         echo "outcome=failure" >> $GITHUB_OUTPUT
         exit 1 # terminate and indicate error 
-        
       else
-        if [ "$STATUS" != "" ]; then
+        if [ "$STATUS" != "UNDEPLOYED" ]; then
           operation="modify"
         fi
       fi
 
       # Execute deployment of the service
       echo ""
-      echo "Deployment operation for serivce: $deploymentname is: $operation"
+      echo "Based on the current status of the service, the deployment operation will be: $operation"
       end=$(date +%s)
       echo "  Elapsed time: $(($end-$start)) seconds"
-      echo "Deploying...."
+      echo " "
+      echo "Preparing deployment command...."
       CREATEUPDATE_APP="anypoint-cli-v4 runtime-mgr cloudhub-application $operation \
       --client_id $cicd_connectedapp_clientid \
       --client_secret $cicd_connectedapp_secret \
@@ -135,26 +145,33 @@ runs:
       --host $deploymenthost \
       --environment $deploymentenvironment \
       $propscloud $propsservice --output json $deploymentname $jar"
-      echo "deployment command: $CREATEUPDATE_APP"
+      echo "Deployment command: $CREATEUPDATE_APP"
+      echo " "
+      echo "Executing deployment...."
+
       $CREATEUPDATE_APP
       end=$(date +%s)
-      echo ""
+      echo " "
       echo "Deployment finished, verifying the deployment...."
       echo "  Elapsed time: $(($end-$start)) seconds" 
+      echo " "
 
       # Process to verify if the service was deployed correctly
+      echo "The process of deployment verification starts"      
       iteration=1
       limit=60
       while true
       do 
         sleep 5
 
-        # Get the current status of the service 
+        # Get the current status of the service
+        echo " " 
+        echo "Getting deployment status"
         DEPLOYMENT_INFO=$($QUERY_STATUS)
         # echo "Quering status: $DEPLOYMENT_INFO"
         STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
         UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
-        echo "Service: $deploymentname status: $STATUS, updateStatus: $UPDATE_STATUS"
+        echo "Service: $deploymentname, operation: $operation, status: $STATUS, updateStatus: $UPDATE_STATUS"
 
         end=$(date +%s)
         echo "  Elapsed time: $(($end-$start)) seconds, iteration: $iteration limit: $limit"
@@ -195,6 +212,13 @@ runs:
         if [ "$UPDATE_STATUS" = "DEPLOY_FAILED" ]; then
           echo "Error: There were errors while deploying the service"
           echo "outcome=failure" >> $GITHUB_OUTPUT
+          echo "Last deployment information: $DEPLOYMENT_INFO"
+          exit 1 # terminate and indicate error
+
+        elif [ "$UPDATE_STATUS" = "null" ] && [ "$STATUS" = "UNDEPLOYED" ]; then
+          echo "Error: There were errors while deploying the service"
+          echo "outcome=failure" >> $GITHUB_OUTPUT
+          echo "Last deployment information: $DEPLOYMENT_INFO"
           exit 1 # terminate and indicate error
 
         elif [ $iteration -eq $limit ]; then
