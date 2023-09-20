@@ -119,16 +119,24 @@ runs:
       echo "  Service: $deploymentname status: $STATUS, updateStatus: $UPDATE_STATUS"
       echo " "
 
-      # Verify if deployment is for update or new application
-      operation="deploy"
+      # Verify if the service is currently in an inconsistent state
+      if [ "$STATUS" = "UNDEPLOYED" ]; then
+        echo "The service is in an inconsistent state: UNDEPLOYED; please delete the service"
+        echo "outcome=failure" >> $GITHUB_OUTPUT
+        exit 1 # terminate and indicate error 
+      fi
+
       if [ "$STATUS" = "DEPLOYING" ]; then
         echo "The service was already in DEPLOYING state, wait until deployment finish or delete it"
         echo "outcome=failure" >> $GITHUB_OUTPUT
         exit 1 # terminate and indicate error 
+      fi
+
+      # Verify if deployment is for an new application of update an existing one
+      if [ "$STATUS" != "" ]; then
+        operation="modify"
       else
-        if [ "$STATUS" != "UNDEPLOYED" ]; then
-          operation="modify"
-        fi
+        operation="deploy"
       fi
 
       # Execute deployment of the service
