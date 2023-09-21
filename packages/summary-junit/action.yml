@@ -18,7 +18,10 @@ inputs:
     description: Suffix file badge
   path-report:
     required: true
-    description: File path to the test report  
+    description: File path to the junit report  
+  path-directoryreports:
+    required: true
+    description: Directory path for test reports  
 
 runs:
   using: "composite"
@@ -61,7 +64,7 @@ runs:
       run: |
         echo " "
         echo "*****************************************************"
-        echo "Unit test - Set badge color"
+        echo "JUnit - Set badge color"
         echo "*****************************************************"
         echo " "
         echo "BADGE_STATUS=${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }}" >> $GITHUB_ENV
@@ -84,7 +87,7 @@ runs:
       run: |
         echo " "
         echo "*****************************************************"
-        echo "Unit test - Badge color for skipped tests"
+        echo "JUnit - Badge color for skipped tests"
         echo "*****************************************************"
         echo " "
         echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
@@ -95,7 +98,7 @@ runs:
       uses: actions/upload-artifact@master
       with:
         name: test-report
-        path: ${{inputs.path-report}}
+        path: ${{inputs.path-directoryreports}}
 
     - name: Create badge for unit test
       uses: jpontdia/common-devops/packages/badge@main

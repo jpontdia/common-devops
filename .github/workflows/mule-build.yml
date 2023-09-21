@@ -123,6 +123,7 @@ jobs:
           badge-label: Unit test
           badge-suffix: ut
           path-report: 'target/surefire-reports/*.xml'
+          path-directoryreports: 'target/surefire-reports/*'
 
       - name: Deploy to anypoint exchange
         #if: ${{ false }}    

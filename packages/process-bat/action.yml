@@ -19,7 +19,7 @@ inputs:
 outputs:
   outcome:
     description: "The result of the test: success, failure, skipped"
-    value: ${{ steps.summary.outputs.outcome }}
+    value: ${{ steps.run-tests.outputs.outcome }}
 
 runs:
   using: "composite"
@@ -49,49 +49,25 @@ runs:
           echo "bat -version: $(bat -version)"
 
     - name: Run tests
+      id: run-tests
       if: ${{ hashFiles('bat') != '' }}
       shell: bash  
       run: |
         cd bat
         mkdir target
-        echo "test_outcome=failure" >> $GITHUB_ENV
+        echo "outcome=failure" >> $GITHUB_OUTPUT      
         bat
-        echo "test_outcome=success" >> $GITHUB_ENV
+        echo "outcome=success" >> $GITHUB_OUTPUT      
 
-    - name: Publish - Test reports
-      uses: actions/upload-artifact@master
-      if: ${{ hashFiles('bat') != '' }}
-      with:
-          name: dev-testing-reports
-          path: bat/target/*.*
-
-    # ***********************************************************
-    # https://github.com/EnricoMi/publish-unit-test-result-action
-    # Note: permissions on job, check documentation
-    # ***********************************************************
-    - name: Job summary with test results
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      if: ${{ hashFiles('bat') != '' }}
-      with:
-        files: |
-          bat/target/JUnit.xml
-        check_name: BAT Test in ${{ inputs.deployment-env}} environment
-
-    - name: Create badge for testing
-      uses: jpontdia/common-devops/packages/badge@main
+    - name: Summary - Test
+      uses: jpontdia/common-devops/packages/summary-junit@main
       if: always()
       with:
-        github-organization: ${{ inputs.github-organization }}
+        github-organization: ${{ env.GITHUB_ORGANIZATION }}
         gist-id: ${{ env.github_gist_id }}
         gist-token: ${{ env.github_gist_accesstoken }}
-        label: '${{ env.deployment_environment }} test'
-        status: '${{ env.test_outcome }}'
-        color: '535597'
-        file: ${{ env.service_name }}-${{ env.deployment_environment }}-test.svg
-
-    - name: Summary
-      id: summary
-      if: always()
-      shell: bash  
-      run: |
-        echo "outcome=$test_outcome" >> $GITHUB_OUTPUT      
+        badge-label: ${{ env.deployment_environment }} test
+        badge-suffix: ${{ env.deployment_environment }}-test
+        path-report: bat/target/JUnit.xml
+        path-directoryreports: bat/target/*
+  
