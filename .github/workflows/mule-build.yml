@@ -105,25 +105,17 @@ jobs:
           skiptest=" "
           if [[ "${{env.configuration_skiptest}}" == "true" ]]; then
             skiptest="-DskipTests"
-            echo "  Test will be skipped"
+            echo "Test will be skipped"
           else
-            echo "  Asset will be tested"
+            echo "Asset will be tested"
           fi
-    
-          echo " Using maven to run test cases and package Mulesoft application"
+
+          echo " "
+          echo "Using maven to run test cases and package Mulesoft application"
           mvn --batch-mode $skiptest package $configuration_unittest
 
       - name: Summary - Test
-        if: ${{ hashFiles('target/surefire-reports/*') != '' }}
-        uses: jpontdia/common-devops/packages/build-testsummary@main
-        with:
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
-          gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_gist_accesstoken }}
-
-      - name: Summary - Test
-        if: ${{ hashFiles('target/surefire-reports/*') != '' }}
-        uses: jpontdia/common-devops/packages/build-testsummary@main
+        uses: jpontdia/common-devops/packages/summary-junit@main
         with:
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
@@ -146,21 +138,6 @@ jobs:
         with:
           name: munit-application-coverage-report
           path: target/site/munit/coverage/*
-      
-      - name: Publish - MUnit Report
-        #if: ${{ false }}
-        if: ${{ hashFiles('target/surefire-reports/*') != '' }}
-        uses: actions/upload-artifact@master
-        with:
-          name: munit-test-report
-          path: target/surefire-reports/*
-
-      #- name: Publish - JAR 
-      #  uses: actions/upload-artifact@master
-      #  if: ${{ hashFiles('target/*.jar') != '' }}
-      #  with:
-      #    name: jar
-      #    path: target/*.jar
 
       - name: Tag repository with service version
         shell: bash
