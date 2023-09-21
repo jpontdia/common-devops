@@ -48,15 +48,15 @@ runs:
     # ***********************************************************
     - name: Summary - Publish test results
       id: unit-test-results
-      if: ${{ hashFiles(inputs.report-path) != '' }}
+      if: ${{ hashFiles(inputs.path-report) != '' }}
       uses: EnricoMi/publish-unit-test-result-action@v2
       with:
         files: |
-          ${{inputs.report-path}}
+          ${{inputs.path-report}}
         check_name: Test Results
 
     - name: Set badge color
-      if: ${{ hashFiles(inputs.report-path) != '' }}
+      if: ${{ hashFiles(inputs.path-report) != '' }}
       shell: bash
       run: |
         echo " "
@@ -64,7 +64,7 @@ runs:
         echo "Unit test - Set badge color"
         echo "*****************************************************"
         echo " "
-        echo "BADGE_STATUS='${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }}'" >> $GITHUB_ENV
+        echo "BADGE_STATUS=${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }}" >> $GITHUB_ENV
 
         case ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }} in
           success)
@@ -79,7 +79,7 @@ runs:
         esac
 
     - name: Badge for skipped tests
-      if: ${{ hashFiles(inputs.report-path) == '' }}
+      if: ${{ hashFiles(inputs.path-report) == '' }}
       shell: bash
       run: |
         echo " "
@@ -91,11 +91,11 @@ runs:
         echo "BADGE_STATUS=Skipped" >> $GITHUB_ENV
 
     - name: Publish - MUnit Report
-      if: ${{ hashFiles(inputs.report-path) != '' }}
+      if: ${{ hashFiles(inputs.path-report) != '' }}
       uses: actions/upload-artifact@master
       with:
         name: test-report
-        path: ${{inputs.report-path}}
+        path: ${{inputs.path-report}}
 
     - name: Create badge for unit test
       uses: jpontdia/common-devops/packages/badge@main
