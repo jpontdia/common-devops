@@ -165,7 +165,12 @@ runs:
       echo " "
 
       # Process to verify if the service was deployed correctly
-      echo "The process of deployment verification starts"      
+      echo " "
+      echo "**********************************"
+      echo "Deployment query cycle"
+      echo "**********************************"
+      echo " "
+      echo "The process of querying deployment starts"      
       iteration=1
       limit=60
       while true
