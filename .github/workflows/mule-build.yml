@@ -122,8 +122,7 @@ jobs:
           gist-token: ${{ env.github_gist_accesstoken }}
           badge-label: Unit test
           badge-suffix: ut
-          path-report: 'target/surefire-reports/*'
-
+          path-report: 'target/surefire-reports/*.xml'
 
       - name: Deploy to anypoint exchange
         #if: ${{ false }}    
