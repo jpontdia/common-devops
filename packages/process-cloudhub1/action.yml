@@ -201,43 +201,55 @@ runs:
       done
 
       # Verify if service was successfully deployed 
+      echo " "
+      echo "**********************************"
+      echo "Analyse the deployment process"
+      echo "**********************************"
+      echo " "
+      echo "The deployment process finished, lets analyse the result based on the last deployment status"
       if [ "$operation" = "deploy" ]; then
 
         # Create new service
         if [ "$STATUS" != "STARTED" ]; then
-          echo "Error: The service was not deployed in the expected time, review logs"
-          echo "  example: anypoint-cli-v4 runtime-mgr cloudhub-application download-logs {APP-NAME}"
-          echo "The expected iterations were 44 but the proccess reached the limit: $limit"
+          echo "  Error: The service was not deployed in the expected time, review logs"
+          echo "    example: anypoint-cli-v4 runtime-mgr cloudhub-application download-logs {APP-NAME}"
+          echo "  The expected iterations were 44 but the proccess reached the limit: $limit"
           echo "outcome=failure" >> $GITHUB_OUTPUT
           exit 1 # terminate and indicate error 
           
         else 
-          echo "Deployment successful.."
+          echo "  Deployment successful.."
           echo "outcome=success" >> $GITHUB_OUTPUT
         fi
       else
         # Update service
         if [ "$UPDATE_STATUS" = "DEPLOY_FAILED" ]; then
-          echo "Error: There were errors while deploying the service"
+          echo "  Error: There were errors while deploying the service"
           echo "outcome=failure" >> $GITHUB_OUTPUT
-          echo "Last deployment information: $DEPLOYMENT_INFO"
+          echo "  Last deployment information: $DEPLOYMENT_INFO"
           exit 1 # terminate and indicate error
 
         elif [ "$UPDATE_STATUS" = "null" ] && [ "$STATUS" = "UNDEPLOYED" ]; then
-          echo "Error: There were errors while deploying the service"
+          echo "  Error: There were errors while deploying the service"
           echo "outcome=failure" >> $GITHUB_OUTPUT
-          echo "Last deployment information: $DEPLOYMENT_INFO"
+          echo "  Last deployment information: $DEPLOYMENT_INFO"
+          exit 1 # terminate and indicate error
+
+        elif [ "$UPDATE_STATUS" = "null" ] && [ "$STATUS" = "DEPLOY_FAILED" ]; then
+          echo "  Error: There were errors while deploying the service"
+          echo "outcome=failure" >> $GITHUB_OUTPUT
+          echo "  Last deployment information: $DEPLOYMENT_INFO"
           exit 1 # terminate and indicate error
 
         elif [ $iteration -eq $limit ]; then
-          echo "Error: The service was not deployed in the expected time, review logs"
-          echo "  example: anypoint-cli-v4 runtime-mgr cloudhub-application download-logs {APP-NAME}"
-          echo "The expected iterations were 44 but the proccess reached the limit: $limit"
+          echo "  Error: The service was not deployed in the expected time, review logs"
+          echo "    example: anypoint-cli-v4 runtime-mgr cloudhub-application download-logs {APP-NAME}"
+          echo "  The expected iterations were 44 but the proccess reached the limit: $limit"
           echo "outcome=failure" >> $GITHUB_OUTPUT
           exit 1 # terminate and indicate error
 
         else
-          echo "Deployment successful.."
+          echo "  Deployment successful.."
           echo "outcome=success" >> $GITHUB_OUTPUT
         fi
       fi
