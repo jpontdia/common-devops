@@ -125,19 +125,18 @@ jobs:
           path-report: 'target/surefire-reports/*.xml'
           path-directoryreports: 'target/surefire-reports/*'
 
+      - name: Summary - Code Coverage
+        uses: jpontdia/common-devops/packages/summary-codecoverage@main
+        with:
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          gist-id: ${{ env.github_gist_id }}
+          gist-token: ${{ env.github_gist_accesstoken }}
+                    
       - name: Deploy to anypoint exchange
         #if: ${{ false }}    
         run: |
           ## Deploy to anypoint exchange
           mvn --batch-mode deploy -DskipTests 
-
-      - name: Publish - Application Coverage Report
-        #if: ${{ false }}
-        if: ${{ hashFiles('target/site/munit/coverage/*') != '' }}
-        uses: actions/upload-artifact@master
-        with:
-          name: munit-application-coverage-report
-          path: target/site/munit/coverage/*
 
       - name: Tag repository with service version
         shell: bash
