@@ -37,6 +37,9 @@ runs:
         echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
         echo "  github-organization: ${{ inputs.github-organization }}"
         echo "  gist-id: ${{ inputs.gist-id }}"
+        echo "  badge-label: ${{ inputs.badge-label }}"
+        echo "  badge-suffix: ${{ inputs.badge-suffix }}"
+        echo "  path-report: ${{ inputs.path-report}}"        
         echo " "
 
     # ***********************************************************
@@ -45,7 +48,7 @@ runs:
     # ***********************************************************
     - name: Summary - Publish test results
       id: unit-test-results
-      if: ${{ hashFiles('inputs.report-path') != '' }}
+      if: ${{ hashFiles(inputs.report-path) != '' }}
       uses: EnricoMi/publish-unit-test-result-action@v2
       with:
         files: |
@@ -53,7 +56,7 @@ runs:
         check_name: Test Results
 
     - name: Set badge color
-      if: ${{ hashFiles('inputs.report-path') != '' }}
+      if: ${{ hashFiles(inputs.report-path) != '' }}
       shell: bash
       run: |
         echo " "
@@ -76,7 +79,7 @@ runs:
         esac
 
     - name: Badge for skipped tests
-      if: ${{ hashFiles('inputs.report-path') == '' }}
+      if: ${{ hashFiles(inputs.report-path) == '' }}
       shell: bash
       run: |
         echo " "
@@ -88,7 +91,7 @@ runs:
         echo "BADGE_STATUS=Skipped" >> $GITHUB_ENV
 
     - name: Publish - MUnit Report
-      if: ${{ hashFiles('inputs.report-path') != '' }}
+      if: ${{ hashFiles(inputs.report-path) != '' }}
       uses: actions/upload-artifact@master
       with:
         name: test-report
