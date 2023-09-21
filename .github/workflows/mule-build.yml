@@ -121,6 +121,18 @@ jobs:
           gist-id: ${{ env.github_gist_id }}
           gist-token: ${{ env.github_gist_accesstoken }}
 
+      - name: Summary - Test
+        if: ${{ hashFiles('target/surefire-reports/*') != '' }}
+        uses: jpontdia/common-devops/packages/build-testsummary@main
+        with:
+          github-organization: ${{ env.GITHUB_ORGANIZATION }}
+          gist-id: ${{ env.github_gist_id }}
+          gist-token: ${{ env.github_gist_accesstoken }}
+          badge-label: Unit test
+          badge-suffix: ut
+          path-report: 'target/surefire-reports/*'
+
+
       - name: Deploy to anypoint exchange
         #if: ${{ false }}    
         run: |

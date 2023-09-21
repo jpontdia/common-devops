@@ -1,0 +1,194 @@
+name: 'Summary - Publish test results'
+description: 'Summary - Publish test results'
+inputs:
+  github-organization:
+    required: true
+    description: Name of the github organization
+  gist-token:
+    required: true
+    description: Personal access token for github gist
+  gist-id:
+    required: true
+    description: Id for the badge gist
+
+runs:
+  using: "composite"
+  steps:
+
+    # ***************************
+    # Unit test section
+    # *************************** 
+
+    - name: DEBUG
+      if: ${{ env.cicd_debug }}
+      shell: bash
+      run: |
+        echo " "
+        echo "*****************************************************"
+        echo "DEBUG Summary - Publish test results"
+        echo "*****************************************************"
+        echo "Input variables: "
+        echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
+        echo "  github-organization: ${{ inputs.github-organization }}"
+        echo "  gist-id: ${{ inputs.gist-id }}"
+        echo ".."
+
+    # ***********************************************************
+    # https://github.com/EnricoMi/publish-unit-test-result-action
+    # Note: permissions on job, check documentation
+    # ***********************************************************
+    - name: Summary - Publish test results
+      id: unit-test-results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        files: |
+          target/surefire-reports/*.xml
+        check_name: Unit Test Results
+
+    - name: Set badge color
+      shell: bash
+      run: |
+        echo " "
+        echo "*****************************************************"
+        echo "Unit test - Set badge color"
+        echo "*****************************************************"
+        echo " "            
+        case ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }} in
+          success)
+            echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
+            ;;
+          failure)
+            echo "BADGE_COLOR=800000" >> $GITHUB_ENV
+            ;;
+          neutral)
+            echo "BADGE_COLOR=696969" >> $GITHUB_ENV
+            ;;
+        esac
+
+    - name: Create badge for unit test
+      uses: jpontdia/common-devops/packages/badge@main
+      with:
+        github-organization: ${{ inputs.github-organization }}
+        gist-token: ${{ inputs.gist-token }}
+        gist-id: ${{ inputs.gist-id }}
+        label: Unit test
+        status: '${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }}'
+        color: ${{ env.BADGE_COLOR }}
+        file: ${{ env.service_name }}-ut.svg
+
+    # ***************************
+    # Code coverage section
+    # ***************************
+    - name: Summary - Add code coverage
+      id: summary-codecoverage
+      shell: bash
+      run: |
+        echo " "
+        echo "*****************************************************"
+        echo "Code coverage - Get the summary report if exists"
+        echo "*****************************************************"
+        echo " "            
+
+        summary_report=target/site/munit/coverage/summary.html
+
+        # Verify if summary report exists
+        if test -f "$summary_report"; then
+
+          temporal=""
+          line=0
+          trigger=0
+          while IFS= read -r p; do
+          
+            if [[ "$p" == *"<div class=\"col-md-8 col-md-offset-2\">"* ]]; then
+              echo "Summary starts at line: $line"
+              ((line=line+1))
+              trigger=1
+              continue
+            fi
+
+            if [[ $trigger == 1 ]]; then
+              # echo "${p:0:6}"
+              echo "$p"
+              if [[ "${p:0:6}" == "</div>" ]]; then
+                echo "Exit condition at line: $line"
+                break
+              else
+                temporal+=$p
+              fi
+            fi
+
+            ((line=line+1))
+          done < $summary_report
+
+          # Remove html tag: <a>
+          temporal=$(sed -e 's/<\/a[^>]*>//g' <<<"$temporal")
+          temporal=$(sed -e 's/<a[^>]*>//g' <<<"$temporal")
+
+          # Add job summary 
+          echo "<div>" >> $GITHUB_STEP_SUMMARY
+          echo "$temporal" >> $GITHUB_STEP_SUMMARY
+          echo "</div>" >> $GITHUB_STEP_SUMMARY
+
+          # The coverage process was executed
+          # echo "COVERAGE_PROCESS='True'" >> $GITHUB_ENV
+          echo "CODE_COVERAGE_EXECUTION=true" >> $GITHUB_OUTPUT
+        else
+          # There is no summary report
+          # echo "COVERAGE_PROCESS='False'" >> $GITHUB_ENV
+          echo "CODE_COVERAGE_EXECUTION=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Set the code coverage results as environment variable
+      if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
+      id: json_var
+      shell: bash
+      run: |
+        echo " "
+        echo "******************************************************"
+        echo "Code coverage - export the summary report as env var"
+        echo "******************************************************"
+        echo " "  
+
+        content=`cat target/site/munit/coverage/munit-coverage.json`
+        # the following lines are only required for multi line json
+        content="${content//'%'/'%25'}"
+        content="${content//$'\n'/'%0A'}"
+        content="${content//$'\r'/'%0D'}"
+        # end of optional handling for multi line json
+        echo "::set-output name=packageJson::$content"
+
+    - name: Set badge color and code coverage as integer
+      if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
+      shell: bash
+      run: |
+        echo " "
+        echo "*****************************************************"
+        echo "Code coverage - Set badge color"
+        echo "*****************************************************"
+        echo " "      
+        coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
+        coverage=${coverage_float%.*}
+        minimum=${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}
+        echo "Application coverage: $coverage"
+        echo "Minimum: $minimum"
+        
+        echo "CODE_COVERAGE=$coverage" >> $GITHUB_ENV
+
+        if [[ "$((coverage))" -ge "$((minimum))" ]]; then
+          echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
+        else
+          echo "BADGE_COLOR=800000" >> $GITHUB_ENV
+        fi
+
+    - name: Create badge for code coverage
+      if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
+      uses: jpontdia/common-devops/packages/badge@main
+      with:
+        github-organization: ${{ inputs.github-organization }}
+        gist-token: ${{ inputs.gist-token }}
+        gist-id: ${{ inputs.gist-id }}
+        label: Code coverage
+        status: '${{ env.CODE_COVERAGE }}% of ${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}%'
+        color: ${{ env.BADGE_COLOR }}
+        file: ${{ env.service_name }}-cc.svg

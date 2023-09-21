@@ -1,0 +1,107 @@
+name: 'Summary - Publish test results'
+description: 'Summary - Publish test results'
+inputs:
+  github-organization:
+    required: true
+    description: Name of the github organization
+  gist-token:
+    required: true
+    description: Personal access token for github gist
+  gist-id:
+    required: true
+    description: Id for the badge gist
+  badge-label:
+    required: true
+    description: Label for the badge
+  badge-suffix:
+    required: true
+    description: Suffix file badge
+  path-report:
+    required: true
+    description: File path to the test report  
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Debug action
+      if: ${{ env.cicd_debug }}
+      shell: bash
+      run: |
+        echo " "
+        echo "*****************************************************"
+        echo "DEBUG Summary - Publish test results"
+        echo "*****************************************************"
+        echo " "
+        echo "Input variables: "
+        echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
+        echo "  github-organization: ${{ inputs.github-organization }}"
+        echo "  gist-id: ${{ inputs.gist-id }}"
+        echo " "
+
+    # ***********************************************************
+    # https://github.com/EnricoMi/publish-unit-test-result-action
+    # Note: permissions on job, check documentation
+    # ***********************************************************
+    - name: Summary - Publish test results
+      id: unit-test-results
+      if: ${{ hashFiles('${{inputs.report-path}}') != '' }}
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      with:
+        files: |
+          ${{inputs.report-path}}
+        check_name: Test Results
+
+    - name: Set badge color
+      if: ${{ hashFiles('${{inputs.report-path}}') != '' }}
+      shell: bash
+      run: |
+        echo " "
+        echo "*****************************************************"
+        echo "Unit test - Set badge color"
+        echo "*****************************************************"
+        echo " "
+        echo "BADGE_STATUS='${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }}'" >> $GITHUB_ENV
+
+        case ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }} in
+          success)
+            echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
+            ;;
+          failure)
+            echo "BADGE_COLOR=800000" >> $GITHUB_ENV
+            ;;
+          neutral)
+            echo "BADGE_COLOR=696969" >> $GITHUB_ENV
+            ;;
+        esac
+
+    - name: Badge for skipped tests
+      if: ${{ hashFiles('${{inputs.report-path}}') = '' }}
+      shell: bash
+      run: |
+        echo " "
+        echo "*****************************************************"
+        echo "Unit test - Badge color for skipped tests"
+        echo "*****************************************************"
+        echo " "
+        echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
+        echo "BADGE_STATUS='Skipped'" >> $GITHUB_ENV
+
+    - name: Publish - MUnit Report
+      if: ${{ hashFiles('${{inputs.report-path}}') != '' }}
+      uses: actions/upload-artifact@master
+      with:
+        name: test-report
+        path: ${{inputs.report-path}}
+
+    - name: Create badge for unit test
+      uses: jpontdia/common-devops/packages/badge@main
+      if: always()
+      with:
+        github-organization: ${{ inputs.github-organization }}
+        gist-token: ${{ inputs.gist-token }}
+        gist-id: ${{ inputs.gist-id }}
+        label: ${{inputs.badge-label}}
+        status: '${{ env.BADGE_STATUS }}'
+        color: ${{ env.BADGE_COLOR }}
+        file: ${{ env.service_name }}-${{inputs.badge-suffix}}.svg
