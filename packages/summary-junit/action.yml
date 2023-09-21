@@ -76,7 +76,7 @@ runs:
         esac
 
     - name: Badge for skipped tests
-      if: ${{ hashFiles('${{inputs.report-path}}') = '' }}
+      if: ${{ hashFiles('${{inputs.report-path}}') == '' }}
       shell: bash
       run: |
         echo " "
