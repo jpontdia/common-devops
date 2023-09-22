@@ -52,7 +52,7 @@ jobs:
 
     steps:
       - name: Get workflow metadata
-        uses: jpontdia/common-devops/packages/workflow-metadata@main
+        uses: jpontdia/common-devops/packages/configuration-issuemanagement@main
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
@@ -147,7 +147,7 @@ jobs:
 
     steps:
       - name: Get workflow metadata
-        uses: jpontdia/common-devops/packages/workflow-metadata@main
+        uses: jpontdia/common-devops/packages/configuration-issuemanagement@main
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
@@ -242,7 +242,7 @@ jobs:
 
     steps:
       - name: Get workflow metadata
-        uses: jpontdia/common-devops/packages/workflow-metadata@main
+        uses: jpontdia/common-devops/packages/configuration-issuemanagement@main
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
@@ -316,7 +316,7 @@ jobs:
 
     steps:
       - name: Get workflow metadata
-        uses: jpontdia/common-devops/packages/workflow-metadata@main
+        uses: jpontdia/common-devops/packages/configuration-issuemanagement@main
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'

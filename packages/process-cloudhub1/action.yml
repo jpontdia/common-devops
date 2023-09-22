@@ -28,15 +28,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-  
-  - name: Get global configuration for the pipeline
-    uses: jpontdia/common-devops/packages/configuration-service@main
-    with:
-      keyvault-key: ${{ inputs.keyvault-key }}
-      azure-credentials: ${{ inputs.azure-credentials }}
-      github-organization: ${{ inputs.github-organization }}
-      configurations-repository: ${{ inputs.configurations-repository }}
-      environment: ${{ inputs.deployment-env }}
 
   - name: Install NodeJs
     uses: actions/setup-node@v3
