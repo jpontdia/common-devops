@@ -69,7 +69,7 @@ runs:
       with:
         keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
         secrets: |
-          github_configurations_accesstoken=github-configurations-accesstoken
+          github_configurations_accesstoken=github-admintasks-accesstoken
         login_credentials: ${{ inputs.azure-credentials }}
 
     - name: Get secrets configuration
