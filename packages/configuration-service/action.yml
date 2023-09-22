@@ -69,7 +69,7 @@ runs:
       with:
         keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
         secrets: |
-          github_configurations_accesstoken=github-admintasks-accesstoken
+          github_admintasks_accesstoken=github-admintasks-accesstoken
         login_credentials: ${{ inputs.azure-credentials }}
 
     - name: Get secrets configuration
@@ -82,12 +82,12 @@ runs:
         echo "Get the configuration for secrets"
         echo "*********************************************"
 
-        echo "Variable. github_configurations_accesstoken: $github_configurations_accesstoken"
+        echo "Variable. github_admintasks_accesstoken: $github_admintasks_accesstoken"
 
         # Get the secrets mapping
         urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$SECRET_MAP_FILE"
         echo "Getting the secrets mapping file: $urlconfigurationfile"
-        initialsecretconfiguration=$(curl -sH "Authorization: token $github_configurations_accesstoken" $urlconfigurationfile)
+        initialsecretconfiguration=$(curl -sH "Authorization: token $github_admintasks_accesstoken" $urlconfigurationfile)
 
         temporal=""
         echo "$initialsecretconfiguration" | while read p; do
@@ -125,12 +125,12 @@ runs:
         echo "Get global configuration"
         echo "*********************************************"
 
-        echo "github_configurations_accesstoken: $github_configurations_accesstoken"
+        echo "github_admintasks_accesstoken: $github_admintasks_accesstoken"
 
         # Get the configuration file from the github repository
         urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$SECRET_MAP_FILE"
         echo "Getting the secrets mapping file: $urlconfigurationfile"
-        initialsecretconfiguration=$(curl -sH "Authorization: token $github_configurations_accesstoken" $urlconfigurationfile)
+        initialsecretconfiguration=$(curl -sH "Authorization: token $github_admintasks_accesstoken" $urlconfigurationfile)
 
         # Verify if configuration file was found
         if [[ $configurationdata != *"Not Found"* ]]; then
@@ -197,7 +197,7 @@ runs:
       if: ${{ inputs.environment == 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_configurations_accesstoken
+        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".settings"
         github-organization: $GITHUB_ORGANIZATION
         configurations-repository: $CONFIGURATIONS_REPOSITORY
@@ -207,7 +207,7 @@ runs:
       if: ${{ inputs.environment == 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_configurations_accesstoken
+        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".skiptests"
         github-organization: ${{ inputs.github-organization }}
         configurations-repository: ${{ inputs.configurations-repository }} 
@@ -217,7 +217,7 @@ runs:
       if: ${{ inputs.environment == 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_configurations_accesstoken
+        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".test-properties"
         github-organization: $GITHUB_ORGANIZATION
         configurations-repository: $CONFIGURATIONS_REPOSITORY
@@ -231,7 +231,7 @@ runs:
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_configurations_accesstoken
+        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".cloudhub"
         suffix: "-${{ inputs.environment }}"
         github-organization: ${{ inputs.github-organization }}
@@ -242,7 +242,7 @@ runs:
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_configurations_accesstoken
+        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".properties"
         suffix: "-${{ inputs.environment }}"
         github-organization: ${{ inputs.github-organization }}
@@ -253,7 +253,7 @@ runs:
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_configurations_accesstoken
+        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".deployment-name"
         suffix: "-${{ inputs.environment }}"
         github-organization: ${{ inputs.github-organization }}
@@ -264,7 +264,7 @@ runs:
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_configurations_accesstoken
+        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".deployment-organization"
         suffix: "-${{ inputs.environment }}"
         github-organization: ${{ inputs.github-organization }}
@@ -275,7 +275,7 @@ runs:
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_configurations_accesstoken
+        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".env"
         suffix: "-${{ inputs.environment }}"
         github-organization: ${{ inputs.github-organization }}

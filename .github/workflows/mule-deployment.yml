@@ -225,7 +225,7 @@ jobs:
         with:
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_gist_accesstoken }}
+          gist-token: ${{ env.github_admintasks_accesstoken }}
           label: '${{ env.deployment_environment }} version'
           status: '${{ env.deployment_version }}'
           color: '535597'

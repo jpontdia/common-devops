@@ -71,7 +71,7 @@ jobs:
       - name: Install Java JDK for Mulesoft Applications
         uses: jpontdia/common-devops/packages/install-java@main
         with:
-          github-configurations-accesstoken: $github_configurations_accesstoken
+          github-configurations-accesstoken: $github_admintasks_accesstoken
           default-settings-xml: $DEFAULT_SETTINGS_XML
           github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
@@ -119,7 +119,7 @@ jobs:
         with:
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_gist_accesstoken }}
+          gist-token: ${{ env.github_admintasks_accesstoken }}
           badge-label: Unit test
           badge-suffix: ut
           path-report: 'target/surefire-reports/*.xml'
@@ -130,7 +130,7 @@ jobs:
         with:
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_gist_accesstoken }}
+          gist-token: ${{ env.github_admintasks_accesstoken }}
                     
       - name: Deploy to anypoint exchange
         #if: ${{ false }}    
@@ -162,7 +162,7 @@ jobs:
         with:
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_gist_accesstoken }}
+          gist-token: ${{ env.github_admintasks_accesstoken }}
           label: Build job
           status: '${{ github.run_number }}'
           color: '535597'
@@ -177,7 +177,7 @@ jobs:
         with:
           github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_gist_accesstoken }}
+          gist-token: ${{ env.github_admintasks_accesstoken }}
           label: Release
           status: '${{ env.service_version }}'
           color: '535597'
@@ -187,7 +187,7 @@ jobs:
         if: ${{ hashFiles('target/*.jar') != '' }}
         name: Create deployment issue
         env:
-          GITHUB_TOKEN: ${{ env.github_issues_accesstoken }}
+          GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}
         shell: bash
         run: |
           echo " "
