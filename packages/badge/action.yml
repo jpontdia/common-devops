@@ -1,9 +1,6 @@
 name: 'Summary - Publish test results'
 description: 'Summary - Publish test results'
 inputs:
-  github-organization:
-    required: true
-    description: Name of the github organization
   gist-token:
     required: true
     description: Personal access token for github gist
@@ -57,5 +54,5 @@ runs:
       uses: jpontdia/append-gist-action@master
       with:
         token: ${{ inputs.gist-token }}
-        gistURL: "https://gist.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.gist-id }}"
+        gistURL: "https://gist.githubusercontent.com/${{ github.repository_owner }}/${{ inputs.gist-id }}"
         file: ${{ inputs.file }}

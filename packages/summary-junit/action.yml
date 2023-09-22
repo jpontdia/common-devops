@@ -1,9 +1,6 @@
 name: 'Summary - Publish test results'
 description: 'Summary - Publish test results'
 inputs:
-  github-organization:
-    required: true
-    description: Name of the github organization
   gist-token:
     required: true
     description: Personal access token for github gist
@@ -38,7 +35,6 @@ runs:
         echo " "
         echo "Input variables: "
         echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
-        echo "  github-organization: ${{ inputs.github-organization }}"
         echo "  gist-id: ${{ inputs.gist-id }}"
         echo "  badge-label: ${{ inputs.badge-label }}"
         echo "  badge-suffix: ${{ inputs.badge-suffix }}"
@@ -104,7 +100,6 @@ runs:
       uses: jpontdia/common-devops/packages/badge@main
       if: always()
       with:
-        github-organization: ${{ inputs.github-organization }}
         gist-token: ${{ inputs.gist-token }}
         gist-id: ${{ inputs.gist-id }}
         label: ${{inputs.badge-label}}

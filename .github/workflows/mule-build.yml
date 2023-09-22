@@ -33,18 +33,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-      - name: Initialize Variables
-        shell: bash
-        run: |
-          echo " "
-          echo "***********************************************"
-          echo "Initialize Variables "
-          echo "***********************************************"
-          echo " "
-          echo "GITHUB_ORGANIZATION=${{ github.repository_owner }}" >> $GITHUB_ENV
-          echo " "
-
       - name: Get the source code
         uses: actions/checkout@v4
         with:
@@ -55,7 +43,6 @@ jobs:
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
-          github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
           environment: unit-test
 
@@ -83,7 +70,6 @@ jobs:
         with:
           github-configurations-accesstoken: $github_admintasks_accesstoken
           default-settings-xml: $DEFAULT_SETTINGS_XML
-          github-organization: $GITHUB_ORGANIZATION
           configurations-repository: $CONFIGURATIONS_REPOSITORY
 
       - name: Documentation - Anypoint Exchange
@@ -127,7 +113,6 @@ jobs:
       - name: Summary - Test
         uses: jpontdia/common-devops/packages/summary-junit@main
         with:
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
           gist-token: ${{ env.github_admintasks_accesstoken }}
           badge-label: Unit test
@@ -138,7 +123,6 @@ jobs:
       - name: Summary - Code Coverage
         uses: jpontdia/common-devops/packages/summary-codecoverage@main
         with:
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
           gist-token: ${{ env.github_admintasks_accesstoken }}
                     
@@ -170,7 +154,6 @@ jobs:
       - name: Create badge for workflow number
         uses: jpontdia/common-devops/packages/badge@main
         with:
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
           gist-token: ${{ env.github_admintasks_accesstoken }}
           label: Build job
@@ -185,7 +168,6 @@ jobs:
         if: ${{ hashFiles('target/*.jar') != '' }}
         uses: jpontdia/common-devops/packages/badge@main
         with:
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
           gist-token: ${{ env.github_admintasks_accesstoken }}
           label: Release

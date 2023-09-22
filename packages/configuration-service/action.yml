@@ -7,9 +7,6 @@ inputs:
   azure-credentials:
     required: true
     description: Azure Credentials for login
-  github-organization:
-    required: true
-    description: Name of the github organization that is used to locate the secrets mapping file
   configurations-repository:
     required: true
     description: Name of the repository for mulesoft configurations
@@ -45,7 +42,6 @@ runs:
         tempvar=$( echo "${{ inputs.azure-credentials }}" | sed 's/./& /g' )
         echo "Value for inputs.azure-credentials: $tempvar"
         echo "  keyvault-key: ${{ inputs.keyvault-key }}"
-        echo "  github-organization: ${{ inputs.github-organization }}"
         echo "  configurations-repository: ${{ inputs.configurations-repository }}"
         echo "  environment: ${{ inputs.environment }}"
 
@@ -85,7 +81,7 @@ runs:
         echo "Variable. github_admintasks_accesstoken: $github_admintasks_accesstoken"
 
         # Get the secrets mapping
-        urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$SECRET_MAP_FILE"
+        urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ inputs.configurations-repository }}/main/$SECRET_MAP_FILE"
         echo "Getting the secrets mapping file: $urlconfigurationfile"
         initialsecretconfiguration=$(curl -sH "Authorization: token $github_admintasks_accesstoken" $urlconfigurationfile)
 
@@ -128,7 +124,7 @@ runs:
         echo "github_admintasks_accesstoken: $github_admintasks_accesstoken"
 
         # Get the configuration file from the github repository
-        urlconfigurationfile="https://raw.githubusercontent.com/${{ inputs.github-organization }}/${{ inputs.configurations-repository }}/main/$SECRET_MAP_FILE"
+        urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ inputs.configurations-repository }}/main/$SECRET_MAP_FILE"
         echo "Getting the secrets mapping file: $urlconfigurationfile"
         initialsecretconfiguration=$(curl -sH "Authorization: token $github_admintasks_accesstoken" $urlconfigurationfile)
 
@@ -199,7 +195,6 @@ runs:
       with:
         github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".settings"
-        github-organization: $GITHUB_ORGANIZATION
         configurations-repository: $CONFIGURATIONS_REPOSITORY
 
     - name: Get the skiptest property for the service
@@ -209,7 +204,6 @@ runs:
       with:
         github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".skiptests"
-        github-organization: ${{ inputs.github-organization }}
         configurations-repository: ${{ inputs.configurations-repository }} 
 
     - name: Get the properties for unit test
@@ -219,7 +213,6 @@ runs:
       with:
         github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".test-properties"
-        github-organization: $GITHUB_ORGANIZATION
         configurations-repository: $CONFIGURATIONS_REPOSITORY
 
     ##########################################################################
@@ -234,7 +227,6 @@ runs:
         github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".cloudhub"
         suffix: "-${{ inputs.environment }}"
-        github-organization: ${{ inputs.github-organization }}
         configurations-repository: ${{ inputs.configurations-repository }}          
 
     - name: Get configuration for deployment properties
@@ -245,7 +237,6 @@ runs:
         github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".properties"
         suffix: "-${{ inputs.environment }}"
-        github-organization: ${{ inputs.github-organization }}
         configurations-repository: ${{ inputs.configurations-repository }} 
 
     - name: Get configuration for deployment name
@@ -256,7 +247,6 @@ runs:
         github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".deployment-name"
         suffix: "-${{ inputs.environment }}"
-        github-organization: ${{ inputs.github-organization }}
         configurations-repository: ${{ inputs.configurations-repository }} 
 
     - name: Get configuration for deployment organization
@@ -267,7 +257,6 @@ runs:
         github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".deployment-organization"
         suffix: "-${{ inputs.environment }}"
-        github-organization: ${{ inputs.github-organization }}
         configurations-repository: ${{ inputs.configurations-repository }} 
 
     - name: Get configuration for service environment variables
@@ -278,7 +267,6 @@ runs:
         github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".env"
         suffix: "-${{ inputs.environment }}"
-        github-organization: ${{ inputs.github-organization }}
         configurations-repository: ${{ inputs.configurations-repository }}
 
     - name: Generate environment variables for the service

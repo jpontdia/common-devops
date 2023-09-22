@@ -50,24 +50,12 @@ jobs:
       deployment-env: ${{ steps.verify-deployment.outputs.deployment-env }}
 
     steps:
-      
-      - name: Initialize Variables
-        shell: bash
-        run: |
-          echo " "
-          echo "***********************************************"
-          echo "Initialize Variables "
-          echo "***********************************************"
-          echo " "
-          echo "GITHUB_ORGANIZATION=${{ github.repository_owner }}" >> $GITHUB_ENV
-          echo " "
 
       - name: Get workflow metadata
         uses: jpontdia/common-devops/packages/configuration-issuemanagement@main
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
 
       - id: verify-deployment
@@ -162,7 +150,6 @@ jobs:
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
       
       - id: issue-comment
@@ -195,7 +182,6 @@ jobs:
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
           deployment-env: ${{ env.deployment_environment }}
 
@@ -234,7 +220,6 @@ jobs:
       - name: Create badge for deployment
         uses: jpontdia/common-devops/packages/badge@main
         with:
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
           gist-id: ${{ env.github_gist_id }}
           gist-token: ${{ env.github_admintasks_accesstoken }}
           label: '${{ env.deployment_environment }} version'
@@ -257,7 +242,6 @@ jobs:
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
 
       - id: issue-comment
@@ -281,7 +265,6 @@ jobs:
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
           deployment-env: ${{ env.deployment_environment }}
 
@@ -331,7 +314,6 @@ jobs:
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
-          github-organization: ${{ env.GITHUB_ORGANIZATION }}
           configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
 
       - id: issue-create
