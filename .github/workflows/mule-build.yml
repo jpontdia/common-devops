@@ -20,7 +20,6 @@ on:
         description: Azure Credentials for login
 env:
   DEFAULT_SETTINGS_XML: settings.xml
-  GITHUB_ORGANIZATION: jpontdia
   CONFIGURATIONS_REPOSITORY: common-configurations
   
 jobs:
@@ -34,6 +33,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      - name: Initialize Variables
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Initialize Variables "
+          echo "***********************************************"
+          echo " "
+          echo "GITHUB_ORGANIZATION=${{ github.repository_owner }}" >> $GITHUB_ENV
+          echo " "
 
       - name: Get the source code
         uses: actions/checkout@v4

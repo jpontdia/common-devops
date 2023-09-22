@@ -19,7 +19,6 @@ on:
         required: true
         description: Azure Credentials for login
 env:
-  GITHUB_ORGANIZATION: jpontdia
   CONFIGURATIONS_REPOSITORY: common-configurations
   MESSAGE_ASSET_NOT_CONFIGURED: "The mulesoft asset doesn't have any deployment configuration"
   MESSAGE_SERVICE_INTERNAL_ERROR: "There was an internal error in the deployment process"
@@ -51,6 +50,18 @@ jobs:
       deployment-env: ${{ steps.verify-deployment.outputs.deployment-env }}
 
     steps:
+      
+      - name: Initialize Variables
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Initialize Variables "
+          echo "***********************************************"
+          echo " "
+          echo "GITHUB_ORGANIZATION=${{ github.repository_owner }}" >> $GITHUB_ENV
+          echo " "
+
       - name: Get workflow metadata
         uses: jpontdia/common-devops/packages/configuration-issuemanagement@main
         with:
