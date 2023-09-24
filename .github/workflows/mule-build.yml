@@ -173,7 +173,7 @@ jobs:
 
       - id: issue-create
         if: ${{ env.configuration_deployable }} == 'true'
-        name: Create deployment issue
+        name: Create a deployment issue
         env:
           GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}
         shell: bash
