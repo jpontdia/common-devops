@@ -172,7 +172,7 @@ jobs:
           file: ${{ env.service_name }}-re.svg
 
       - id: issue-create
-        if: ${{ env.configuration_skiptest }} = 'true'
+        if: ${{ env.configuration_deployable }} == 'true'
         name: Create deployment issue
         env:
           GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}

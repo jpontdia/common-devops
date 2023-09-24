@@ -345,6 +345,7 @@ runs:
           echo "configuration_settings=${{steps.configuration-settings.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_skiptest=${{steps.configuration-skiptest.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_unittest=${{steps.configuration-unittest.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_deployable=${{steps.configuration-deployable.outputs.configuration-data}}" >> $GITHUB_ENV
         fi
 
     - name: Debug review configuration environment variables
@@ -359,6 +360,7 @@ runs:
         echo "  configuration_settings= " $configuration_settings
         echo "  configuration_skiptest= " $configuration_skiptest          
         echo "  configuration_unittest= " $configuration_unittest
+        echo "  configuration_deployable= " $configuration_deployable
         echo "  configuration_cloudhub= " $configuration_cloudhub
         echo "  configuration_properties= " $configuration_properties
         echo "  configuration_deployment_name= " $configuration_deployment_name
