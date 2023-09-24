@@ -220,8 +220,6 @@ jobs:
       - name: Create badge for deployment
         uses: jpontdia/common-devops/packages/badge@main
         with:
-          gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_admintasks_accesstoken }}
           label: '${{ env.deployment_environment }} version'
           status: '${{ env.deployment_version }}'
           color: '535597'

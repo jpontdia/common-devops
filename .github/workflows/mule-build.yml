@@ -154,8 +154,6 @@ jobs:
       - name: Create badge for workflow number
         uses: jpontdia/common-devops/packages/badge@main
         with:
-          gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_admintasks_accesstoken }}
           label: Build job
           status: '${{ github.run_number }}'
           color: '535597'
@@ -168,8 +166,6 @@ jobs:
         if: ${{ hashFiles('target/*.jar') != '' }}
         uses: jpontdia/common-devops/packages/badge@main
         with:
-          gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_admintasks_accesstoken }}
           label: Release
           status: '${{ env.service_version }}'
           color: '535597'

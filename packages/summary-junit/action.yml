@@ -100,8 +100,6 @@ runs:
       uses: jpontdia/common-devops/packages/badge@main
       if: always()
       with:
-        gist-token: ${{ inputs.gist-token }}
-        gist-id: ${{ inputs.gist-id }}
         label: ${{inputs.badge-label}}
         status: '${{ env.BADGE_STATUS }}'
         color: ${{ env.BADGE_COLOR }}
