@@ -206,6 +206,15 @@ runs:
         yaml-path: ".skiptests"
         configurations-repository: ${{ inputs.configurations-repository }} 
 
+    - name: Get the deployable property for the service
+      id: configuration-deployable
+      if: ${{ inputs.environment == 'deployable' }}
+      uses: jpontdia/common-devops/packages/configuration-file@main
+      with:
+        github-configurations-accesstoken: $github_admintasks_accesstoken
+        yaml-path: ".deployable"
+        configurations-repository: ${{ inputs.configurations-repository }} 
+
     - name: Get the properties for unit test
       id: configuration-unittest
       if: ${{ inputs.environment == 'unit-test' }}
