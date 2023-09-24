@@ -47,6 +47,7 @@ jobs:
           environment: unit-test
 
       - name: Verify if github tag exists
+        if: !contains(env.service_version, 'snapshot')
         shell: bash
         run: |
           echo " "
@@ -172,7 +173,7 @@ jobs:
           file: ${{ env.service_name }}-re.svg
 
       - id: issue-create
-        if: ${{ env.configuration_deployable }} == 'true'
+        if: env.configuration_deployable == 'true'
         name: Create a deployment issue
         env:
           GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}

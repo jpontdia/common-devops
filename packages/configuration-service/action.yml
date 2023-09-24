@@ -208,7 +208,7 @@ runs:
 
     - name: Get the deployable property for the service
       id: configuration-deployable
-      if: ${{ inputs.environment == 'deployable' }}
+      if: ${{ inputs.environment == 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
         github-configurations-accesstoken: $github_admintasks_accesstoken
