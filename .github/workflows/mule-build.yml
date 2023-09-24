@@ -131,13 +131,13 @@ jobs:
       # Next actions only if application is not a snapshot
       #########################################################
       - name: Deploy to anypoint exchange
-        if: !contains(env.service_version, 'snapshot')
+        if: "!contains(env.service_version, 'snapshot')"
         run: |
           ## Deploy to anypoint exchange
           mvn --batch-mode deploy -DskipTests 
 
       - name: Tag repository with service version
-        if: !contains(env.service_version, 'snapshot')
+        if: "!contains(env.service_version, 'snapshot')"
         shell: bash
         run: |
           echo " "
@@ -149,7 +149,7 @@ jobs:
           
       - name: Create a release
         uses: ncipollo/release-action@v1
-        if: hashFiles('target/*.jar') != '' && !contains(env.service_version, 'snapshot')
+        if: hashFiles('target/*.jar') != '' && "!contains(env.service_version, 'snapshot')"
         with: 
           artifacts: "target/*.jar"
           artifactErrorsFailBuild: true
@@ -158,7 +158,7 @@ jobs:
 
       - name: Create badge for workflow number
         uses: jpontdia/common-devops/packages/badge@main
-        if: !contains(env.service_version, 'snapshot')
+        if: "!contains(env.service_version, 'snapshot')"
         with:
           label: Build job
           status: '${{ github.run_number }}'
@@ -170,7 +170,7 @@ jobs:
       ##################################################
       - name: Create badge for release
         uses: jpontdia/common-devops/packages/badge@main
-        if: hashFiles('target/*.jar') != '' && !contains(env.service_version, 'snapshot')
+        if: hashFiles('target/*.jar') != '' && "!contains(env.service_version, 'snapshot')"
         with:
           label: Release
           status: '${{ env.service_version }}'
@@ -179,7 +179,7 @@ jobs:
 
       - id: issue-create
         name: Create a deployment issue
-        if: env.configuration_deployable == 'true' && !contains(env.service_version, 'snapshot')
+        if: env.configuration_deployable == 'true' && "!contains(env.service_version, 'snapshot')"
         env:
           GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}
         shell: bash
