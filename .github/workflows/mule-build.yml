@@ -47,7 +47,7 @@ jobs:
           environment: unit-test
 
       - name: Verify if github tag exists
-        if: !contains(env.service_version, 'snapshot')
+        # if: !contains(env.service_version, 'snapshot')
         shell: bash
         run: |
           echo " "
