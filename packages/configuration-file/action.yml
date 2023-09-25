@@ -1,12 +1,6 @@
 name: 'Get configuration file'
 description: 'Get the configuration file for the service defined in pom.xml'
 inputs:
-  configurations-repository:
-    required: true
-    description: Name of the repository for mulesoft configurations
-  github-configurations-accesstoken:
-    required: true
-    description: Token to access the configuration repository
   yaml-path: 
     required: true
     description: Path to get the node in the yaml file
@@ -39,9 +33,9 @@ runs:
         echo " "
 
         # Get the configuration file for the service
-        urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ inputs.configurations-repository }}/main/$configurationfile"
+        urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/$CONFIGURATIONS_REPOSITORY/main/$configurationfile"
         echo "Getting file: $urlconfigurationfile"
-        configurationdata=$(curl -sH "Authorization: token ${{ inputs.github-configurations-accesstoken}}" $urlconfigurationfile)
+        configurationdata=$(curl -sH "Authorization: token ${{ env.github_admintasks_accesstoken }}" $urlconfigurationfile)
         pathdata=""
 
         # Verify if configuration file was found

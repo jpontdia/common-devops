@@ -7,9 +7,7 @@ inputs:
   default-settings-xml:
     required: true
     description: Default file for settings.xml in case the service doesn't have any configured
-  configurations-repository:
-    required: true
-    description: Name of the repository for mulesoft configurations
+
 runs:
   using: "composite"
   steps:
@@ -49,7 +47,7 @@ runs:
         fi
 
         echo "Getting next settings file from configuration repository: $settings_xml"
-        urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ inputs.configurations-repository }}/main/$settings_xml"
+        urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/$CONFIGURATIONS_REPOSITORY/main/$settings_xml"
         echo "URL file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token ${{inputs.github-configurations-accesstoken}}" $urlconfigurationfile)
         echo "The content of the file is: $configurationdata"

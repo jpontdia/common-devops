@@ -7,9 +7,6 @@ inputs:
   azure-credentials:
     required: true
     description: Azure Credentials for login
-  configurations-repository:
-    required: true
-    description: Name of the repository for mulesoft configurations
   deployment-env:
     required: true
     description: Deployment environment for the service

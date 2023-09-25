@@ -43,7 +43,6 @@ jobs:
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
-          configurations-repository: $CONFIGURATIONS_REPOSITORY
           environment: unit-test
 
       - name: Verify if github tag exists
@@ -71,7 +70,6 @@ jobs:
         with:
           github-configurations-accesstoken: $github_admintasks_accesstoken
           default-settings-xml: $DEFAULT_SETTINGS_XML
-          configurations-repository: $CONFIGURATIONS_REPOSITORY
 
       - name: Documentation - Anypoint Exchange
         run: |

@@ -7,9 +7,6 @@ inputs:
   azure-credentials:
     required: true
     description: Azure Credentials for login
-  configurations-repository:
-    required: true
-    description: Name of the repository for mulesoft configurations
 
 runs:
   using: "composite"
@@ -53,5 +50,4 @@ runs:
       with:
         keyvault-key: ${{ inputs.keyvault-key }}
         azure-credentials: ${{ inputs.azure-credentials }}
-        configurations-repository: ${{ inputs.configurations-repository }}
         environment: "${{ env.deployment_environment }}"

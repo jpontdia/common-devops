@@ -7,9 +7,6 @@ inputs:
   azure-credentials:
     required: true
     description: Azure Credentials for login
-  configurations-repository:
-    required: true
-    description: Name of the repository for mulesoft configurations
   environment:
     required: true
     description: Get the configuration the the specified environment
@@ -42,7 +39,7 @@ runs:
         tempvar=$( echo "${{ inputs.azure-credentials }}" | sed 's/./& /g' )
         echo "Value for inputs.azure-credentials: $tempvar"
         echo "  keyvault-key: ${{ inputs.keyvault-key }}"
-        echo "  configurations-repository: ${{ inputs.configurations-repository }}"
+        echo "  configurations-repository: $CONFIGURATIONS_REPOSITORY"
         echo "  environment: ${{ inputs.environment }}"
 
     # Note: if not sure if azure-credentials variable is not well configured, then try github action:
@@ -81,7 +78,7 @@ runs:
         echo "Variable. github_admintasks_accesstoken: $github_admintasks_accesstoken"
 
         # Get the secrets mapping
-        urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ inputs.configurations-repository }}/main/$SECRET_MAP_FILE"
+        urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/$CONFIGURATIONS_REPOSITORY/main/$SECRET_MAP_FILE"
         echo "Getting the secrets mapping file: $urlconfigurationfile"
         initialsecretconfiguration=$(curl -sH "Authorization: token $github_admintasks_accesstoken" $urlconfigurationfile)
 
@@ -124,7 +121,7 @@ runs:
         echo "github_admintasks_accesstoken: $github_admintasks_accesstoken"
 
         # Get the configuration file from the github repository
-        urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ inputs.configurations-repository }}/main/$SECRET_MAP_FILE"
+        urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/$CONFIGURATIONS_REPOSITORY/main/$SECRET_MAP_FILE"
         echo "Getting the secrets mapping file: $urlconfigurationfile"
         initialsecretconfiguration=$(curl -sH "Authorization: token $github_admintasks_accesstoken" $urlconfigurationfile)
 
@@ -193,36 +190,28 @@ runs:
       if: ${{ inputs.environment == 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".settings"
-        configurations-repository: $CONFIGURATIONS_REPOSITORY
 
     - name: Get the skiptest property for the service
       id: configuration-skiptest
       if: ${{ inputs.environment == 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".skiptests"
-        configurations-repository: ${{ inputs.configurations-repository }} 
 
     - name: Get the deployable property for the service
       id: configuration-deployable
       if: ${{ inputs.environment == 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".deployable"
-        configurations-repository: ${{ inputs.configurations-repository }} 
 
     - name: Get the properties for unit test
       id: configuration-unittest
       if: ${{ inputs.environment == 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".test-properties"
-        configurations-repository: $CONFIGURATIONS_REPOSITORY
 
     ##########################################################################
     # Configuration for all environments: dev, tst, prd
@@ -233,50 +222,40 @@ runs:
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".cloudhub"
         suffix: "-${{ inputs.environment }}"
-        configurations-repository: ${{ inputs.configurations-repository }}          
 
     - name: Get configuration for deployment properties
       id: configuration-properties
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".properties"
         suffix: "-${{ inputs.environment }}"
-        configurations-repository: ${{ inputs.configurations-repository }} 
 
     - name: Get configuration for deployment name
       id: configuration-deployment-name
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".deployment-name"
         suffix: "-${{ inputs.environment }}"
-        configurations-repository: ${{ inputs.configurations-repository }} 
 
     - name: Get configuration for deployment organization
       id: configuration-deployment-organization
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".deployment-organization"
         suffix: "-${{ inputs.environment }}"
-        configurations-repository: ${{ inputs.configurations-repository }} 
 
     - name: Get configuration for service environment variables
       id: configuration-env
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        github-configurations-accesstoken: $github_admintasks_accesstoken
         yaml-path: ".env"
         suffix: "-${{ inputs.environment }}"
-        configurations-repository: ${{ inputs.configurations-repository }}
 
     - name: Generate environment variables for the service
       id: generate-service-env-variables

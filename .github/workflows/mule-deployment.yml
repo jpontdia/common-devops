@@ -56,7 +56,6 @@ jobs:
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
-          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
 
       - id: verify-deployment
         name: Verify if asset has the deployment configuration
@@ -150,7 +149,6 @@ jobs:
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
-          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
       
       - id: issue-comment
         name: Add issue comment
@@ -182,7 +180,6 @@ jobs:
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
-          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
           deployment-env: ${{ env.deployment_environment }}
 
       - id: verify-issue-close-deployment
@@ -240,7 +237,6 @@ jobs:
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
-          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
 
       - id: issue-comment
         name: Add issue comment
@@ -263,7 +259,6 @@ jobs:
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
-          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
           deployment-env: ${{ env.deployment_environment }}
 
       - id: issue-close-test
@@ -312,7 +307,6 @@ jobs:
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
-          configurations-repository: ${{ env.CONFIGURATIONS_REPOSITORY }}
 
       - id: issue-create
         name: Create deployment issue
