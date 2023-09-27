@@ -137,7 +137,7 @@ runs:
         fi
 
     - name: Import variables from global.yml
-      uses: zlatko-ms/varfiletoenv@v3
+      uses: zlatko-ms/envarfiles@main
       with:
         paths: global.yml
 

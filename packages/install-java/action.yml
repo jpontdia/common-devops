@@ -40,17 +40,24 @@ runs:
         settings_xml="${{ inputs.default-settings-xml}}"
 
         if [ "$configuration_settings" = "null" ] || [ "$configuration_settings" = "" ] ; then
-          echo "The settings.xml file was not configured for the service, assigning the default one"
+          echo "Assigning the default settings file"
         else
-          echo "Assigning the settings file specified in the configuration for the service"
+          echo "The service will use the next settings file: $configuration_settings"
           settings_xml="$configuration_settings"
         fi
 
-        echo "Getting next settings file from configuration repository: $settings_xml"
+        echo " "
+        echo "Getting settings file: $settings_xml"
         urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/$CONFIGURATIONS_REPOSITORY/main/$settings_xml"
-        echo "URL file: $urlconfigurationfile"
+        echo "  URL file: $urlconfigurationfile"
         configurationdata=$(curl -sH "Authorization: token ${{inputs.github-configurations-accesstoken}}" $urlconfigurationfile)
-        echo "The content of the file is: $configurationdata"
+
+        if [ "$configurationdata" == "404: Not Found" ] ; then
+          echo "  The file was not found in the repository. Response: $configurationdata"
+          exit 1
+        fi
+
+        echo "  The content of the file is: $configurationdata"
         output=$(echo "$configurationdata" | envsubst)
         echo "$output" > $HOME/.m2/settings.xml
 
