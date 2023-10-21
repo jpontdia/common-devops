@@ -20,6 +20,7 @@ on:
         description: Azure Credentials for login
 env:
   CONFIGURATIONS_REPOSITORY: common-configurations
+  MULE_APPLICATION_TYPE: mule-application-example.jar
   MESSAGE_ASSET_NOT_CONFIGURED: "The mulesoft asset doesn't have any deployment configuration"
   MESSAGE_SERVICE_INTERNAL_ERROR: "There was an internal error in the deployment process"
   MESSAGE_SERVICE_NOT_DEPLOYED: "The service couldn't be deployed"
@@ -40,6 +41,7 @@ jobs:
   verify:
     if: |
       github.actor == 'jpontdia' ||
+      github.actor == 'tallguyjenks' ||
       github.actor == 'GitHubActions' ||
       github.actor == 'github-actions'
     name: verify
@@ -170,16 +172,25 @@ jobs:
         with:
           repo: '${{ github.repository }}'
           version: 'tags/${{ env.deployment_version }}'
-          regex: true
-          file: "${{ env.deployment_service }}-.*\\.jar"
+          regex: false
+          file: "${{ env.service_artifact }}-${{ env.deployment_version }}-${{ env.MULE_APPLICATION_TYPE }}"
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - id: debug-workplace
+        name: Debug workplace
+        shell: bash
+        run: |
+          echo " "
+          echo "***************************************"
+          echo "Debug workplace - Show root files"
+          echo "***************************************"
+          echo " "
+          ls -l
+          
       - id: deployment-ch1
         name: Deploy the service in the cloud
         uses: jpontdia/common-devops/packages/process-cloudhub1@main
         with:
-          keyvault-key: ${{ inputs.keyvault-key }}
-          azure-credentials: ${{ secrets.azure-credentials }}
           deployment-env: ${{ env.deployment_environment }}
 
       - id: verify-issue-close-deployment
@@ -246,9 +257,9 @@ jobs:
         shell: bash
         run: |
           echo " "
-          echo "***********************************************"
+          echo "****************************************************"
           echo "Add issue comment: ${{ github.event.issue.number }} "
-          echo "***********************************************"
+          echo "****************************************************"
           echo " "
           gh issue comment ${{ github.event.issue.number }} \
             -b "The testing process is starting" 
@@ -291,6 +302,62 @@ jobs:
               -c "${{ env.MESSAGE_SERVICE_BAT_FAILURE }}" \
               -r "not planned"
           fi
+
+  ##################################################################
+  # Custom Logger
+  ##################################################################
+  custom-logger:
+    needs: [deployment]
+    if: needs.deployment.outputs.outcome == 'success'
+    name: custom-logger
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get workflow metadata
+        uses: jpontdia/common-devops/packages/configuration-issuemanagement@main
+        with:
+          keyvault-key: '${{ inputs.keyvault-key }}'
+          azure-credentials: '${{ secrets.azure-credentials }}'
+
+      - id: issue-comment-start
+        name: Add issue comment for start process
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: |
+          echo " "
+          echo "****************************************************"
+          echo "Add issue comment: ${{ github.event.issue.number }} "
+          echo "****************************************************"
+          echo " "
+          gh issue comment ${{ github.event.issue.number }} \
+            -b "The process for setting the custom logging is starting" 
+            
+      - name: Set custom logger
+        id: custom-logger
+        uses: jpontdia/common-devops/packages/process-customlogger@main
+        with:
+          deployment-env: ${{ env.deployment_environment }}
+
+      - id: issue-comment-end
+        name: Add issue comment for end process
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: |
+          echo " "
+          echo "****************************************************"
+          echo "Add issue comment: ${{ github.event.issue.number }} "
+          echo "****************************************************"
+          echo " "
+          echo "Output steps.custom-logger.outputs.outcome=${{ steps.custom-logger.outputs.outcome }}"
+
+          gh issue comment ${{ github.event.issue.number }} \
+            -b "The process for setting the custom logging ended with status=${{ steps.custom-logger.outputs.outcome }}" 
+
 
   ##################################################################
   # Forward to next environnment

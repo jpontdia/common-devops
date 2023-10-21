@@ -47,8 +47,6 @@ runs:
       uses: jpontdia/common-devops/packages/summary-junit@main
       if: always()
       with:
-        gist-id: ${{ env.github_gist_id }}
-        gist-token: ${{ env.github_admintasks_accesstoken }}
         badge-label: ${{ env.deployment_environment }} test
         badge-suffix: ${{ env.deployment_environment }}-test
         path-report: bat/target/JUnit.xml

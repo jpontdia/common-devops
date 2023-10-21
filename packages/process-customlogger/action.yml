@@ -1,0 +1,127 @@
+name: 'Sets the custom logging in Cloudhub/GovCloud'
+description: 'Sets the custom logging in Cloudhub/GovCloud'
+inputs:
+  deployment-env:
+    required: true
+    description: Deployment environment for the service
+outputs:
+  outcome:
+    description: "The result of the deployment: sucess, failure"
+    value: ${{ steps.custom-logger.outputs.outcome }}
+
+runs:
+  using: "composite"
+  steps:
+
+  - id: custom-logger
+    name: Set custom logger
+    shell: bash
+    run: |
+      start=$(date +%s)
+      echo " "
+      echo "***************************************"
+      echo "Create JSON file with update instruction"
+      echo "***************************************"
+      echo "{ \"loggingCustomLog4JEnabled\": \"$configuration_deployment_customlogger\" }" >> customlogger.json
+
+      echo " "
+      echo "***************************************"
+      echo "Get the authorization access token"
+      echo "***************************************"
+      ACCESS_TOKEN=$( \
+          curl --location --request POST \
+          https://$configuration_deployment_host/accounts/api/v2/oauth2/token \
+          --header "Content-Type: application/x-www-form-urlencoded" \
+          --data-urlencode "client_id=$cicd_connectedapp_clientid" \
+          --data-urlencode "client_secret=$cicd_connectedapp_secret" \
+          --data-urlencode "grant_type=client_credentials" \
+        | jq -r ".access_token")
+      ACCESS_TOKEN_MASKED=$(echo $ACCESS_TOKEN | sed -E "s/(.{9})(.{14})/\1*****/")
+      echo "Access Token: $ACCESS_TOKEN_MASKED"
+
+      echo " "
+      echo "***************************************"
+      echo " Get the Environment ID"
+      echo "***************************************"
+      ENVIRONMENT_ID=$( \
+          curl \
+          https://$configuration_deployment_host/accounts/api/organizations/$configuration_deployment_organization/environments \
+          -H "Authorization: Bearer $ACCESS_TOKEN" \
+        | jq -r '.data[] | select(.name == "${{ inputs.deployment-env }}") | {id}' \
+        | jq -r ".id ")
+      echo "ENVIRONMENT_ID: $ENVIRONMENT_ID"
+
+      echo " "
+      echo "***************************************"
+      echo " Enable/disable custom log"
+      echo "***************************************"
+      CUSTOM_LOGS=$( \
+          curl -X PUT \
+          https://$configuration_deployment_host/cloudhub/api/v2/applications/$configuration_deployment_name \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer $ACCESS_TOKEN" \
+          -H "x-anypnt-env-id: $ENVIRONMENT_ID" \
+          -H "x-anypnt-org-id: $configuration_deployment_organization" \
+          -d "@customlogger.json" )
+      echo "CUSTOM_LOGS: $CUSTOM_LOGS"
+
+      echo " "
+      echo "***************************************"
+      echo " Query the status of the application"
+      echo "***************************************"
+      
+      echo "The process of querying deployment starts"
+      sleep 5
+      iteration=1
+      limit=70
+      while true
+      do 
+        # Wait 5 seconds to query the status
+        sleep 5
+
+        echo " "
+        STATUS_APP=$( \
+            curl -X GET \
+            https://$configuration_deployment_host/cloudhub/api/v2/applications/$configuration_deployment_name \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "x-anypnt-env-id: $ENVIRONMENT_ID" \
+            -H "x-anypnt-org-id: $configuration_deployment_organization")
+        # echo "STATUS_APP: $STATUS_APP"
+
+        # Getting the 2 status from the document related with the deployment of the application
+        end=$(date +%s)
+        DEPLOYMENT_STATUS=$(echo $STATUS_APP | jq -r ".status")
+        UPDATE_STATUS=$(echo $STATUS_APP | jq -r ".deploymentUpdateStatus")  
+        echo "status: $DEPLOYMENT_STATUS, updateStatus: $UPDATE_STATUS"
+        echo "  Elapsed time: $(($end-$start)) seconds, iteration: $iteration limit: $limit"
+
+        if [ "$DEPLOYMENT_STATUS" != "STARTED" ] ; then
+          echo "  Error: The service was in an inconsistent state: $DEPLOYMENT_STATUS, expected: STARTED "
+          echo "outcome=failure" >> $GITHUB_OUTPUT
+          exit 1 # terminate and indicate error 
+        fi
+
+        if [ $iteration -eq $limit ]; then
+          echo "  Error: The service was not deployed in the expected time, review logs"
+          echo "    example: anypoint-cli-v4 runtime-mgr cloudhub-application download-logs {APP-NAME}"
+          echo "  The expected iterations were 44 but the proccess reached the limit: $limit"
+          echo "outcome=failure" >> $GITHUB_OUTPUT
+          exit 1 # terminate and indicate error
+        fi
+
+        if [ "$UPDATE_STATUS" = "null" ] ; then
+          echo "  Deployment successful.."
+          echo "outcome=success" >> $GITHUB_OUTPUT
+          break # Abandon the while loop.
+        elif [ "$UPDATE_STATUS" != "DEPLOYING" ] ; then
+          echo "  Error: The service was in an inconsistent state: $UPDATE_STATUS, expected: DEPLOYING "
+          echo "outcome=failure" >> $GITHUB_OUTPUT
+          exit 1 # terminate and indicate error 
+        fi
+
+        echo "  waiting for next query status iteration"
+        iteration=$(( $iteration + 1 ))
+      done
+
+      echo " "

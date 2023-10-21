@@ -1,19 +1,9 @@
 name: 'Deploys a service to Cloudhub/GovCloud'
 description: 'Deploys a service to Cloudhub/GovCloud'
 inputs:
-  keyvault-key:
-    required: true
-    description: The name of the KeyVault
-  azure-credentials:
-    required: true
-    description: Azure Credentials for login
   deployment-env:
     required: true
     description: Deployment environment for the service
-  host:
-    required: false
-    description: The host of your Anypoint Platform Installation. This value defaults to anypoint.mulesoft.com.
-    default: anypoint.mulesoft.com
 outputs:
   outcome:
     description: "The result of the deployment: sucess, failure"
@@ -22,6 +12,17 @@ outputs:
 runs:
   using: "composite"
   steps:
+
+  - id: debug-workplace
+    name: Debug workplace
+    shell: bash
+    run: |
+      echo " "
+      echo "***************************************"
+      echo "Debug root workplace"
+      echo "***************************************"
+      echo " "
+      ls -l
 
   - name: Install NodeJs
     uses: actions/setup-node@v3
@@ -65,7 +66,7 @@ runs:
       deploymentname="${{ env.configuration_deployment_name }}"
       deploymentenvironment="${{ inputs.deployment-env }}"
       deploymentorganization="${{ env.configuration_deployment_organization }}"
-      deploymenthost="${{ inputs.host }}"
+      deploymenthost="${{ env.configuration_deployment_host }}"
       propscloud="${{ env.configuration_cloudhub }}"
       propsservice="${{ env.configuration_properties }}"
 
@@ -75,7 +76,8 @@ runs:
 
       start=$(date +%s)
       echo " "
-      echo "Deployment process start. anypoint-cli-v4: $(anypoint-cli-v4 --version)"
+      echo "Deployment process start. "
+      echo "   anypoint-cli-v4: $(anypoint-cli-v4 --version)"
 
       QUERY_STATUS="anypoint-cli-v4 runtime-mgr cloudhub-application describe \
                   --client_id $cicd_connectedapp_clientid \
@@ -87,7 +89,8 @@ runs:
 
       # Get the current status of the service
       echo " "
-      echo "Getting the current status for the service, query command: $QUERY_STATUS"
+      echo "Getting the current status for the service"
+      echo "  Query command: $QUERY_STATUS"
 
       # Get the current status of the service 
       DEPLOYMENT_INFO=$($QUERY_STATUS || true)
@@ -138,7 +141,7 @@ runs:
       --host $deploymenthost \
       --environment $deploymentenvironment \
       $propscloud $propsservice --output json $deploymentname $jar"
-      echo "Deployment command: $CREATEUPDATE_APP"
+      echo "  Deployment command: $CREATEUPDATE_APP"
       echo " "
       echo "Executing deployment...."
 
@@ -157,7 +160,7 @@ runs:
       echo " "
       echo "The process of querying deployment starts"      
       iteration=1
-      limit=60
+      limit=70
       while true
       do 
         sleep 5
@@ -187,6 +190,7 @@ runs:
             fi
         fi
 
+        echo "  Waiting for next query status iteration"
         iteration=$(( $iteration + 1 ))
       done
 

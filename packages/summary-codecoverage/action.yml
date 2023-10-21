@@ -1,12 +1,5 @@
 name: 'Summary - Publish test results'
 description: 'Summary - Publish test results'
-inputs:
-  gist-token:
-    required: true
-    description: Personal access token for github gist
-  gist-id:
-    required: true
-    description: Id for the badge gist
 
 runs:
   using: "composite"
@@ -23,18 +16,6 @@ runs:
         # Set the initial values for the badge status and color
         echo "BADGE_STATUS=Error parsing" >> $GITHUB_ENV
         echo "BADGE_COLOR=800000" >> $GITHUB_ENV
-
-        if [ "${{ env.cicd_debug }}" = "true" ]; then
-          echo " "
-          echo "*****************************************************"
-          echo "Code Coverage - Debug variables"
-          echo "*****************************************************"
-          echo " "
-          echo "Input variables: "
-          echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
-          echo "  gist-id: ${{ inputs.gist-id }}"    
-          echo " "
-        fi
 
     - name: Publish - Application Coverage Report
       if: ${{ hashFiles('target/site/munit/coverage/*') != '' }}

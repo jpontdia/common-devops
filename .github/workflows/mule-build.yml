@@ -38,14 +38,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get global configuration for the pipeline
+      - name: Get global configuration
         uses: jpontdia/common-devops/packages/configuration-service@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
           environment: unit-test
 
-      - name: Verify if github tag exists
+      - name: Verify if the github tag exists
         if: "!contains(env.service_version, 'snapshot')"
         shell: bash
         run: |
@@ -74,10 +74,11 @@ jobs:
       - name: Documentation - Anypoint Exchange
         run: |
           echo " "
+          echo "Configuring the directory for Anypoint Exchange documentation"
           if [ -d "exchange-docs" ]; then
-              echo "Directory exchange-docs exists and will not be overriden with README.md" 
+            echo "  Directory exchange-docs exists and will not be overriden with README.md" 
           else
-            echo "Creating exchange-doc directory with home.md from README.md"
+            echo "  Creating directory 'exchange-doc' with home.md from README.md"
             mkdir -p exchange-docs
             mkdir -p exchange-docs/docs
             cp -Rfpv README.md exchange-docs/home.md
@@ -102,18 +103,31 @@ jobs:
             skiptest="-DskipTests"
             echo "Test will be skipped"
           else
-            echo "Asset will be tested"
+            echo "The asset will be tested"
           fi
 
-          echo " "
-          echo "Using maven to run test cases and package Mulesoft application"
+          # Possible solution for parameters with spaces, but not working
+          # mvn --batch-mode $skiptest package "$configuration_unittest"
+
+          # Next approach doesn't work with parameters with spaces
           mvn --batch-mode $skiptest package $configuration_unittest
+          
+          #echo " "
+          #echo "Preparing mvn command"
+          # command=$(echo "mvn --batch-mode $skiptest package $configuration_unittest")
+          # command="$(echo "mvn --batch-mode $skiptest package $configuration_unittest")"
+          # command=`echo "mvn --batch-mode $skiptest package $configuration_unittest"`
+          # command=`echo 'mvn --batch-mode $skiptest package $configuration_unittest'`
+          
+          #echo "  The command is: $command"
+
+          #echo " "
+          #echo "Executing..."
+          #eval $command
 
       - name: Summary - Test
         uses: jpontdia/common-devops/packages/summary-junit@main
         with:
-          gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_admintasks_accesstoken }}
           badge-label: Unit test
           badge-suffix: ut
           path-report: 'target/surefire-reports/*.xml'
@@ -121,9 +135,6 @@ jobs:
 
       - name: Summary - Code Coverage
         uses: jpontdia/common-devops/packages/summary-codecoverage@main
-        with:
-          gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_admintasks_accesstoken }}
 
       #########################################################
       # Next actions only if application is not a snapshot

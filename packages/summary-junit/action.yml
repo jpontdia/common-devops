@@ -1,12 +1,6 @@
 name: 'Summary - Publish test results'
 description: 'Summary - Publish test results'
 inputs:
-  gist-token:
-    required: true
-    description: Personal access token for github gist
-  gist-id:
-    required: true
-    description: Id for the badge gist
   badge-label:
     required: true
     description: Label for the badge
@@ -25,17 +19,14 @@ runs:
   steps:
 
     - name: Debug action
-      if: ${{ env.cicd_debug }}
       shell: bash
       run: |
         echo " "
         echo "*****************************************************"
-        echo "DEBUG Summary - Publish test results"
+        echo "Summary - Publish test results"
         echo "*****************************************************"
         echo " "
         echo "Input variables: "
-        echo "  gist-token: $(echo ${{inputs.gist-token}} | sed 's/./& /g')"  
-        echo "  gist-id: ${{ inputs.gist-id }}"
         echo "  badge-label: ${{ inputs.badge-label }}"
         echo "  badge-suffix: ${{ inputs.badge-suffix }}"
         echo "  path-report: ${{ inputs.path-report}}"        

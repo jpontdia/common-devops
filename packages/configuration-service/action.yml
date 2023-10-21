@@ -238,7 +238,7 @@ runs:
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        yaml-path: ".deployment-name"
+        yaml-path: ".deployment.name"
         suffix: "-${{ inputs.environment }}"
 
     - name: Get configuration for deployment organization
@@ -246,7 +246,23 @@ runs:
       if: ${{ inputs.environment != 'unit-test' }}
       uses: jpontdia/common-devops/packages/configuration-file@main
       with:
-        yaml-path: ".deployment-organization"
+        yaml-path: ".deployment.organization"
+        suffix: "-${{ inputs.environment }}"
+
+    - name: Get configuration for deployment host
+      id: configuration-deployment-host
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: jpontdia/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".deployment.host"
+        suffix: "-${{ inputs.environment }}"
+
+    - name: Get configuration for deployment custom logger
+      id: configuration-deployment-customlogger
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: jpontdia/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".deployment.customlogger"
         suffix: "-${{ inputs.environment }}"
 
     - name: Get configuration for service environment variables
@@ -318,6 +334,8 @@ runs:
           echo "configuration_properties=${{steps.configuration-properties.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_deployment_name=${{steps.configuration-deployment-name.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_deployment_organization=${{steps.configuration-deployment-organization.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_deployment_host=${{steps.configuration-deployment-host.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_deployment_customlogger=${{steps.configuration-deployment-customlogger.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_env=${{steps.configuration-env.outputs.configuration-data}}" >> $GITHUB_ENV
         else
           echo "  creating variables for unit-test"
@@ -344,4 +362,6 @@ runs:
         echo "  configuration_properties= " $configuration_properties
         echo "  configuration_deployment_name= " $configuration_deployment_name
         echo "  configuration_deployment_organization= " $configuration_deployment_organization
+        echo "  configuration_deployment_host= " $configuration_deployment_host
+        echo "  configuration_deployment_customlogger= " $configuration_deployment_customlogger
         echo "  configuration_env= " $configuration_env

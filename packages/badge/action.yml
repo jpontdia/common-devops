@@ -45,7 +45,7 @@ runs:
         echo " "
 
     - name: Upload badge to Gist
-      uses: jpontdia/append-gist-action@master
+      uses: andymckay/append-gist-action@master
       with:
         token: ${{ env.github_gist_accesstoken }}
         gistURL: "https://gist.githubusercontent.com/${{ env.github_gist_path }}"
