@@ -73,7 +73,7 @@ jobs:
             echo "Dependencies up to date"
           fi
 
-          if [$ERROR =="true"]; then
+          if [$ERROR == "true"]; then
             exit 1 # terminate and indicate error 
           fi
 
