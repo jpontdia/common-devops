@@ -45,11 +45,16 @@ jobs:
             echo "  Update plugins!!"
             echo "  ***********************************************"
             echo " "
-            echo $SCAN_RESULT
+            mvn versions:display-plugin-updates
+            echo " "
+            echo " "
+            echo " "
+            echo " "
           else
             echo "Plugins up to date"
           fi
 
+          SCAN_RESULT=$(mvn versions:display-dependency-updates)
           echo " "
           echo "***********************************************"
           echo "Scan dependencies"
@@ -60,7 +65,7 @@ jobs:
             echo "  Update dependencies!!"
             echo "  ***********************************************"
             echo " "
-            echo $SCAN_RESULT
+            mvn versions:display-dependency-updates
           else
             echo "Dependencies up to date"
           fi
