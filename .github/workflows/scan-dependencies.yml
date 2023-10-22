@@ -2,7 +2,10 @@
 # Scan Maven Dependencies
 ##########################################################################
 name: scan-dependencies
-  
+
+on:
+  workflow_call:
+
 jobs:
   scan-dependencies:
     name: scan
@@ -11,5 +14,3 @@ jobs:
     steps:
       - name: Get the source code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
