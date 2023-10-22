@@ -39,6 +39,7 @@ jobs:
           echo "***********************************************"
           echo " "
           SCAN_RESULT=$(mvn versions:display-plugin-updates)
+          ERROR="false"
 
           if [[ $SCAN_RESULT == *"The following plugin updates are available"* ]]; then
             echo "  ***********************************************"
@@ -46,6 +47,7 @@ jobs:
             echo "  ***********************************************"
             echo " "
             mvn versions:display-plugin-updates
+            ERROR="true"
             echo " "
             echo " "
             echo " "
@@ -60,12 +62,18 @@ jobs:
           echo "Scan dependencies"
           echo "***********************************************"
           echo " "
-          if [[ $SCAN_RESULT == *"have newer versions"* ]]; then
+          if [[ $SCAN_RESULT == *"The following dependencies"* ]]; then
             echo "  ***********************************************"
             echo "  Update dependencies!!"
             echo "  ***********************************************"
             echo " "
             mvn versions:display-dependency-updates
+            ERROR="true"
           else
             echo "Dependencies up to date"
           fi
+
+          if [$ERROR =="true"]; then
+            exit 1 # terminate and indicate error 
+          fi
+
