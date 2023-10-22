@@ -1,0 +1,74 @@
+##########################################################################
+# Scan Maven Dependencies
+##########################################################################
+
+name: scan-dependencies
+on:
+  workflow_call:
+  
+jobs:
+
+  ##########################################################################
+  # BUILD MULESOFT SERVICE
+  ##########################################################################
+
+  build:
+    name: scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get the source code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache local Maven repository
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+              
+      - name: Setup JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          cache: 'maven'
+        
+      - name: Scan maven dependencies
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Scan plugins"
+          echo "***********************************************"
+          echo " "
+          SCAN_RESULT=$(mvn versions:display-plugin-updates)
+
+          if [[ $SCAN_RESULT == *"The following plugin updates are available"* ]]; then
+            echo "  ***********************************************"
+            echo "  Update plugins!!"
+            echo "  ***********************************************"
+            echo " "
+            echo $SCAN_RESULT
+          else
+            echo "Plugins up to date"
+          fi
+
+          echo " "
+          echo "***********************************************"
+          echo "Scan dependencies"
+          echo "***********************************************"
+          echo " "
+          if [[ $SCAN_RESULT == *"have newer versions"* ]]; then
+            echo "  ***********************************************"
+            echo "  Update dependencies!!"
+            echo "  ***********************************************"
+            echo " "
+            echo $SCAN_RESULT
+          else
+            echo "Dependencies up to date"
+          fi
+
