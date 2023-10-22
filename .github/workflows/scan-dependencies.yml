@@ -4,6 +4,9 @@
 name: scan-dependencies
 
 on:
+  schedule:
+    # crontab guru https://crontab.guru/
+    - cron: "0 0 * * 5"
   workflow_call:
 
 jobs:
