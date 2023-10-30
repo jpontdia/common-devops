@@ -54,8 +54,8 @@ jobs:
           echo "Verify if github tag exists "
           echo "***********************************************"
           echo " "
-          git config --global user.name "GitHubActions"
-          git config --global user.email "github-actions@users.noreply.github.com"
+          # git config --global user.name "GitHubActions"
+          # git config --global user.email "github-actions@users.noreply.github.com"
 
           tag_exist=$(git tag $service_version)
           if [ "$tag_exist" != "" ] ; then
